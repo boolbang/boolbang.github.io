@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>불방 게시판</title>
+  <link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts-nine@1.0/NanumGothicCoding.woff2" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    
+    @keyframes scrollText {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+
+    #textBanner {
+      background-color: #000;
+      color: #adff6a;
+      font-family: 'Press Start 2P', cursive;
+      overflow: hidden;
+    }
+
+    .text-slide-wrap {
+      width: 100%;
+      white-space: nowrap;
+    }
+
+    .text-slide-track {
+      display: inline-block;
+      padding: 7px 0;
+      animation: scrollText 50s linear infinite;
+    }
+
+    .text-slide-track span {
+      display: inline-block;
+      margin: 0 3rem;
+      font-size: 0.7rem;
+    }
+
+    a { color: #0000cc; text-decoration: none; }
+    a:hover { color: #ff2929; }
+
+    body {
+      font-family:'Nanum Gothic Coding', monospace;
+      text-align: center;
+      background-color: hsl(0, 0%, 79%);
+      color: #003cff;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+    }
+
+    h2 {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 1.5rem;
+      margin-top: 30px;
+    }
+
+    table {
+      margin: auto;
+      border-collapse: collapse;
+      width: 90%;
+      background-color: #fff;
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      border: 0.5px solid #ccc;
+      padding: 2px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 20px;
+      margin: 5% auto;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 8px;
+      text-align: left;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    #modalImage {
+      display: block;
+      max-width: 100%;
+      margin: 10px auto;
+      border-radius: 8px;
+    }
+
+    .retro-box {
+      max-width: 700px;
+      margin: 3rem auto;
+      padding: 1.8rem;
+      background-color: #a9e4ff;
+      border: 2px solid #000;
+      box-shadow: 3px 3px 0px #000;
+      position: relative;
+    }
+
+    .retro-box::before {
+      content: "📁 BBS";
+      position: absolute;
+      top: -14px;
+      left: 12px;
+      background: #fff8dc;
+      font-size: 0.8rem;
+      padding: 0 4px;
+      color: #444;
+      border: 1px solid #999;
+      font-family: 'Press Start 2P', cursive;
+    }
+
+    .home-button {
+      position: fixed;
+      top: 9px;
+      left: 15px;
+      background-color: #ffffff;
+      color: #000;
+      padding: 3px 5px;
+      font-size: 0.5rem;
+      border: 1px solid #000;
+      font-family: 'Press Start 2P', 'Nanum Gothic Coding';
+      z-index: 10000;
+    }
+
+    .home-button:hover {
+      background-color: #ffe600;
+      color: #000;
+    }
+
+    #pagination {
+      margin: 1rem auto;
+    }
+    #pagination button {
+      margin: 0 5px;
+      padding: 4px 10px;
+    }
+  </style>
+</head>
+
+<body>
+<a href="index.html" class="home-button">🏠 HOME</a>
+
+<!-- 상단 슬라이드 배너 -->
+<div id="textBanner">
+  <div class="text-slide-wrap">
+    <div class="text-slide-track">
+      <span>VIDEO</span><span>GAME</span><span>SOFTWERE</span><span>GRAPHICS</span>
+      <span>WEB</span><span>INTERACTIVE</span><span>DRAWING</span>
+      <span>VIDEO</span><span>GAME</span><span>SOFTWERE</span><span>GRAPHICS</span>
+    </div>
+  </div>
+</div>
+
+<h2>Portfolio Board</h2>
+
+<div class="retro-box">
+  <table id="postTable">
+    <thead>
+      <tr>
+        <th>번호</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>날짜</th>
+        <th>조회</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <div id="pagination"></div>
+</div>
+
+<!-- 게시글 보기 모달 -->
+<div id="postModal" class="modal">
+  <div class="modal-content">
+    <h3 id="modalTitle"></h3>
+    <p><strong>작성자:</strong> <span id="modalAuthor"></span></p>
+    <p><strong>날짜:</strong> <span id="modalDate"></span></p>
+    <p id="modalContent"></p>
+    <div id="postPagination" style="text-align: center; margin-top: 10px;"></div>
+    <img id="modalImage" src="" alt="이미지" />
+    <br>
+    <div style="text-align: center; margin-top: 20px;">
+    <button onclick="closeModal()">닫기</button>
+  </div>
+</div>
+
+<script>
+let postList = [];
+let postId = 1;
+let currentViewIndex = null;
+let isEditing = false;
+let editingPostId = null;
+let currentPage = 1;
+const postsPerPage = 10;
+
+let currentPostPageIndex = 0;
+let currentPostPages = [];
+
+const savedPosts = localStorage.getItem('postList');
+if (savedPosts) {
+  postList = JSON.parse(savedPosts);
+  postId = postList.length > 0 ? Math.max(...postList.map(p => p.id)) + 1 : 1;
+}
+renderPosts();
+
+function submitPost() {
+  const writer = document.getElementById('postWriter').value.trim();
+  const title = document.getElementById('postTitle').value.trim();
+  const content = document.getElementById('postContent').value.trim();
+  const imageUrl = document.getElementById('postImageUrl').value.trim();
+
+  if (!title || !content) {
+    alert('제목과 내용을 모두 입력해주세요.');
+    return;
+  }
+
+  const existingIndex = postList.findIndex(p => p.id === editingPostId);
+  const existingPost = existingIndex !== -1 ? postList[existingIndex] : null;
+
+  const post = {
+    id: existingPost ? existingPost.id : postId++,
+    title,
+    content,
+    image: imageUrl,
+    author: writer || '익명',
+    date: existingPost
+      ? existingPost.date
+      : new Date().toLocaleString('ko-KR', {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
+        }),
+    views: existingPost ? existingPost.views : 0
+  };
+
+  if (existingIndex !== -1) {
+    postList.splice(existingIndex, 1, post);
+  } else {
+    postList.unshift(post);
+  }
+
+  savePosts();
+  renderPosts();
+  clearWriteForm();
+  closeWriteModal();
+
+  isEditing = false;
+  editingPostId = null;
+  currentViewIndex = null;
+}
+
+function renderPosts() {
+  const tbody = document.querySelector('#postTable tbody');
+  tbody.innerHTML = '';
+
+  const start = (currentPage - 1) * postsPerPage;
+  const end = start + postsPerPage;
+  const paginatedPosts = postList.slice(start, end);
+
+  paginatedPosts.forEach((post, index) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${postList.length - (start + index)}</td>
+      <td><a href="#" onclick="viewPostById(${post.id})">${post.title}</a></td>
+      <td>${post.author}</td>
+      <td>${post.date}</td>
+      <td>${post.views}</td>
+    `;
+    tbody.appendChild(row);
+  });
+
+  renderPaginationControls();
+}
+
+function renderPaginationControls() {
+  const totalPages = Math.ceil(postList.length / postsPerPage);
+  const container = document.getElementById('pagination');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  if (totalPages <= 1) return;
+
+  if (currentPage > 1) {
+    const prev = document.createElement('button');
+    prev.textContent = '이전';
+    prev.onclick = () => {
+      currentPage--;
+      renderPosts();
+    };
+    container.appendChild(prev);
+  }
+
+  const pageInfo = document.createElement('span');
+  pageInfo.textContent = ` ${currentPage} / ${totalPages} `;
+  container.appendChild(pageInfo);
+
+  if (currentPage < totalPages) {
+    const next = document.createElement('button');
+    next.textContent = '다음';
+    next.onclick = () => {
+      currentPage++;
+      renderPosts();
+    };
+    container.appendChild(next);
+  }
+}
+
+function viewPost(index) {
+  const post = postList[index];
+  post.views++;
+  savePosts();
+  renderPosts();
+
+  currentViewIndex = index;
+
+  // 페이지 넘어가는 기능
+const rawContent = post.content;
+const contentPages = rawContent.split(/\[\[PAGE\]\]/i).map(p => parseMedia(p.trim()));
+currentPostPages = contentPages;
+currentPostPageIndex = 0;
+
+  
+  document.getElementById('modalTitle').textContent = post.title;
+  document.getElementById('modalAuthor').textContent = post.author;
+  document.getElementById('modalDate').textContent = post.date;
+
+  renderPostPage();
+
+  const img = document.getElementById('modalImage');
+  if (post.image) {
+    img.src = post.image;
+    img.style.display = 'block';
+  } else {
+    img.style.display = 'none';
+  }
+
+  document.getElementById('postModal').style.display = 'block';
+}
+
+function renderPostPage() {
+  const contentEl = document.getElementById('modalContent');
+  contentEl.innerHTML = currentPostPages[currentPostPageIndex] || '';
+
+  const controls = document.getElementById('postPagination');
+  if (!controls) return;
+
+  controls.innerHTML = '';
+
+  if (currentPostPages.length <= 1) return;
+
+  if (currentPostPageIndex > 0) {
+    const prevBtn = document.createElement('button');
+    prevBtn.textContent = '이전';
+    prevBtn.onclick = () => {
+      currentPostPageIndex--;
+      renderPostPage();
+    };
+    controls.appendChild(prevBtn);
+  }
+
+  const pageInfo = document.createElement('span');
+  pageInfo.textContent = ` ${currentPostPageIndex + 1} / ${currentPostPages.length} `;
+  controls.appendChild(pageInfo);
+
+  if (currentPostPageIndex < currentPostPages.length - 1) {
+    const nextBtn = document.createElement('button');
+    nextBtn.textContent = '다음';
+    nextBtn.onclick = () => {
+      currentPostPageIndex++;
+      renderPostPage();
+    };
+    controls.appendChild(nextBtn);
+  }
+}
+
+function closeModal() {
+  document.getElementById('postModal').style.display = 'none';
+  currentViewIndex = null;
+}
+
+function editPost() {
+  if (currentViewIndex === null) return;
+
+  const post = postList[currentViewIndex];
+  closeModal();
+  document.getElementById('writeModal').style.display = 'block';
+
+  document.getElementById('postWriter').value = post.author;
+  document.getElementById('postTitle').value = post.title;
+  document.getElementById('postContent').value = post.content;
+  document.getElementById('postImageUrl').value = post.image;
+
+  isEditing = true;
+  editingPostId = post.id;
+}
+
+function deletePost() {
+  if (currentViewIndex === null) return;
+
+  if (confirm('정말 이 글을 삭제하시겠습니까?')) {
+    postList.splice(currentViewIndex, 1);
+    savePosts();
+    renderPosts();
+    closeModal();
+    currentViewIndex = null;
+    isEditing = false;
+    editingPostId = null;
+  }
+}
+
+function viewPostById(id) {
+  const index = postList.findIndex(p => p.id === id);
+  if (index !== -1) {
+    viewPost(index);
+  }
+}
+
+function savePosts() {
+  localStorage.setItem('postList', JSON.stringify(postList));
+}
+
+function clearWriteForm() {
+  document.getElementById('postWriter').value = '';
+  document.getElementById('postTitle').value = '';
+  document.getElementById('postContent').value = '';
+  document.getElementById('postImageUrl').value = '';
+}
+
+function closeWriteModal() {
+  document.getElementById('writeModal').style.display = 'none';
+}
+
+function parseMedia(content) {
+  // 줄바꿈 → <br>
+  let parsed = content.replace(/\n/g, '<br>');
+
+  // 이미지 URL 자동 감지 (jpg/png/gif)
+  parsed = parsed.replace(/(https?:\/\/[^\s]+?\.(jpg|png|gif))/gi, '<img src="$1" style="max-width:100%; margin:10px 0;" />');
+
+  // 유튜브 링크 → iframe
+  parsed = parsed.replace(/https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-]+)/g, '<iframe width="100%" height="315" src="https://www.youtube.com/embed/$1" frameborder="0" allowfullscreen></iframe>');
+  parsed = parsed.replace(/https?:\/\/youtu\.be\/([\w-]+)/g, '<iframe width="100%" height="315" src="https://www.youtube.com/embed/$1" frameborder="0" allowfullscreen></iframe>');
+
+  return parsed;
+}
+
+
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const idParam = params.get('id');
+  if (idParam) {
+    const index = postList.findIndex(p => String(p.id) === idParam);
+    if (index !== -1) {
+      viewPost(index);
+    }
+  }
+  
+});
+</script>
+</body>
+</html>

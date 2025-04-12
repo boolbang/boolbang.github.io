@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>불방 인터렉티브</title>
+
+<link rel="stylesheet" href="/css/style.css" />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts-nine@1.0/NanumGothicCoding.woff2" rel="stylesheet" />
+
+</head>
+<body>
+ 
+  <header>
+    <h1>
+      <img src="/images/fire.gif" alt="불" class="fire-icon" />
+      BoolBang Interactive
+      <img src="/images/fire.gif" alt="불" class="fire-icon" />
+    </h1>
+  </header>
+
+  
+  <nav class="icon-nav">
+    <a href="/html/about.html" class="nav-icon">
+      <img src="/images/fireicon.png" alt="불방" />
+      <span class="label">About?</span>
+    </a>
+    <a href="/html/board.html" class="nav-icon">
+      <img src="/images/board.png" alt="게시판" />
+      <span class="label">Works </span>
+    </a>
+    <a href="/html/games.html" class="nav-icon">
+      <img src="/images/game.png" alt="게임" />
+      <span class="label">Game </span>
+    </a>
+  </nav>
+
+  <!-- 배너 -->
+  <div class="link-banner" style="width: 200px; margin: 20px auto; text-align: center;">
+      <img src="/images/banner.gif" alt="배너" style="width: 100%; height: auto;" />
+  </div>
+
+  <!-- 메인 컨테이너 -->
+  <div class="container">
+    <!-- 인트로 텍스트 -->
+    <section class="intro">
+      <h3>Notice</h3>
+      <p> BoolBang.log ("Hello, world!"); </p>
+    </section>
+
+    <!-- 불방 공지 -->
+    <section class="notice-section">
+      <h3>SNS</h3>
+      <ul>
+        <li><a href="https://www.youtube.com/@boolbang" target="_blank"> Youtube </a></li>
+        <li><a href="https://x.com/nilwordnil" target="_blank"> X </a></li>
+        <li><a href="https://www.instagram.com/postboolbang" target="_blank"> Instagram </a></li>
+      </ul>
+    </section>
+
+    <!-- 최근 게시글 -->
+    <section class="recent-posts">
+      <h3>최근 게시글</h3>
+      <ul id="post-list"></ul>
+    </section>
+  </div>
+
+<script>
+function renderPosts() {
+  const list = document.getElementById('post-list');
+  const posts = JSON.parse(localStorage.getItem('postList')) || [];
+
+  list.innerHTML = '';
+
+  if (posts.length === 0) {
+    list.innerHTML = '<li>최근 게시글이 없습니다.</li>';
+    return;
+  }
+
+  // 최신 글 보여주기
+  posts.slice(0, 10).forEach((post) => {
+    const li = document.createElement('li');
+
+    li.innerHTML = `
+      <a href="board.html?id=${post.id}">
+        ${post.title}
+      </a>
+      <small style="color:#777;">(${post.date})</small>
+    `;
+    list.appendChild(li);
+  });
+}
+
+
+document.addEventListener('DOMContentLoaded', renderPosts);
+
+
+</script>
+  
+  
+  <footer>
+    © 2016–2025 BoolBang Interactive. Site launched in 2025. All rights reserved.
+  </footer>
+
+
+</body>
+</html>

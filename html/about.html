@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+   
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts-nine@1.0/NanumGothicCoding.woff2" rel="stylesheet" />
+
+  <title>🔥불방이란?</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #fff;
+      font-family: monospace;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 60px;
+    }
+
+    p {
+      margin-bottom: 40px;
+      font-size: 1.2rem;
+      color: #ddd;
+    }
+
+    #three-container {
+      width: 600px;
+      height: 600px;
+      margin: 0 auto 60px auto;
+      
+}
+
+    
+    pre {
+      line-height: 80%;
+    }
+    
+    nav a {
+      color: #ff00ea;
+  font-weight: bold;
+  padding: 20px;
+  font-size: 1.2rem;
+}
+
+.home-button {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  background-color: #808080;
+  color: #ffffff;
+  padding: 5px 5px;
+  font-size: 0.5rem;
+  border: 2px solid #ffffff;
+  text-decoration: none;
+  font-family: 'Press Start 2P';
+  z-index: 10000;
+  box-shadow: 0px 0px 0px #000;
+  transition: background-color 0.2s;
+}
+
+.home-button:hover {
+  background-color: #ffe600;
+  color: #000;
+  transform: scale(1.05);
+}
+
+
+  </style>
+</head>
+<body>
+  <a href="index.html" class="home-button">🏠 HOME</a>
+  
+
+  <h1>불방이란?</h1>
+  <p>불방은 이 것 저 것 만드는... 좀 산만한 팀(2명)입니다.</p>
+
+ 
+  <div id="three-container"></div>
+
+  <!-- ✅ 구버전 Three.js + ASCIIEffect -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/examples/js/effects/AsciiEffect.js"></script>
+
+  <script>
+    
+    const container = document.getElementById('three-container');
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+    camera.position.z = 5;
+
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(container.clientWidth, container.clientHeight);
+
+    const effect = new THREE.AsciiEffect(renderer, ' .:-+*=%@#', { invert: true });
+    effect.setSize(container.clientWidth, container.clientHeight);
+    effect.domElement.style.color = '#00FF00';
+    effect.domElement.style.backgroundColor = 'black';
+    effect.domElement.style.textShadow = '0 0 5px #33ff33, 0 0 10px #33ff33';
+    
+
+
+    container.appendChild(effect.domElement);
+
+    const geometry = new THREE.TorusGeometry(0.8, 0.3, 14, 100);
+    const material = new THREE.MeshBasicMaterial({ color: 0xff3300, wireframe: true });
+    const torus = new THREE.Mesh(geometry, material);
+    scene.add(torus);
+
+    function animate() {
+      requestAnimationFrame(animate);
+      torus.rotation.x += 0.01;
+      torus.rotation.y += 0.02;
+      effect.render(scene, camera);
+    }
+
+    animate();
+
+    window.addEventListener("resize", () => {
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height);
+      effect.setSize(width, height);
+    });
+  </script>
+</body>
+</html>

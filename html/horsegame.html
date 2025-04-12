@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>경마 게임</title>
+  <style>
+    body { margin: 0; overflow: hidden; position: relative; }
+    #rankInput {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 5px;
+      z-index: 10;
+    }
+    #applyBtn {
+      position: absolute;
+      top: 10px;
+      left: 220px;
+      padding: 5px 10px;
+      z-index: 10;
+    }
+    .label {
+      position: absolute;
+      color: white;
+      background: rgba(0,0,0,0.7);
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-weight: bold;
+      font-size: 16px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+ 
+  <!-- Three.js + GSAP -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.136.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.136.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.136.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+  <script src="/js/race.js"></script> <!-- 항상 마지막 -->
+  
+</body>
+</html>

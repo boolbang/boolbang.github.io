@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>글쓰기 - 관리자 전용</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    input, textarea {
+      width: 60%;
+      margin: 8px 0;
+      padding: 5px;
+      box-sizing: border-box;
+      font-size: 1rem;
+    }
+    button {
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+    .hint {
+      font-size: 0.85rem;
+      color: #8000ff;
+      margin-bottom: 10px;
+    }
+    #imagePreview {
+      max-width: 60%;
+      margin: 10px 0;
+      display: none;
+      border: 1px solid #aaa;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>새 글 작성 (관리자 전용)</h2>
+
+  <input type="text" id="postWriter" placeholder="작성자 (기본: 불방)" />
+  <input type="text" id="postTitle" placeholder="제목" />
+
+  <div class="hint">
+    ※ 페이지를 나누고 싶다면 본문 안에 <code>[[page]]</code> 를 넣어주세요.<br>
+    ※ 작업중입니다. 관리자가 아니라면 굳이 장난치지 마세요 ㅠㅠ
+  </div>
+
+  <textarea id="postContent" placeholder="내용을 입력하세요. [[PAGE]] 를 넣으면 페이지가 나뉩니다." rows="25"></textarea>
+
+  <input type="text" id="postImageUrl" placeholder="이미지 URL (선택)" /><br>
+
+  <!-- ✅ 이미지 파일 첨부 -->
+  <label>이미지 업로드 (파일 선택):</label><br />
+  <input type="file" id="postImageFile" accept="image/*" /><br />
+  <img id="imagePreview" alt="미리보기" /><br>
+
+  <button onclick="submitPost()">등록</button>
+
+  <hr />
+  <h3>📝 게시글 목록 (관리자 전용 삭제)</h3>
+  <div id="adminPostList"></div>
+
+  <script>
+    let postList = [];
+    let postId = 1;
+
+    const savedPosts = localStorage.getItem('postList');
+    if (savedPosts) {
+      postList = JSON.parse(savedPosts);
+      postId = postList.length > 0 ? Math.max(...postList.map(p => p.id)) + 1 : 1;
+    }
+
+    function submitPost() {
+      const writer = document.getElementById('postWriter').value.trim();
+      const title = document.getElementById('postTitle').value.trim();
+      const content = document.getElementById('postContent').value.trim();
+      const urlInput = document.getElementById('postImageUrl');
+      const fileInput = document.getElementById('postImageFile');
+
+      if (!title || !content) {
+        alert('제목과 내용을 모두 입력해주세요.');
+        return;
+      }
+
+      if (fileInput.files.length > 0) {
+        const reader = new FileReader();
+        reader.onloadend = function () {
+          const imageDataUrl = reader.result;
+          savePost(writer, title, content, imageDataUrl);
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+      } else {
+        const imageUrl = urlInput.value.trim();
+        savePost(writer, title, content, imageUrl);
+      }
+    }
+
+    function savePost(writer, title, content, imageData) {
+      const post = {
+        id: postId++,
+        title,
+        content,
+        image: imageData,
+        author: writer || '불방',
+        date: new Date().toLocaleString('ko-KR', {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
+        }),
+        views: 0
+      };
+
+      postList.unshift(post);
+      localStorage.setItem('postList', JSON.stringify(postList));
+
+      alert('글이 등록되었습니다!');
+      clearWriteForm();
+      renderAdminPostList();
+    }
+
+    function clearWriteForm() {
+      document.getElementById('postWriter').value = '';
+      document.getElementById('postTitle').value = '';
+      document.getElementById('postContent').value = '';
+      document.getElementById('postImageUrl').value = '';
+      document.getElementById('postImageFile').value = '';
+      document.getElementById('imagePreview').style.display = 'none';
+    }
+
+    document.getElementById('postImageFile').addEventListener('change', function () {
+      const file = this.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onloadend = function () {
+        const preview = document.getElementById('imagePreview');
+        preview.src = reader.result;
+        preview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function renderAdminPostList() {
+      const container = document.getElementById('adminPostList');
+      container.innerHTML = '';
+
+      if (postList.length === 0) {
+        container.innerHTML = '<p>등록된 게시글이 없습니다.</p>';
+        return;
+      }
+
+      const list = document.createElement('ul');
+      postList.forEach((post, index) => {
+        const item = document.createElement('li');
+        item.innerHTML = `[${post.id}] <strong>${post.title}</strong> - ${post.author} (${post.date}) 
+          <button onclick="deletePost(${index})">삭제</button>`;
+        list.appendChild(item);
+      });
+
+      container.appendChild(list);
+    }
+
+    function deletePost(index) {
+      if (!confirm('정말 이 글을 삭제하시겠습니까?')) return;
+      postList.splice(index, 1);
+      localStorage.setItem('postList', JSON.stringify(postList));
+      renderAdminPostList();
+      alert('삭제 완료!');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderAdminPostList();
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,166 @@
+/* 공통 스타일 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Nanum Gothic Coding', monospace;
+  background-color: #f3f4f6;
+  color: #333;
+  line-height: 1.6;
+}
+
+a {
+  color: #000000;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.fire-icon {
+  width: 30px;
+  height: 35px;
+  vertical-align: middle;
+}
+
+/* 헤더 */
+header {
+  font-family: 'Press Start 2P', 'Nanum Gothic Coding', monospace;
+  background-color: #fff457;
+  color: rgb(0, 0, 0);
+  padding: 1.5rem 0.5rem;
+  text-align: center;
+  border-bottom: 1px solid #000000;
+}
+
+header h1 {
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+header p {
+  font-size: 1rem;
+}
+
+/* 아이콘 네비게이션 */
+.icon-nav {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 0.5rem 0;
+  background-color: #ffffff;
+  border-bottom: 1px solid #000000;
+}
+
+.nav-icon {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 5px;
+  background-color: hwb(204 60% 0%);
+  border: 1px solid #000000;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+  color: #333;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.nav-icon img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.nav-icon:hover {
+  background-color: #ff2929;
+  color: rgb(0, 0, 0);
+  transform: scale(1.05);
+  text-decoration: none;
+}
+
+.nav-icon:hover img {
+  filter: brightness(5);
+}
+
+.nav-icon .label {
+  font-family: 'Press Start 2P', 'Nanum Gothic Coding', monospace;
+  font-size: 0.5rem;
+  font-weight: 400;
+  color: #222;
+}
+
+/* 메인 컨테이너 */
+.container {
+  max-width: 960px;
+  margin: 2rem auto;
+  background-color: rgb(216, 216, 216);
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid #000000;
+}
+
+/* 공지사항 & 최근 게시글 공통 */
+.notice-section,
+.recent-posts {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 0;
+}
+
+.notice-section h3,
+.recent-posts h3 {
+  font-family: 'Nanum Gothic Coding', monospace;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0 0 0.5rem;
+  padding: 2px 0;
+  color: #222;
+  border-bottom: 1px solid #000000;
+}
+
+.notice-section ul,
+.recent-posts ul {
+  list-style: none;
+}
+
+/* 공통 리스트 아이템 스타일 */
+.notice-section li,
+.recent-posts li {
+  line-height: 1.6;
+  padding: 0.2rem 0;
+  border-bottom: 1px solid #000000;
+}
+
+/* 공통 링크 스타일 */
+.notice-section li a,
+.recent-posts li a {
+  font-size: 0.95rem;
+  font-weight: normal;
+  display: inline-block;
+  width: auto;
+  color: #000;
+  text-decoration: none;
+}
+
+/* 필요 시 <strong> 태그 제거 효과 */
+.recent-posts li strong {
+  font-weight: normal;
+}
+
+/* 푸터 */
+footer {
+  margin-top: 1rem;
+  text-align: center;
+  padding: 1rem 0;
+  font-size: 0.9rem;
+  color: #000000;
+}

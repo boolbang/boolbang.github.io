@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ 
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts-nine@1.0/NanumGothicCoding.woff2" rel="stylesheet" />
+
+  <title>BoolBang Game</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Nanum Gothic Coding', monospace;
+    }
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+    .sidebar {
+      width: 180px;
+      background-color: hsl(199, 100%, 71%);
+      color: white;
+      padding: 3.5rem 1rem 1rem 1rem;
+      overflow-y: auto;
+    }
+    .sidebar h2 {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 0.8rem;
+      text-align: center;
+      margin-top: 0;
+    }
+    .game-item {
+      margin: 20px 0;
+      cursor: pointer;
+      text-align: left;
+      padding-left: 10px;
+    }
+    .game-item span {
+      display: block;
+      color: rgb(255, 255, 255);
+      font-size: 0.9rem;
+    }
+    .game-item:hover span {
+      color: #ff0;
+    }
+    .content {
+      flex: 1;
+      background-color: #aaaaaa;
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .preview-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      width: 400px;
+      height: 500px;
+    }
+    .preview-link {
+      width: 400px;
+      height: 400px;
+      border: 3px solid #69cfff;
+      overflow: hidden;
+      background-color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .preview-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .description {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #ffffff;
+      text-align: center;
+      word-break: keep-all;
+      height: 60px;
+      overflow-y: auto;
+    }
+    .home-button {
+      position: fixed;
+      top: 12px;
+      left: 15px;
+      background-color: #ffffff;
+      color: #000;
+      padding: 3px 5px;
+      font-size: 0.5rem;
+      border: 1px solid #000;
+      font-family: 'Press Start 2P';
+      text-decoration: none;
+
+    }
+
+    .home-button:hover {
+      background-color: #ffe600;
+      color: #000;
+    }
+
+    
+
+  </style>
+</head>
+<body>
+  <a href="index.html" class="home-button">🏠 HOME</a>
+  <div class="container">
+    <div class="sidebar">
+      <h2> GAME LIST</h2>
+      <div class="game-item" onclick="showGame('../images/game_horse.jpg', 'horsegame.html')"> 
+        <span>경마</span>
+      </div>
+      <div class="game-item" onclick="showGame('../images/game_ddol.png', 'ddolgame.html')">
+        <span>달려라 똘배!</span>
+      </div>
+      <div class="game-item" onclick="showGame('../images/game_main.png', 'game3.html')">
+        <span>대작곧출시됨</span>
+      </div>
+      <!-- 추가 게임 항목은 여기에 -->
+    </div>
+
+    <div class="content">
+      <div class="preview-wrapper">
+        <a id="previewLink" href="horsegame.html" target="_blank" class="preview-link">
+          <img id="preview" src="../images/game_main2.png" alt="게임 미리보기" class="preview-image" />
+        </a>
+        <p id="description" class="description">좌측 메뉴에서 선택하세요</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showGame(imageSrc, gameUrl) {
+      const preview = document.getElementById('preview');
+      const previewLink = document.getElementById('previewLink');
+      const description = document.getElementById('description');
+
+      preview.src = imageSrc;
+      preview.alt = `미리보기: ${imageSrc}`;
+      previewLink.href = gameUrl;
+
+      // 이미지 파일명에 따라 설명 바꿔줌
+      if (imageSrc === '../images/game_horse.jpg') {
+        description.textContent = '경주마의 순위를 니 맘대로 정해보세요';
+      } else if (imageSrc === '../images/game_ddol.png') {
+        description.textContent = '들판을 달리는 똘배를 통해 힐링하세요';
+      } else if (imageSrc === '../images/game_main.png') {
+        description.textContent = '2025년에 괜츈한 게임이 출시될겁니다.';
+      } else {
+        description.textContent = '';
+      }
+    }
+  </script>
+</body>
+</html>
