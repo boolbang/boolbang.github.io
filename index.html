@@ -66,38 +66,66 @@
     </section>
   </div>
 
-<script>
-function renderPosts() {
-  const list = document.getElementById('post-list');
-  const posts = JSON.parse(localStorage.getItem('postList')) || [];
+<!-- Firebase + Firestore 연동 (기존 localStorage 대신 사용) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-  list.innerHTML = '';
+  const firebaseConfig = {
+    apiKey: "AIzaSyCqAQCELh1q2pWxrXtx-8lBwRe2CTSG_HdQ",
+    authDomain: "boolbang-board.firebaseapp.com",
+    projectId: "boolbang-board",
+    storageBucket: "boolbang-board.appspot.com",
+    messagingSenderId: "1563061617526",
+    appId: "1:1563061617526:web:066768f311fc53cd017257",
+    measurementId: "G-2CBKFZ5Q85"
+  };
 
-  if (posts.length === 0) {
-    list.innerHTML = '<li>최근 게시글이 없습니다.</li>';
-    return;
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  async function renderPosts() {
+    const list = document.getElementById('post-list');
+    list.innerHTML = '';
+
+    try {
+      const querySnapshot = await getDocs(collection(db, "posts"));
+      if (querySnapshot.empty) {
+        list.innerHTML = '<li>최근 게시글이 없습니다.</li>';
+        return;
+      }
+
+      // 최근 글만 10개 가져오기
+      const posts = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        posts.push({
+          id: doc.id,
+          title: data.title,
+          date: data.date || ""
+        });
+      });
+
+      posts.reverse().slice(0, 10).forEach((post) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <a href="html/board.html?id=${post.id}">
+            ${post.title}
+          </a>
+          <small style="color:#777;">(${post.date})</small>
+        `;
+        list.appendChild(li);
+      });
+
+    } catch (e) {
+      console.error("글 불러오기 실패:", e);
+      list.innerHTML = '<li>게시글을 불러오는 중 오류가 발생했습니다.</li>';
+    }
   }
 
-  // 최신 글 보여주기
-  posts.slice(0, 10).forEach((post) => {
-    const li = document.createElement('li');
-
-    li.innerHTML = `
-      <a href="board.html?id=${post.id}">
-        ${post.title}
-      </a>
-      <small style="color:#777;">(${post.date})</small>
-    `;
-    list.appendChild(li);
-  });
-}
-
-
-document.addEventListener('DOMContentLoaded', renderPosts);
-
-
+  window.addEventListener('DOMContentLoaded', renderPosts);
 </script>
-  
+
   
   <footer>
     © 2016–2025 BoolBang Interactive. Site launched in 2025. All rights reserved.

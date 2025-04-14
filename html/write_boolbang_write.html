@@ -12,7 +12,6 @@
       width: 60%;
       margin: 8px 0;
       padding: 5px;
-      box-sizing: border-box;
       font-size: 1rem;
     }
     button {
@@ -57,21 +56,30 @@
   <button onclick="submitPost()">등록</button>
 
   <hr />
-  <h3>📝 게시글 목록 (관리자 전용 삭제)</h3>
+  <h3>📝 게시글 목록 (Firestore에서 불러옴)</h3>
   <div id="adminPostList"></div>
 
-  <script>
-    let postList = [];
-    let postId = 1;
+  <!-- Firebase 연동 -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-    const savedPosts = localStorage.getItem('postList');
-    if (savedPosts) {
-      postList = JSON.parse(savedPosts);
-      postId = postList.length > 0 ? Math.max(...postList.map(p => p.id)) + 1 : 1;
-    }
+    const firebaseConfig = {
+      apiKey: "AIzaSyCqAQCELh1q2pWxrXtx-8lBwRe2CTSG_HdQ",
+      authDomain: "boolbang-board.firebaseapp.com",
+      projectId: "boolbang-board",
+      storageBucket: "boolbang-board.appspot.com",
+      messagingSenderId: "1563061617526",
+      appId: "1:1563061617526:web:066768f311fc53cd017257",
+      measurementId: "G-2CBKFZ5Q85"
+    };
 
-    function submitPost() {
-      const writer = document.getElementById('postWriter').value.trim();
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 글 등록
+    async function submitPost() {
+      const writer = document.getElementById('postWriter').value.trim() || '불방';
       const title = document.getElementById('postTitle').value.trim();
       const content = document.getElementById('postContent').value.trim();
       const urlInput = document.getElementById('postImageUrl');
@@ -84,24 +92,23 @@
 
       if (fileInput.files.length > 0) {
         const reader = new FileReader();
-        reader.onloadend = function () {
+        reader.onloadend = async function () {
           const imageDataUrl = reader.result;
-          savePost(writer, title, content, imageDataUrl);
+          await savePost(writer, title, content, imageDataUrl);
         };
         reader.readAsDataURL(fileInput.files[0]);
       } else {
         const imageUrl = urlInput.value.trim();
-        savePost(writer, title, content, imageUrl);
+        await savePost(writer, title, content, imageUrl || '');
       }
     }
 
-    function savePost(writer, title, content, imageData) {
-      const post = {
-        id: postId++,
+    async function savePost(writer, title, content, image) {
+      await addDoc(collection(db, "posts"), {
         title,
         content,
-        image: imageData,
-        author: writer || '불방',
+        image,
+        author: writer,
         date: new Date().toLocaleString('ko-KR', {
           year: 'numeric',
           month: 'numeric',
@@ -111,10 +118,7 @@
           hour12: true
         }),
         views: 0
-      };
-
-      postList.unshift(post);
-      localStorage.setItem('postList', JSON.stringify(postList));
+      });
 
       alert('글이 등록되었습니다!');
       clearWriteForm();
@@ -143,32 +147,33 @@
       reader.readAsDataURL(file);
     });
 
-    function renderAdminPostList() {
+    async function renderAdminPostList() {
       const container = document.getElementById('adminPostList');
       container.innerHTML = '';
 
-      if (postList.length === 0) {
+      const querySnapshot = await getDocs(collection(db, "posts"));
+      if (querySnapshot.empty) {
         container.innerHTML = '<p>등록된 게시글이 없습니다.</p>';
         return;
       }
 
       const list = document.createElement('ul');
-      postList.forEach((post, index) => {
-        const item = document.createElement('li');
-        item.innerHTML = `[${post.id}] <strong>${post.title}</strong> - ${post.author} (${post.date}) 
-          <button onclick="deletePost(${index})">삭제</button>`;
-        list.appendChild(item);
+      querySnapshot.forEach((docSnap) => {
+        const post = docSnap.data();
+        const li = document.createElement('li');
+        li.innerHTML = `[ID: ${docSnap.id}] <strong>${post.title}</strong> - ${post.author} (${post.date}) 
+          <button onclick="deletePost('${docSnap.id}')">삭제</button>`;
+        list.appendChild(li);
       });
 
       container.appendChild(list);
     }
 
-    function deletePost(index) {
+    async function deletePost(docId) {
       if (!confirm('정말 이 글을 삭제하시겠습니까?')) return;
-      postList.splice(index, 1);
-      localStorage.setItem('postList', JSON.stringify(postList));
+      await deleteDoc(doc(db, "posts", docId));
+      alert("삭제 완료!");
       renderAdminPostList();
-      alert('삭제 완료!');
     }
 
     document.addEventListener('DOMContentLoaded', () => {
