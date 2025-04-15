@@ -25,6 +25,7 @@ a:hover {
   width: 30px;
   height: 35px;
   vertical-align: middle;
+  margin-top: -15px;
 }
 
 /* 헤더 */
@@ -38,9 +39,18 @@ header {
 }
 
 header h1 {
-  font-size: 1rem;
-  margin-bottom: 0.25rem;
+  font-size: 1rem; /* 기본: 데스크탑용 큰 폰트 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 0.8rem; /* 모바일에서 줄임 */
+  }
+}
+
 
 header p {
   font-size: 1rem;

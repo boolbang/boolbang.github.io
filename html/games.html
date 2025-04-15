@@ -4,15 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
  
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts-nine@1.0/NanumGothicCoding.woff2" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts-nine@1.0/NanumGothicCoding.woff2" rel="stylesheet" />
 
   <title>BoolBang Game</title>
   <style>
     body {
-      margin: 0;
-      font-family: 'Nanum Gothic Coding', monospace;
-    }
+  margin: 0;
+  font-family: 'Nanum Gothic Coding', monospace;
+  min-height: 100vh;
+  background-color: #aaa;
+}
+
     .container {
       display: flex;
       height: 100vh;
@@ -96,16 +99,42 @@
       border: 1px solid #000;
       font-family: 'Press Start 2P';
       text-decoration: none;
-
     }
-
     .home-button:hover {
       background-color: #ffe600;
       color: #000;
     }
-
-    
-
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        height: auto;
+      }
+      .sidebar {
+        width: 100%;
+        height: auto;
+        padding: 1rem;
+        box-sizing: border-box;
+      }
+      .content {
+        padding: 1rem;
+        flex: none;
+      }
+      .preview-wrapper {
+        width: 100%;
+        max-width: 400px;
+        height: auto;
+      }
+      .preview-link {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1 / 1;
+      }
+      .home-button {
+        top: 6px;
+        left: 10px;
+        font-size: 0.6rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -122,9 +151,7 @@
       <div class="game-item" onclick="showGame('../images/game_main.png', 'game3.html')">
         <span>대작곧출시됨</span>
       </div>
-      <!-- 추가 게임 항목은 여기에 -->
     </div>
-
     <div class="content">
       <div class="preview-wrapper">
         <a id="previewLink" href="horsegame.html" target="_blank" class="preview-link">
@@ -134,7 +161,6 @@
       </div>
     </div>
   </div>
-
   <script>
     function showGame(imageSrc, gameUrl) {
       const preview = document.getElementById('preview');
@@ -145,7 +171,6 @@
       preview.alt = `미리보기: ${imageSrc}`;
       previewLink.href = gameUrl;
 
-      // 이미지 파일명에 따라 설명 바꿔줌
       if (imageSrc === '../images/game_horse.jpg') {
         description.textContent = '경주마의 순위를 니 맘대로 정해보세요';
       } else if (imageSrc === '../images/game_ddol.png') {
