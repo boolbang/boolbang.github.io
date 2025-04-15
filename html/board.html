@@ -77,11 +77,20 @@
       overflow-y: auto;
     }
     #modalImage {
-      display: block;
-      max-width: 100%;
-      margin: 10px auto;
-      border-radius: 8px;
-    }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+#modalImage img {
+  max-width: 80%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
     .retro-box {
       max-width: 700px;
       margin: 3rem auto;
@@ -162,139 +171,189 @@
     <p><strong>날짜:</strong> <span id="modalDate"></span></p>
     <p id="modalContent"></p>
     <div id="postPagination" style="text-align: center; margin-top: 10px;"></div>
-    <img id="modalImage" src="" alt="이미지" />
+    <div id="modalImage"></div>
     <br>
     <div style="text-align: center; margin-top: 20px;">
-    <button onclick="closeModal()">닫기</button>
+      <button onclick="closeModal()">닫기</button>
+    </div>
   </div>
 </div>
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCqAQCELh1q2pWxrXtx-8lBwRe2CTSG_HdQ",
-  authDomain: "boolbang-board.firebaseapp.com",
-  projectId: "boolbang-board",
-  storageBucket: "boolbang-board.appspot.com",
-  messagingSenderId: "1563061617526",
-  appId: "1:1563061617526:web:066768f311fc53cd017257",
-  measurementId: "G-2CBKFZ5Q85"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyCqAQCELh1q2pWxrXtx-8lBwRe2CTSG_HdQ",
+    authDomain: "boolbang-board.firebaseapp.com",
+    projectId: "boolbang-board",
+    storageBucket: "boolbang-board.appspot.com",
+    messagingSenderId: "1563061617526",
+    appId: "1:1563061617526:web:066768f311fc53cd017257",
+    measurementId: "G-2CBKFZ5Q85"
+  };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-let postList = [];
-let currentPostPages = [], currentPostPageIndex = 0;
-let currentViewDocId = null;
-let currentPage = 1;
-const postsPerPage = 10;
+  let postList = [];
+  let postId = 1;
+  let currentViewIndex = null;
+  let currentPage = 1;
+  const postsPerPage = 10;
+  let currentPostPageIndex = 0;
+  let currentPostPages = [];
 
-async function loadPosts() {
-  const snapshot = await getDocs(collection(db, "posts"));
+  async function fetchPosts() {
+  const querySnapshot = await getDocs(collection(db, "posts"));
   postList = [];
-  snapshot.forEach(doc => {
-    const data = doc.data();
-    postList.push({ id: doc.id, ...data });
+  querySnapshot.forEach((docSnap) => {
+    postList.push({ id: docSnap.id, ...docSnap.data() });
   });
+
   postList.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+
   renderPosts();
 }
 
-function renderPosts() {
-  const tbody = document.querySelector('#postTable tbody');
-  tbody.innerHTML = '';
-  const start = (currentPage - 1) * postsPerPage;
-  const paginatedPosts = postList.slice(start, start + postsPerPage);
-  paginatedPosts.forEach((post, i) => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${postList.length - (start + i)}</td>
-      <td><a href="#" onclick="viewPost('${post.id}')">${post.title}</a></td>
-      <td>${post.author}</td>
-      <td>${post.date}</td>
-      <td>${post.views}</td>
-    `;
-    tbody.appendChild(row);
-  });
-  renderPaginationControls();
-}
 
-function renderPaginationControls() {
-  const totalPages = Math.ceil(postList.length / postsPerPage);
-  const container = document.getElementById('pagination');
-  container.innerHTML = '';
-  if (totalPages <= 1) return;
-  if (currentPage > 1) {
-    const prev = document.createElement('button');
-    prev.textContent = '이전';
-    prev.onclick = () => { currentPage--; renderPosts(); };
-    container.appendChild(prev);
+  function renderPosts() {
+    const tbody = document.querySelector('#postTable tbody');
+    tbody.innerHTML = '';
+    const start = (currentPage - 1) * postsPerPage;
+    const end = start + postsPerPage;
+    const paginatedPosts = postList.slice(start, end);
+
+    paginatedPosts.forEach((post, index) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${postList.length - (start + index)}</td>
+        <td><a href="#" onclick="viewPostById('${post.id}')">${post.title}</a></td>
+        <td>${post.author}</td>
+        <td>${post.date}</td>
+        <td>${post.views || 0}</td>
+      `;
+      tbody.appendChild(row);
+    });
+
+    renderPaginationControls();
   }
-  container.append(`${currentPage} / ${totalPages}`);
-  if (currentPage < totalPages) {
-    const next = document.createElement('button');
-    next.textContent = '다음';
-    next.onclick = () => { currentPage++; renderPosts(); };
-    container.appendChild(next);
+
+  function renderPaginationControls() {
+    const totalPages = Math.ceil(postList.length / postsPerPage);
+    const container = document.getElementById('pagination');
+    container.innerHTML = '';
+    if (totalPages <= 1) return;
+
+    if (currentPage > 1) {
+      const prev = document.createElement('button');
+      prev.textContent = '이전';
+      prev.onclick = () => {
+        currentPage--;
+        renderPosts();
+      };
+      container.appendChild(prev);
+    }
+
+    const pageInfo = document.createElement('span');
+    pageInfo.textContent = ` ${currentPage} / ${totalPages} `;
+    container.appendChild(pageInfo);
+
+    if (currentPage < totalPages) {
+      const next = document.createElement('button');
+      next.textContent = '다음';
+      next.onclick = () => {
+        currentPage++;
+        renderPosts();
+      };
+      container.appendChild(next);
+    }
   }
-}
 
-async function viewPost(id) {
-  const post = postList.find(p => p.id === id);
-  if (!post) return;
-  currentViewDocId = id;
-  await updateDoc(doc(db, "posts", id), { views: (post.views || 0) + 1 });
-  post.views++;
-  renderPosts();
-  currentPostPages = (post.content || '').split(/\[\[PAGE\]\]/i).map(parseMedia);
-  currentPostPageIndex = 0;
-  document.getElementById('modalTitle').textContent = post.title;
-  document.getElementById('modalAuthor').textContent = post.author;
-  document.getElementById('modalDate').textContent = post.date;
-  renderPostPage();
-  const img = document.getElementById('modalImage');
-  if (post.image) { img.src = post.image; img.style.display = 'block'; } else { img.style.display = 'none'; }
-  document.getElementById('postModal').style.display = 'block';
-}
+  function viewPost(indexOrId) {
+    const post = typeof indexOrId === 'number' ? postList[indexOrId] : postList.find(p => p.id === indexOrId);
+    if (!post) return;
 
-function renderPostPage() {
-  const contentEl = document.getElementById('modalContent');
-  contentEl.innerHTML = currentPostPages[currentPostPageIndex] || '';
-  const controls = document.getElementById('postPagination');
-  controls.innerHTML = '';
-  if (currentPostPages.length <= 1) return;
-  if (currentPostPageIndex > 0) {
-    const prev = document.createElement('button');
-    prev.textContent = '이전';
-    prev.onclick = () => { currentPostPageIndex--; renderPostPage(); };
-    controls.appendChild(prev);
+    document.getElementById('modalTitle').textContent = post.title;
+    document.getElementById('modalAuthor').textContent = post.author;
+    document.getElementById('modalDate').textContent = post.date;
+
+    const rawContent = post.content;
+    const contentPages = rawContent.split(/\[\[PAGE\]\]/i).map(p => parseMedia(p.trim()));
+    currentPostPages = contentPages;
+    currentPostPageIndex = 0;
+    renderPostPage();
+
+    const imageContainer = document.getElementById('modalImage');
+    imageContainer.innerHTML = '';
+
+    if (Array.isArray(post.images)) {
+      post.images.forEach((url) => {
+        const img = document.createElement('img');
+        img.src = url;
+        img.style.maxWidth = '100%';
+        img.style.margin = '10px 0';
+        imageContainer.appendChild(img);
+      });
+    } else if (post.image) {
+      const img = document.createElement('img');
+      img.src = post.image;
+      img.style.maxWidth = '100%';
+      img.style.margin = '10px 0';
+      imageContainer.appendChild(img);
+    }
+
+    document.getElementById('postModal').style.display = 'block';
   }
-  controls.append(`${currentPostPageIndex + 1} / ${currentPostPages.length}`);
-  if (currentPostPageIndex < currentPostPages.length - 1) {
-    const next = document.createElement('button');
-    next.textContent = '다음';
-    next.onclick = () => { currentPostPageIndex++; renderPostPage(); };
-    controls.appendChild(next);
+
+  function renderPostPage() {
+    const contentEl = document.getElementById('modalContent');
+    contentEl.innerHTML = currentPostPages[currentPostPageIndex] || '';
+    const controls = document.getElementById('postPagination');
+    controls.innerHTML = '';
+    if (currentPostPages.length <= 1) return;
+
+    if (currentPostPageIndex > 0) {
+      const prevBtn = document.createElement('button');
+      prevBtn.textContent = '이전';
+      prevBtn.onclick = () => {
+        currentPostPageIndex--;
+        renderPostPage();
+      };
+      controls.appendChild(prevBtn);
+    }
+
+    const pageInfo = document.createElement('span');
+    pageInfo.textContent = ` ${currentPostPageIndex + 1} / ${currentPostPages.length} `;
+    controls.appendChild(pageInfo);
+
+    if (currentPostPageIndex < currentPostPages.length - 1) {
+      const nextBtn = document.createElement('button');
+      nextBtn.textContent = '다음';
+      nextBtn.onclick = () => {
+        currentPostPageIndex++;
+        renderPostPage();
+      };
+      controls.appendChild(nextBtn);
+    }
   }
-}
 
-function closeModal() {
-  document.getElementById('postModal').style.display = 'none';
-}
+  function closeModal() {
+    document.getElementById('postModal').style.display = 'none';
+  }
 
-function parseMedia(content) {
-  let parsed = content.replace(/\n/g, '<br>');
-  parsed = parsed.replace(/(https?:\/\/[^\s]+?\.(jpg|png|gif))/gi, '<img src="$1" style="max-width:100%; margin:10px 0;" />');
-  parsed = parsed.replace(/https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-]+)/g, '<iframe width="100%" height="315" src="https://www.youtube.com/embed/$1" frameborder="0" allowfullscreen></iframe>');
-  parsed = parsed.replace(/https?:\/\/youtu\.be\/([\w-]+)/g, '<iframe width="100%" height="315" src="https://www.youtube.com/embed/$1" frameborder="0" allowfullscreen></iframe>');
-  return parsed;
-}
+  window.viewPostById = viewPost;
+  window.closeModal = closeModal;
 
-window.viewPost = viewPost;
-window.closeModal = closeModal;
-document.addEventListener('DOMContentLoaded', loadPosts);
+  window.addEventListener('DOMContentLoaded', fetchPosts);
+
+  function parseMedia(content) {
+    let parsed = content.replace(/\n/g, '<br>');
+    parsed = parsed.replace(/(https?:\/\/[^\s]+?\.(jpg|png|gif))/gi, '<img src="$1" style="max-width:100%; margin:10px 0;" />');
+    parsed = parsed.replace(/https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-]+)/g, '<iframe width="100%" height="315" src="https://www.youtube.com/embed/$1" frameborder="0" allowfullscreen></iframe>');
+    parsed = parsed.replace(/https?:\/\/youtu\.be\/([\w-]+)/g, '<iframe width="100%" height="315" src="https://www.youtube.com/embed/$1" frameborder="0" allowfullscreen></iframe>');
+    return parsed;
+  }
 </script>
 </body>
 </html>

@@ -39,7 +39,12 @@
 
   <textarea id="postContent" placeholder="내용을 입력하세요. [[PAGE]] 를 넣으면 페이지가 나뉩니다." rows="25"></textarea>
 
-  <input type="text" id="postImageUrl" placeholder="이미지 URL (선택)" /><br>
+  <!-- 여러 이미지 URL 입력 -->
+  <input type="text" class="imageInput" placeholder="이미지 URL 1 (선택)" /><br>
+  <input type="text" class="imageInput" placeholder="이미지 URL 2 (선택)" /><br>
+  <input type="text" class="imageInput" placeholder="이미지 URL 3 (선택)" /><br>
+  <input type="text" class="imageInput" placeholder="이미지 URL 4 (선택)" /><br>
+  <input type="text" class="imageInput" placeholder="이미지 URL 5 (선택)" /><br>
 
   <button onclick="submitPost()">등록</button>
 
@@ -69,7 +74,11 @@
       const writer = document.getElementById('postWriter').value.trim() || '불방';
       const title = document.getElementById('postTitle').value.trim();
       const content = document.getElementById('postContent').value.trim();
-      const imageUrl = document.getElementById('postImageUrl').value.trim();
+
+      const imageInputs = document.querySelectorAll('.imageInput');
+      const imageUrls = Array.from(imageInputs)
+        .map(input => input.value.trim())
+        .filter(url => url !== '');
 
       if (!title || !content) {
         alert('제목과 내용을 모두 입력해주세요.');
@@ -79,15 +88,11 @@
       await addDoc(collection(db, "posts"), {
         title,
         content,
-        image: imageUrl,
+        images: imageUrls,
         author: writer,
         date: new Date().toLocaleString('ko-KR', {
-          year: 'numeric',
-          month: 'numeric',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true
+          year: 'numeric', month: 'numeric', day: 'numeric',
+          hour: '2-digit', minute: '2-digit', hour12: true
         }),
         views: 0
       });
@@ -101,7 +106,7 @@
       document.getElementById('postWriter').value = '';
       document.getElementById('postTitle').value = '';
       document.getElementById('postContent').value = '';
-      document.getElementById('postImageUrl').value = '';
+      document.querySelectorAll('.imageInput').forEach(input => input.value = '');
     }
 
     async function renderAdminPostList() {
@@ -137,10 +142,8 @@
       renderAdminPostList();
     });
 
-    // 모듈 최하단에 추가:
-window.submitPost = submitPost;
-window.deletePost = deletePost;
-
+    window.submitPost = submitPost;
+    window.deletePost = deletePost;
   </script>
 
 </body>
