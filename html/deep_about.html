@@ -4,11 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding&display=swap" rel="stylesheet">
-
+  <!-- 음악은 여기서 활용했습니다. Author Joth https://opengameart.org/content/bossa-nova -->
 
   <title>불방 이력서</title>
   <style>
- 
     body {
       margin: 0;
       padding: 0;
@@ -25,13 +24,13 @@
     }
 
     #titleBox {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  min-height: 2.5rem;
-  color: #1fff1f;         
-  font-weight: bold; 
-  margin-top: -5vh;       
-}
+      font-size: 1.8rem;
+      margin-bottom: 2.8rem;
+      min-height: 2.5rem;
+      color: #1fff1f;
+      font-weight: bold;
+      margin-top: -5vh;
+    }
 
     #typewriterBox {
       max-width: 90%;
@@ -40,70 +39,71 @@
       line-height: 2.5rem;
       white-space: pre-wrap;
       min-height: 150px;
-      margin-top: -3vh;  
+      margin-top: -3vh;
     }
 
     #nextButton {
-  margin-top: 0;
-  padding: 7px 10px;
-  font-size: 1rem;
-  font-weight: bold;
-  background-color: yellow;
-  color: black;
-  border: none;
-  border-radius: 0px;
-  cursor: pointer;
-  display: none;
-  transition: all 0.25s ease;
+      margin-top: 0;
+      padding: 7px 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      background-color: yellow;
+      color: black;
+      border: none;
+      border-radius: 0px;
+      cursor: pointer;
+      display: none;
+      transition: all 0.25s ease;
+      position: absolute;
+      bottom: 20vh;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+    }
 
-  position: absolute;           /* ✅ 위치 기준 고정 */
-  bottom: 20vh;                  /* ✅ PC도 살짝 위에 띄우자 */
-  left: 50%;
-  transform: translateX(-50%);  /* ✅ 정확히 중앙 정렬 */
-  z-index: 100;
-}
+    #nextButton:hover {
+      background-color: #ff1313;
+      transform: translateX(-50%) scale(1.07);
+      color: black;
+    }
 
-
-#nextButton:hover {
-  background-color: #ff1313;
-  transform: translateX(-50%) scale(1.07); /* ✅ 기준 유지 + 커짐 */
-  color: black;
-}
     @media (max-width: 800px) {
       #titleBox {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
       }
 
       #typewriterBox {
         font-size: 0.9rem;
         line-height: 2.1rem;
+        margin-top: -3rem;
       }
 
       #nextButton {
         font-size: 0.90rem;
         padding: 5px 8px;
         position: fixed;
-    bottom: 3vh;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 999;
-    margin-top: 0;
+        bottom: 3vh;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 999;
+        margin-top: 0;
       }
     }
 
     @media (hover: none) {
-  #nextButton:hover {
-    background-color: unset;
-    transform: translateX(-50%); /* ✅ 위치만 유지 */
-  }
-}
-
-
+      #nextButton:hover {
+        background-color: unset;
+        transform: translateX(-50%);
+      }
+    }
   </style>
 </head>
 <body>
+
 <div id="titleBox"></div>
 <div id="typewriterBox"></div>
+<audio id="bgm" src="/BGM/8bit Bossa.mp3" loop preload="auto"></audio>
+
 <button id="nextButton">다음</button>
 
 <script>
@@ -114,11 +114,11 @@
     },
     {
       title: "작가, 감독 시절",
-      content: "주로 실험적인 영상 작업을 하는 작가로 알려져 있었습니다. 주요 미술관의 전시와 인천아트플랫폼 레지던시, 프로젝트 사루비아 스페이스 개인전 등의 경력이 있습니다. 작업을 진행하던 중 자연스럽게 단편 영화를 몇 개 만들었고, 그 중 하나는 다큐멘터리로, 영화제에 상영되었습니다. DCP 시설이 갖추어진 괜찮은 영화제에서 상영이 되었고,(인디포럼 서울아트시네마) 작품은 현재 한국영상자료원에 소장 되어 있습니다. 비평가들에게 좋은 비평도 많이 받았습니다. (『암점』문학과지성사 박준상 2017년 출간 등) 2019년 전시를 끝으로 작가 생활은 그만 두었습니다. (경제적인 것 때문이라고 생각했으나, 후에 생각해보니 그 분야에 흥미를 잃었던 게 원인이었던 것 같습니다.)"
+      content: "주로 실험적인 영상 작업을 하는 작가로 알려져 있었습니다. 주요 미술관의 전시와 '인천아트플랫폼 레지던시 입주', '프로젝트 사루비아 스페이스 개인전' 등의 경력이 있습니다. 작업을 진행하던 중 자연스럽게 단편 영화를 몇 개 만들었고, 그 중 하나는 다큐멘터리로, 영화제에 상영되었습니다. DCP 시설이 갖추어진 괜찮은 영화제에서 상영이 되었고,(인디포럼 서울아트시네마) 작품은 현재 한국영상자료원에 소장 되어 있습니다. 비평가들에게 좋은 비평도 많이 받았습니다. (『암점』문학과지성사 박준상 2017년 출간 등) 2019년 전시를 끝으로 작가 생활은 그만 두었습니다. (경제적인 것 때문이라고 생각했으나, 후에 생각해보니 그 분야에 흥미를 잃었던 게 원인이었던 것 같습니다.)"
     },
     {
       title: "영상으로 돈벌기 시작",
-      content: "작가로 활동하던 중 2016년에는 사업자를 내고 상업적인 영상을 제작하였습니다. 처음엔 단순히 기록하는 일부터 시작했습니다. 혹은 좋소홍보영상. 후에는 많은 동료 작가들과 업계 사람들에게 필요한 색보정 기술을 익혔습니다. 영화관(블랙박스)와 미술관(화이트큐브)을 동시에 활동한 경력이 있어, 영화관에 필요한 색보정 프로세스 REC.709, P3 기준 색보정, 설치를 필요로 하는 미술관 영상에 맞는 다채널 솔루션 등을 제공하면서 활동을 하였습니다. 동시에 3D그래픽, 모델링에도 관심을 가졌습니다. 물론 관련하여 상업적인 일도 하였습니다. 뮤직비디오 캐릭터 모델링 + 리깅, 공공미술 3D 아카이브, 이유식 공장 생산과정 전체 모델링 + 애니메이션 등 "
+      content: "작가로 활동하던 중 2016년에는 사업자를 내고 상업적인 영상을 제작하였습니다. 처음엔 단순히 기록하는 일부터 시작했습니다. 좋소홍보영상 같은... 후에는 많은 동료 작가들과 업계 사람들에게 필요한 색보정 기술을 익혔습니다. 영화관(블랙박스)와 미술관(화이트큐브)을 동시에 활동한 경력이 있어, 영화관에 필요한 색보정 프로세스 REC.709, P3 기준 색보정, 설치를 필요로 하는 미술관 영상에 맞는 다채널 솔루션 등을 제공하면서 활동을 하였습니다. 동시에 3D그래픽, 모델링에도 관심을 가졌습니다. 물론 관련하여 상업적인 일도 하였습니다. 뮤직비디오 캐릭터 모델링 + 리깅, 공공미술 3D 아카이브, 이유식 공장 생산과정 전체 모델링 + 애니메이션 등 "
     },
     {
       title: "인터렉션, 코딩",
@@ -137,8 +137,10 @@
   const titleBox = document.getElementById('titleBox');
   const box = document.getElementById('typewriterBox');
   const button = document.getElementById('nextButton');
+  const bgm = document.getElementById('bgm'); // ✅ 오디오 엘리먼트 참조
   let index = 0;
   let typing = false;
+  let bgmStarted = false; // ✅ 첫 재생 플래그
 
   async function typeText(text) {
     box.textContent = '';
@@ -159,6 +161,16 @@
 
   button.addEventListener('click', () => {
     if (typing) return;
+
+    // ✅ 버튼 최초 클릭 시 BGM 재생
+    if (!bgmStarted) {
+      bgm.volume = 0.5;
+      bgm.play().catch(err => {
+        console.warn("🔇 자동재생 차단됨:", err);
+      });
+      bgmStarted = true;
+    }
+
     index++;
     if (index < textList.length) {
       button.style.display = 'none';
@@ -171,7 +183,7 @@
     }
   });
 
-  // 첫 시작 텍스트 출력
+  // 첫 텍스트 출력
   titleBox.textContent = textList[0].title;
   typeText(textList[0].content);
 </script>
