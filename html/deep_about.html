@@ -143,28 +143,21 @@
   let bgmStarted = false; // ✅ 첫 재생 플래그
 
   async function typeText(text) {
-    box.textContent = '';
-    typing = true;
-    for (let i = 0; i <= text.length; i++) {
-      box.textContent = text.substring(0, i);
-      await new Promise(res => setTimeout(res, 40));
-    }
-    typing = false;
-    
-    setTimeout(() => {
+  box.textContent = '';
+  typing = true;
+  for (let i = 0; i <= text.length; i++) {
+    box.textContent = text.substring(0, i);
+    await new Promise(res => setTimeout(res, 40));
+  }
+  typing = false;
+
+  // ✅ 버튼 출력은 여기서만 처리
+  setTimeout(() => {
     button.style.display = 'inline-block';
     button.textContent = index < textList.length - 1 ? "다음" : "완료";
   }, 10);
-  
-    if (index < textList.length - 1) {
-      button.textContent = "다음";
-      button.style.display = 'inline-block';
-    } else {
-      button.textContent = "완료";
-      button.style.display = 'inline-block';
-    }
-    
-  }
+}
+
 
   button.addEventListener('click', () => {
     if (typing) return;
