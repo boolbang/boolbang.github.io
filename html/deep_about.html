@@ -150,6 +150,12 @@
       await new Promise(res => setTimeout(res, 40));
     }
     typing = false;
+    
+    setTimeout(() => {
+    button.style.display = 'inline-block';
+    button.textContent = index < textList.length - 1 ? "다음" : "완료";
+  }, 10);
+  
     if (index < textList.length - 1) {
       button.textContent = "다음";
       button.style.display = 'inline-block';
@@ -157,6 +163,7 @@
       button.textContent = "완료";
       button.style.display = 'inline-block';
     }
+    
   }
 
   button.addEventListener('click', () => {
