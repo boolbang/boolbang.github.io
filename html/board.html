@@ -348,12 +348,44 @@
   window.addEventListener('DOMContentLoaded', fetchPosts);
 
   function parseMedia(content) {
-    let parsed = content.replace(/\n/g, '<br>');
-    parsed = parsed.replace(/(https?:\/\/[^\s]+?\.(jpg|png|gif))/gi, '<img src="$1" style="max-width:100%; margin:10px 0;" />');
-    parsed = parsed.replace(/https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-]+)/g, '<iframe width="100%" height="315" src="https://www.youtube.com/embed/$1" frameborder="0" allowfullscreen></iframe>');
-    parsed = parsed.replace(/https?:\/\/youtu\.be\/([\w-]+)/g, '<iframe width="100%" height="315" src="https://www.youtube.com/embed/$1" frameborder="0" allowfullscreen></iframe>');
-    return parsed;
-  }
+  let parsed = content.replace(/\n/g, '<br>');
+
+  // ✅ 1. 이미지 주소 (확장자 포함)
+  parsed = parsed.replace(
+    /(https?:\/\/[^\s<]+?\.(jpg|jpeg|png|gif|webp|bmp|svg))/gi,
+    (_, url) => `<img src="${url}" style="max-width:100%; margin:10px 0;" />`
+  );
+
+  // ✅ 2. 이미지 주소 (확장자 없어도 가능성 있는 도메인: 구글 등)
+  parsed = parsed.replace(
+    /(https?:\/\/[^\s<]*(gstatic\.com|googleusercontent\.com)[^\s<]*)/gi,
+    (_, url) => `<img src="${url}" style="max-width:100%; margin:10px 0;" />`
+  );
+
+  // ✅ 3. 유튜브 (일반 주소) - 쿼리스트링 제거 포함
+  parsed = parsed.replace(
+    /https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-]+)[^\s<]*/g,
+    (_, videoId) => `<iframe width="100%" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`
+  );
+
+  // ✅ 4. 유튜브 (짧은 주소) - 쿼리스트링 제거 포함
+  parsed = parsed.replace(
+    /https?:\/\/youtu\.be\/([\w-]+)[^\s<]*/g,
+    (_, videoId) => `<iframe width="100%" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`
+  );
+
+  // ✅ 5. 일반 링크 (이미 이미지나 iframe으로 처리되지 않은 경우)
+  parsed = parsed.replace(
+    /(?<!src=")(https?:\/\/[^\s<]+)(?![^>]*>)/g,
+    '<a href="$1" target="_blank">$1</a>'
+  );
+
+  return parsed;
+}
+
+
+
+
 </script>
 </body>
 </html>

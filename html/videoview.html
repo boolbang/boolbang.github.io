@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>UX 유튜브 포트폴리오 큐브</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+    }
+    #container {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+    .title-overlay {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #00ff88;
+      font-family: monospace;
+      font-size: 1.2rem;
+      background: rgba(0,0,0,0.6);
+      padding: 8px 16px;
+      border-radius: 8px;
+      pointer-events: none;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <div class="title-overlay" id="videoTitle">포트폴리오를 회전해보세요</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/examples/js/renderers/CSS3DRenderer.js"></script>
+
+  <script>
+    const container = document.getElementById('container');
+    const title = document.getElementById('videoTitle');
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000);
+    camera.position.set(0, 0, 800);
+
+    const renderer = new THREE.CSS3DRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    container.appendChild(renderer.domElement);
+
+    const urls = [
+      { url: 'https://www.youtube.com/embed/ScMzIvxBSi4', label: 'Demo Reel 2024' },
+      { url: 'https://www.youtube.com/embed/dQw4w9WgXcQ', label: '모션 그래픽 소개' },
+      { url: 'https://www.youtube.com/embed/FTQbiNvZqaY', label: 'UI/UX 애니메이션' },
+      { url: 'https://www.youtube.com/embed/l482T0yNkeo', label: '브랜드 캠페인 영상' },
+      { url: 'https://www.youtube.com/embed/9bZkp7q19f0', label: '콜라보 프로젝트' },
+      { url: 'https://www.youtube.com/embed/CevxZvSJLk8', label: '개인 작업 하이라이트' }
+    ];
+
+    const group = new THREE.Group();
+    const size = 400;
+    const objects = [];
+
+    urls.forEach((item, i) => {
+      const element = document.createElement('iframe');
+      element.src = ''; // 초기에는 비워두기
+      element.dataset.src = item.url; // 필요 시 동적 로드
+      element.loading = 'lazy';
+      element.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      element.allowFullscreen = true;
+      element.style.width = size + 'px';
+      element.style.height = size + 'px';
+      element.style.border = '0px';
+
+      const object = new THREE.CSS3DObject(element);
+      object.userData = { label: item.label };
+
+      switch (i) {
+        case 0: object.position.set(0, 0, size / 2); break;
+        case 1: object.position.set(0, 0, -size / 2); object.rotation.y = Math.PI; break;
+        case 2: object.position.set(-size / 2, 0, 0); object.rotation.y = -Math.PI / 2; break;
+        case 3: object.position.set(size / 2, 0, 0); object.rotation.y = Math.PI / 2; break;
+        case 4: object.position.set(0, size / 2, 0); object.rotation.x = -Math.PI / 2; break;
+        case 5: object.position.set(0, -size / 2, 0); object.rotation.x = Math.PI / 2; break;
+      }
+
+      group.add(object);
+      objects.push(object);
+    });
+
+    scene.add(group);
+
+    let activeIndex = -1;
+
+    function animate() {
+      requestAnimationFrame(animate);
+      group.rotation.y += 0.005;
+      group.rotation.x += 0.0025;
+      renderer.render(scene, camera);
+      updateActiveFace();
+    }
+
+    function updateActiveFace() {
+      const matrix = new THREE.Matrix4().copy(group.matrixWorld);
+      const direction = new THREE.Vector3(0, 0, 1).applyMatrix4(matrix).normalize();
+
+      let closest = -1;
+      let maxDot = -1;
+
+      objects.forEach((obj, index) => {
+        const toFace = new THREE.Vector3().subVectors(obj.getWorldPosition(new THREE.Vector3()), camera.position).normalize();
+        const dot = direction.dot(toFace);
+        if (dot > maxDot) {
+          maxDot = dot;
+          closest = index;
+        }
+      });
+
+      if (closest !== activeIndex) {
+        activeIndex = closest;
+        const el = objects[activeIndex].element;
+        if (!el.src) el.src = el.dataset.src; // 지연 로딩 적용
+        title.textContent = objects[activeIndex].userData.label;
+      }
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Drawing Log</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #d4d4d4;
+      font-family: sans-serif;
+    }
+    #container {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+    #title {
+      position: absolute;
+      top: 60px;
+      width: 100%;
+      text-align: center;
+      color: #111;
+      font-size: 1rem;
+      z-index: 10;
+    }
+    @media (min-width: 1025px) {
+      /* PC용 */
+      .video-wrapper {
+        width: 1080px;
+        height: 1920px;
+      }
+      iframe {
+        width: 1080px;
+        height: 1920px;
+      }
+    }
+    @media (max-width: 1024px) {
+      /* 모바일용 */
+      .video-wrapper {
+        width: 1260px;
+        height: 2220px;
+      }
+      iframe {
+        width: 1260px;
+        height: 2220px;
+      }
+    }
+    
+  </style>
+</head>
+<body>
+  <div id="title">"2025–Now: My Daily Drawing Log"</div>
+  <div id="container"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/examples/js/renderers/CSS3DRenderer.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/examples/js/controls/OrbitControls.js"></script>
+
+  <script>
+    const container = document.getElementById('container');
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 5000);
+    camera.position.set(0, 0, 2000);
+
+    const renderer = new THREE.CSS3DRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    container.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enablePan = true;
+    controls.enableZoom = true;
+    controls.minDistance = 1000;
+    controls.maxDistance = 3000;
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.1;
+    controls.rotateSpeed = 0.4;
+    controls.minPolarAngle = Math.PI / 3;
+    controls.maxPolarAngle = Math.PI * 2 / 3;
+
+    const group = new THREE.Group();
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'video-wrapper';
+    wrapper.style.pointerEvents = 'auto';
+
+    const shortsEmbed = document.createElement('iframe');
+    shortsEmbed.frameBorder = '0';
+    shortsEmbed.allow = 'autoplay; encrypted-media';
+    shortsEmbed.allowFullscreen = true;
+    shortsEmbed.style.pointerEvents = 'auto';
+
+    const playlistId = 'PL33_f3LZOk2-2djWF0gkSSICLDONlqdjG';
+    shortsEmbed.src = `https://www.youtube.com/embed/videoseries?list=${playlistId}&autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&loop=1&origin=${location.origin}`;
+
+    wrapper.appendChild(shortsEmbed);
+
+    const object = new THREE.CSS3DObject(wrapper);
+    object.position.set(0, 0, 0);
+    group.add(object);
+    scene.add(group);
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>

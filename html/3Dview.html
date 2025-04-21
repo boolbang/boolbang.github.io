@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Modeling Log</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: black;
+    }
+    canvas {
+      display: block;
+    }
+    /* Caption overlay style */
+    #caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 12px 20px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #FF8000;
+      font-family: sans-serif;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      z-index: 10;
+    }
+    /* Close button style */
+    #close-btn {
+      position: absolute;
+      top: 8px;
+      right: 16px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: #fff;
+    }
+    
+  </style>
+</head>
+<body>
+  <!-- Three.js 및 로더 CDN을 script 방식으로 로드 -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/examples/js/loaders/OBJLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/examples/js/controls/OrbitControls.js"></script>
+  <script>
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color('#000000');
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 2, 20);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.target.set(0, 1, 0);
+    controls.update();
+
+    scene.add(new THREE.AmbientLight(0xffffff, 1.5));
+    const light = new THREE.DirectionalLight(0xffffff, 1.5);
+    light.position.set(5, 10, 5);
+    scene.add(light);
+
+    // const spotLight = new THREE.SpotLight(0xffffff, 1.5, 20, Math.PI / 4, 0.2);
+    // spotLight.position.set(0, 10, 0);
+    // spotLight.target.position.set(0, 0, 0);
+    // scene.add(spotLight);
+    // scene.add(spotLight.target);
+
+    const gridHelper = new THREE.GridHelper(100, 100, 0x00FF00, 0xFF8000);
+    gridHelper.material.opacity = 0.4;
+    gridHelper.material.transparent = true;
+    scene.add(gridHelper);
+
+    let currentModel;
+
+    function clearScene() {
+      if (currentModel) {
+        scene.remove(currentModel);
+        currentModel.traverse((child) => {
+          if (child.isMesh) {
+            child.geometry.dispose();
+            if (child.material.map) child.material.map.dispose();
+            child.material.dispose();
+          }
+        });
+      }
+    }
+
+    function loadModelFromURL(url) {
+      const extension = url.split('.').pop().toLowerCase();
+      clearScene();
+
+      if (extension === 'glb' || extension === 'gltf') {
+        const loader = new THREE.GLTFLoader();
+        loader.load(url, (gltf) => {
+          currentModel = gltf.scene;
+          currentModel.scale.set(1.0, 1.0, 1.0);
+          currentModel.position.set(0, 0, 0);
+          scene.add(currentModel);
+          controls.target.copy(currentModel.position);
+        }, undefined, (error) => console.error('GLTF Load Error:', error));
+
+      } else if (extension === 'obj') {
+        const loader = new THREE.OBJLoader();
+        fetch(url)
+          .then(res => res.text())
+          .then(text => {
+            currentModel = loader.parse(text);
+            currentModel.scale.set(3.9, 3.9, 3.9);
+            currentModel.position.set(0, 0, 0);
+            scene.add(currentModel);
+            controls.target.copy(currentModel.position);
+          })
+          .catch((error) => console.error('OBJ Fetch Error:', error));
+      } else {
+        alert('지원되지 않는 파일 형식입니다.');
+      }
+    }
+
+    const modelUrl = '../models/akira.glb';
+    loadModelFromURL(modelUrl);
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // // 닫기 버튼 이벤트
+    // window.addEventListener('DOMContentLoaded', () => {
+    //   const btn = document.getElementById('close-btn');
+    //   btn.addEventListener('click', () => {
+    //     document.getElementById('caption').style.display = 'none';
+    //   });
+    // });
+  </script>
+
+  <!-- Caption Overlay -->
+  <div id="caption">
+    
+    <h2>아키라</h2>
+    <p>
+      아키라 아직 안봤습니다.<br>
+      캐릭터는 귀엽네요 <br>
+      
+    </p>
+  </div>
+</body>
+</html>
