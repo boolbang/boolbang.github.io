@@ -3,10 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding&display=swap" rel="stylesheet">
-  <!-- 음악은 여기서 활용했습니다. Author Joth https://opengameart.org/content/bossa-nova -->
-
   <title>불방 이력서</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding&display=swap" rel="stylesheet" />
   <style>
     body {
       margin: 0;
@@ -43,6 +41,9 @@
     }
 
     #nextButton {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease;
       margin-top: 0;
       padding: 7px 10px;
       font-size: 1rem;
@@ -52,13 +53,16 @@
       border: none;
       border-radius: 0px;
       cursor: pointer;
-      display: none;
-      transition: all 0.25s ease;
       position: absolute;
       bottom: 20vh;
       left: 50%;
       transform: translateX(-50%);
       z-index: 100;
+    }
+
+    #nextButton.show {
+      opacity: 1;
+      visibility: visible;
     }
 
     #nextButton:hover {
@@ -103,7 +107,6 @@
 <div id="titleBox"></div>
 <div id="typewriterBox"></div>
 <audio id="bgm" src="/BGM/8bit Bossa.mp3" loop preload="auto"></audio>
-
 <button id="nextButton">다음</button>
 
 <script>
@@ -137,55 +140,50 @@
   const titleBox = document.getElementById('titleBox');
   const box = document.getElementById('typewriterBox');
   const button = document.getElementById('nextButton');
-  const bgm = document.getElementById('bgm'); // ✅ 오디오 엘리먼트 참조
+  const bgm = document.getElementById('bgm');
   let index = 0;
   let typing = false;
-  let bgmStarted = false; // ✅ 첫 재생 플래그
+  let bgmStarted = false;
 
   async function typeText(text) {
-  box.textContent = '';
-  typing = true;
-  for (let i = 0; i <= text.length; i++) {
-    box.textContent = text.substring(0, i);
-    await new Promise(res => setTimeout(res, 40));
+    box.textContent = '';
+    typing = true;
+    for (let i = 0; i <= text.length; i++) {
+      box.textContent = text.substring(0, i);
+      await new Promise(res => setTimeout(res, 40));
+    }
+    typing = false;
   }
-  typing = false;
 
-  // ✅ 버튼 출력은 여기서만 처리
-  setTimeout(() => {
-    button.style.display = 'inline-block';
-    button.textContent = index < textList.length - 1 ? "다음" : "완료";
-  }, 10);
-}
-
+  async function showPage(i) {
+    button.classList.remove('show');
+    titleBox.textContent = textList[i].title;
+    await typeText(textList[i].content);
+    button.textContent = i < textList.length - 1 ? "다음" : "완료";
+    requestAnimationFrame(() => {
+      button.classList.add('show');
+    });
+  }
 
   button.addEventListener('click', () => {
     if (typing) return;
-
-    // ✅ 버튼 최초 클릭 시 BGM 재생
     if (!bgmStarted) {
       bgm.volume = 0.5;
-      bgm.play().catch(err => {
-        console.warn("🔇 자동재생 차단됨:", err);
-      });
+      bgm.play().catch(err => console.warn("🔇 자동재생 차단:", err));
       bgmStarted = true;
     }
-
     index++;
     if (index < textList.length) {
-      button.style.display = 'none';
-      titleBox.textContent = textList[index].title;
-      typeText(textList[index].content);
+      showPage(index);
     } else {
-      button.style.display = 'none';
+      button.classList.remove('show');
       titleBox.textContent = "GAME OVER";
       box.textContent = "CLEAR";
     }
   });
 
-  // 첫 텍스트 출력
-  titleBox.textContent = textList[0].title;
-  typeText(textList[0].content);
+  // 첫 페이지
+  showPage(index);
 </script>
 
 </body>

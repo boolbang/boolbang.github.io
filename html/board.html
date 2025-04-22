@@ -6,6 +6,36 @@
   <link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts-nine@1.0/NanumGothicCoding.woff2" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
+  
+  #postPagination button {
+  background-color: #f1ff33;
+  color: #000000;
+  border: 1px solid #000;
+  font-family: 'Nanum Gothic Coding', monospace;
+  padding: 5px 7px;
+  margin: 0 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#postPagination button:hover {
+  background-color: #ff2929;
+}
+
+#closeButton {
+  background-color: #0011ff;
+  color: rgb(255, 255, 255);
+  font-family: 'Press Start 2P', monospace;
+  padding: 8px 10px;
+  border: 1px solid black;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#closeButton:hover {
+  background-color: #ff2929;
+}
+
     @keyframes scrollText {
       0% { transform: translateX(0%); }
       100% { transform: translateX(-50%); }
@@ -157,8 +187,9 @@
     <div id="modalImage"></div>
     <br>
     <div style="text-align: center; margin-top: 20px;">
-      <button onclick="closeModal()">닫기</button>
+      <button id="closeButton" onclick="closeModal()">닫기</button>
     </div>
+    
   </div>
 </div>
 
