@@ -5,15 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>불방 인터렉티브</title>
 
-<link rel="stylesheet" href="/css/style.css" />
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts-nine@1.0/NanumGothicCoding.woff2" rel="stylesheet" />
-<link rel="icon" href="../images/pavicon.png" type="image/png" />
-
-
+  <link rel="stylesheet" href="/css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts-nine@1.0/NanumGothicCoding.woff2" rel="stylesheet" />
+  <link rel="icon" href="../images/pavicon.png" type="image/png" />
 </head>
 <body>
- 
+
+  <!-- 헤더 -->
   <header>
     <h1>
       <img src="/images/fire.gif" alt="불" class="fire-icon" />
@@ -22,7 +21,7 @@
     </h1>
   </header>
 
-  
+  <!-- 네비게이션 -->
   <nav class="icon-nav">
     <a href="/html/about.html" class="nav-icon">
       <img src="/images/fireicon.png" alt="불방" />
@@ -38,17 +37,17 @@
     </a>
     <a href="/html/2Dview.html" class="nav-icon">
       <img src="/images/2dview.png" alt="드로잉" />
-      <span class="label">Drawing </span>
+      <span class="label">2D </span>
     </a>
     <a href="/html/3Dview.html" class="nav-icon">
       <img src="/images/3dview.png" alt="모델링" />
-      <span class="label">Modeling </span>
+      <span class="label">3D </span>
     </a>
   </nav>
 
   <!-- 배너 -->
   <div class="link-banner" style="width: 200px; margin: 20px auto; text-align: center;">
-      <img src="/images/banner.gif" alt="배너" style="width: 100%; height: auto;" />
+    <img src="/images/banner.gif" alt="배너" style="width: 100%; height: auto;" />
   </div>
 
   <!-- 메인 컨테이너 -->
@@ -76,71 +75,73 @@
     </section>
   </div>
 
-<!-- Firebase + Firestore 연동 (기존 localStorage 대신 사용) -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+  <!-- Firebase + Firestore 연동 -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCqAQCELh1q2pWxrXtx-8lBwRe2CTSG_HdQ",
-    authDomain: "boolbang-board.firebaseapp.com",
-    projectId: "boolbang-board",
-    storageBucket: "boolbang-board.appspot.com",
-    messagingSenderId: "1563061617526",
-    appId: "1:1563061617526:web:066768f311fc53cd017257",
-    measurementId: "G-2CBKFZ5Q85"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCqAQCELh1q2pWxrXtx-8lBwRe2CTSG_HdQ",
+      authDomain: "boolbang-board.firebaseapp.com",
+      projectId: "boolbang-board",
+      storageBucket: "boolbang-board.appspot.com",
+      messagingSenderId: "1563061617526",
+      appId: "1:1563061617526:web:066768f311fc53cd017257",
+      measurementId: "G-2CBKFZ5Q85"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-  async function renderPosts() {
-    const list = document.getElementById('post-list');
-    list.innerHTML = '';
+    async function renderPosts() {
+      const list = document.getElementById('post-list');
+      list.innerHTML = '';
 
-    try {
-      const querySnapshot = await getDocs(collection(db, "posts"));
-      if (querySnapshot.empty) {
-        list.innerHTML = '<li>최근 게시글이 없습니다.</li>';
-        return;
-      }
+      try {
+        const querySnapshot = await getDocs(collection(db, "posts"));
+        if (querySnapshot.empty) {
+          list.innerHTML = '<li>최근 게시글이 없습니다.</li>';
+          return;
+        }
 
-      // 최근 글만 10개 가져오기
-      const posts = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        posts.push({
-          id: doc.id,
-          title: data.title,
-          date: data.date || ""
+        const posts = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          posts.push({
+            id: doc.id,
+            title: data.title,
+            date: data.date || "",
+            createdAt: data.createdAt?.seconds || 0
+          });
         });
-      });
 
-      posts.reverse().slice(0, 10).forEach((post) => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <a href="html/board.html?id=${post.id}">
-            ${post.title}
-          </a>
-          <small style="color:#777;">(${post.date})</small>
-        `;
-        list.appendChild(li);
-      });
+        // 최신순 정렬
+        posts.sort((a, b) => b.createdAt - a.createdAt);
 
-    } catch (e) {
-      console.error("글 불러오기 실패:", e);
-      list.innerHTML = '<li>게시글을 불러오는 중 오류가 발생했습니다.</li>';
+        // 최근 10개만 출력
+        posts.slice(0, 10).forEach((post) => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <a href="/html/board.html?id=${post.id}">
+              ${post.title}
+            </a>
+            <small style="color:#777;">(${post.date})</small>
+          `;
+          list.appendChild(li);
+        });
+
+      } catch (e) {
+        console.error("글 불러오기 실패:", e);
+        list.innerHTML = '<li>게시글을 불러오는 중 오류가 발생했습니다.</li>';
+      }
     }
-  }
 
-  window.addEventListener('DOMContentLoaded', renderPosts);
-</script>
+    window.addEventListener('DOMContentLoaded', renderPosts);
+  </script>
 
-  
+  <!-- 푸터 -->
   <footer>
     © 2016–2025 BoolBang Interactive. Site launched in 2025. All rights reserved.
   </footer>
-
-
 </body>
 </html>

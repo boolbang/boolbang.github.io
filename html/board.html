@@ -54,7 +54,7 @@
       font-size: 0.85rem;
     }
     th, td {
-      border: 0.5px solid #ccc;
+      border: 0.5px solid #cccccc;
       padding: 2px;
     }
     .modal {
@@ -77,20 +77,19 @@
       overflow-y: auto;
     }
     #modalImage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 10px;
-}
-#modalImage img {
-  max-width: 80%;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-}
-
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    #modalImage img {
+      max-width: 80%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
     .retro-box {
       max-width: 700px;
       margin: 3rem auto;
@@ -101,33 +100,17 @@
       position: relative;
     }
     .retro-box::before {
-      content: "📁 BBS";
+      content: ":)";
       position: absolute;
       top: -14px;
       left: 12px;
-      background: #fff8dc;
+      background: #ffffff;
       font-size: 0.8rem;
       padding: 0 4px;
       color: #444;
-      border: 1px solid #999;
+      border: 2px solid #000000;
       font-family: 'Press Start 2P', cursive;
     }
-    /* .home-button {
-      position: fixed;
-      top: 9px;
-      left: 15px;
-      background-color: #ffffff;
-      color: #000;
-      padding: 3px 5px;
-      font-size: 0.5rem;
-      border: 1px solid #000;
-      font-family: 'Press Start 2P', 'Nanum Gothic Coding';
-      z-index: 10000;
-    }
-    .home-button:hover {
-      background-color: #ffe600;
-      color: #000;
-    } */
     #pagination {
       margin: 1rem auto;
     }
@@ -138,16 +121,15 @@
   </style>
 </head>
 <body>
-<!-- <a href="/boolbang.github.io/" class="home-button">🏠 HOME</a> -->
 <div id="textBanner">
   <div class="text-slide-wrap">
     <div class="text-slide-track">
       <span>VIDEO</span><span>GAME</span><span>SOFTWERE</span><span>GRAPHICS</span>
       <span>WEB</span><span>INTERACTIVE</span><span>DRAWING</span>
-      <span>VIDEO</span><span>GAME</span><span>SOFTWERE</span><span>GRAPHICS</span>
     </div>
   </div>
 </div>
+
 <h2>Portfolio Board</h2>
 <div class="retro-box">
   <table id="postTable">
@@ -164,6 +146,7 @@
   </table>
   <div id="pagination"></div>
 </div>
+
 <div id="postModal" class="modal">
   <div class="modal-content">
     <h3 id="modalTitle"></h3>
@@ -178,203 +161,197 @@
     </div>
   </div>
 </div>
+
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import {
+  getFirestore, collection, getDocs, doc, updateDoc
+} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCqAQCELh1q2pWxrXtx-8lBwRe2CTSG_HdQ",
-    authDomain: "boolbang-board.firebaseapp.com",
-    projectId: "boolbang-board",
-    storageBucket: "boolbang-board.appspot.com",
-    messagingSenderId: "1563061617526",
-    appId: "1:1563061617526:web:066768f311fc53cd017257",
-    measurementId: "G-2CBKFZ5Q85"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyCqAQCELh1q2pWxrXtx-8lBwRe2CTSG_HdQ",
+  authDomain: "boolbang-board.firebaseapp.com",
+  projectId: "boolbang-board",
+  storageBucket: "boolbang-board.appspot.com",
+  messagingSenderId: "1563061617526",
+  appId: "1:1563061617526:web:066768f311fc53cd017257",
+  measurementId: "G-2CBKFZ5Q85"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-  let postList = [];
-  let postId = 1;
-  let currentViewIndex = null;
-  let currentPage = 1;
-  const postsPerPage = 10;
-  let currentPostPageIndex = 0;
-  let currentPostPages = [];
+let postList = [];
+let currentPage = 1;
+const postsPerPage = 10;
+let currentPostPageIndex = 0;
+let currentPostPages = [];
 
-  async function fetchPosts() {
+async function fetchPosts() {
   const querySnapshot = await getDocs(collection(db, "posts"));
   postList = [];
   querySnapshot.forEach((docSnap) => {
     postList.push({ id: docSnap.id, ...docSnap.data() });
   });
 
-  postList.sort((a, b) => new Date(b.date) - new Date(a.date));
-
+  postList.sort((a, b) => {
+    const timeA = a.createdAt?.seconds || 0;
+    const timeB = b.createdAt?.seconds || 0;
+    return timeB - timeA;
+  });
 
   renderPosts();
 }
 
+function renderPosts() {
+  const tbody = document.querySelector('#postTable tbody');
+  tbody.innerHTML = '';
+  const start = (currentPage - 1) * postsPerPage;
+  const end = start + postsPerPage;
+  const paginatedPosts = postList.slice(start, end);
 
-  function renderPosts() {
-    const tbody = document.querySelector('#postTable tbody');
-    tbody.innerHTML = '';
-    const start = (currentPage - 1) * postsPerPage;
-    const end = start + postsPerPage;
-    const paginatedPosts = postList.slice(start, end);
+  paginatedPosts.forEach((post, index) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${postList.length - (start + index)}</td>
+      <td><a href="#" onclick="viewPostById('${post.id}')">${post.title}</a></td>
+      <td>${post.author}</td>
+      <td>${post.date || formatDate(post.createdAt)}</td>
+      <td>${typeof post.views === 'number' ? post.views : 0}</td>
+    `;
+    tbody.appendChild(row);
+  });
 
-    paginatedPosts.forEach((post, index) => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${postList.length - (start + index)}</td>
-        <td><a href="#" onclick="viewPostById('${post.id}')">${post.title}</a></td>
-        <td>${post.author}</td>
-        <td>${post.date}</td>
-        <td>${post.views || 0}</td>
-      `;
-      tbody.appendChild(row);
-    });
+  renderPaginationControls();
+}
 
-    renderPaginationControls();
+function renderPaginationControls() {
+  const totalPages = Math.ceil(postList.length / postsPerPage);
+  const container = document.getElementById('pagination');
+  container.innerHTML = '';
+  if (totalPages <= 1) return;
+
+  if (currentPage > 1) {
+    const prev = document.createElement('button');
+    prev.textContent = '이전';
+    prev.onclick = () => { currentPage--; renderPosts(); };
+    container.appendChild(prev);
   }
 
-  function renderPaginationControls() {
-    const totalPages = Math.ceil(postList.length / postsPerPage);
-    const container = document.getElementById('pagination');
-    container.innerHTML = '';
-    if (totalPages <= 1) return;
+  const pageInfo = document.createElement('span');
+  pageInfo.textContent = ` ${currentPage} / ${totalPages} `;
+  container.appendChild(pageInfo);
 
-    if (currentPage > 1) {
-      const prev = document.createElement('button');
-      prev.textContent = '이전';
-      prev.onclick = () => {
-        currentPage--;
-        renderPosts();
-      };
-      container.appendChild(prev);
-    }
+  if (currentPage < totalPages) {
+    const next = document.createElement('button');
+    next.textContent = '다음';
+    next.onclick = () => { currentPage++; renderPosts(); };
+    container.appendChild(next);
+  }
+}
 
-    const pageInfo = document.createElement('span');
-    pageInfo.textContent = ` ${currentPage} / ${totalPages} `;
-    container.appendChild(pageInfo);
+async function viewPost(indexOrId) {
+  const post = typeof indexOrId === 'number' ? postList[indexOrId] : postList.find(p => p.id === indexOrId);
+  if (!post) return;
 
-    if (currentPage < totalPages) {
-      const next = document.createElement('button');
-      next.textContent = '다음';
-      next.onclick = () => {
-        currentPage++;
-        renderPosts();
-      };
-      container.appendChild(next);
-    }
+  const docRef = doc(db, "posts", post.id);
+  const currentViews = typeof post.views === 'number' ? post.views : 0;
+  const newViews = currentViews + 1;
+
+  try {
+    await updateDoc(docRef, { views: newViews });
+    post.views = newViews;
+  } catch (e) {
+    console.error("조회수 업데이트 실패:", e);
   }
 
-  function viewPost(indexOrId) {
-    const post = typeof indexOrId === 'number' ? postList[indexOrId] : postList.find(p => p.id === indexOrId);
-    if (!post) return;
+  document.getElementById('modalTitle').textContent = post.title;
+  document.getElementById('modalAuthor').textContent = post.author;
+  document.getElementById('modalDate').textContent = post.date || formatDate(post.createdAt);
 
-    document.getElementById('modalTitle').textContent = post.title;
-    document.getElementById('modalAuthor').textContent = post.author;
-    document.getElementById('modalDate').textContent = post.date;
+  const rawContent = post.content;
+  const contentPages = rawContent.split(/\[\[PAGE\]\]/i).map(p => parseMedia(p.trim()));
+  currentPostPages = contentPages;
+  currentPostPageIndex = 0;
+  renderPostPage();
 
-    const rawContent = post.content;
-    const contentPages = rawContent.split(/\[\[PAGE\]\]/i).map(p => parseMedia(p.trim()));
-    currentPostPages = contentPages;
-    currentPostPageIndex = 0;
-    renderPostPage();
+  const imageContainer = document.getElementById('modalImage');
+  imageContainer.innerHTML = '';
 
-    const imageContainer = document.getElementById('modalImage');
-    imageContainer.innerHTML = '';
-
-    if (Array.isArray(post.images)) {
-      post.images.forEach((url) => {
-        const img = document.createElement('img');
-        img.src = url;
-        img.style.maxWidth = '100%';
-        img.style.margin = '10px 0';
-        imageContainer.appendChild(img);
-      });
-    } else if (post.image) {
+  if (Array.isArray(post.images)) {
+    post.images.forEach((url) => {
       const img = document.createElement('img');
-      img.src = post.image;
-      img.style.maxWidth = '100%';
-      img.style.margin = '10px 0';
+      img.src = url;
       imageContainer.appendChild(img);
-    }
-
-    document.getElementById('postModal').style.display = 'block';
+    });
+  } else if (post.image) {
+    const img = document.createElement('img');
+    img.src = post.image;
+    imageContainer.appendChild(img);
   }
 
-  function renderPostPage() {
-    const contentEl = document.getElementById('modalContent');
-    contentEl.innerHTML = currentPostPages[currentPostPageIndex] || '';
-    const controls = document.getElementById('postPagination');
-    controls.innerHTML = '';
-    if (currentPostPages.length <= 1) return;
+  document.getElementById('postModal').style.display = 'block';
+}
 
-    if (currentPostPageIndex > 0) {
-      const prevBtn = document.createElement('button');
-      prevBtn.textContent = '이전';
-      prevBtn.onclick = () => {
-        currentPostPageIndex--;
-        renderPostPage();
-      };
-      controls.appendChild(prevBtn);
-    }
+function renderPostPage() {
+  const contentEl = document.getElementById('modalContent');
+  contentEl.innerHTML = currentPostPages[currentPostPageIndex] || '';
+  const controls = document.getElementById('postPagination');
+  controls.innerHTML = '';
 
-    const pageInfo = document.createElement('span');
-    pageInfo.textContent = ` ${currentPostPageIndex + 1} / ${currentPostPages.length} `;
-    controls.appendChild(pageInfo);
+  if (currentPostPages.length <= 1) return;
 
-    if (currentPostPageIndex < currentPostPages.length - 1) {
-      const nextBtn = document.createElement('button');
-      nextBtn.textContent = '다음';
-      nextBtn.onclick = () => {
-        currentPostPageIndex++;
-        renderPostPage();
-      };
-      controls.appendChild(nextBtn);
-    }
+  if (currentPostPageIndex > 0) {
+    const prevBtn = document.createElement('button');
+    prevBtn.textContent = '이전';
+    prevBtn.onclick = () => { currentPostPageIndex--; renderPostPage(); };
+    controls.appendChild(prevBtn);
   }
 
-  function closeModal() {
-    document.getElementById('postModal').style.display = 'none';
+  const pageInfo = document.createElement('span');
+  pageInfo.textContent = ` ${currentPostPageIndex + 1} / ${currentPostPages.length} `;
+  controls.appendChild(pageInfo);
+
+  if (currentPostPageIndex < currentPostPages.length - 1) {
+    const nextBtn = document.createElement('button');
+    nextBtn.textContent = '다음';
+    nextBtn.onclick = () => { currentPostPageIndex++; renderPostPage(); };
+    controls.appendChild(nextBtn);
   }
+}
 
-  window.viewPostById = viewPost;
-  window.closeModal = closeModal;
+function formatDate(timestamp) {
+  if (!timestamp || !timestamp.seconds) return '';
+  const date = new Date(timestamp.seconds * 1000);
+  return new Intl.DateTimeFormat('ko-KR', {
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hour12: false, timeZone: 'Asia/Seoul'
+  }).format(date);
+}
 
-  window.addEventListener('DOMContentLoaded', fetchPosts);
+function closeModal() {
+  document.getElementById('postModal').style.display = 'none';
+}
 
-  function parseMedia(content) {
+function parseMedia(content) {
   let parsed = content.replace(/\n/g, '<br>');
-
-  // ✅ 1. 이미지 주소 (확장자 포함)
   parsed = parsed.replace(
     /(https?:\/\/[^\s<]+?\.(jpg|jpeg|png|gif|webp|bmp|svg))/gi,
     (_, url) => `<img src="${url}" style="max-width:100%; margin:10px 0;" />`
   );
-
-  // ✅ 2. 이미지 주소 (확장자 없어도 가능성 있는 도메인: 구글 등)
   parsed = parsed.replace(
     /(https?:\/\/[^\s<]*(gstatic\.com|googleusercontent\.com)[^\s<]*)/gi,
     (_, url) => `<img src="${url}" style="max-width:100%; margin:10px 0;" />`
   );
-
-  // ✅ 3. 유튜브 (일반 주소) - 쿼리스트링 제거 포함
   parsed = parsed.replace(
     /https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-]+)[^\s<]*/g,
     (_, videoId) => `<iframe width="100%" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`
   );
-
-  // ✅ 4. 유튜브 (짧은 주소) - 쿼리스트링 제거 포함
   parsed = parsed.replace(
     /https?:\/\/youtu\.be\/([\w-]+)[^\s<]*/g,
     (_, videoId) => `<iframe width="100%" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`
   );
-
-  // ✅ 5. 일반 링크 (이미 이미지나 iframe으로 처리되지 않은 경우)
   parsed = parsed.replace(
     /(?<!src=")(https?:\/\/[^\s<]+)(?![^>]*>)/g,
     '<a href="$1" target="_blank">$1</a>'
@@ -383,7 +360,17 @@
   return parsed;
 }
 
-
+window.viewPostById = viewPost;
+window.closeModal = closeModal;
+window.addEventListener('DOMContentLoaded', () => {
+  fetchPosts().then(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const postId = urlParams.get('id');
+    if (postId) {
+      viewPostById(postId);
+    }
+  });
+});
 
 
 </script>
