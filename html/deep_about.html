@@ -11,7 +11,6 @@
       padding: 0;
       background: black;
       color: rgb(0, 255, 64);
-      /* font-family: 'Nanum Gothic Coding', monospace; */
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -41,8 +40,9 @@
     }
 
     #nextButton {
-      opacity: 1 !important;
-      visibility: visible !important;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
       transition: none;
       padding: 7px 10px;
       font-size: 1rem;
@@ -95,7 +95,7 @@
   <div id="titleBox"></div>
   <div id="typewriterBox"></div>
   <audio id="bgm" src="/BGM/8bit Bossa.mp3" loop preload="auto"></audio>
-  <button id="nextButton">.</button>
+  <button id="nextButton">다음</button>
 
   <script>
     const textList = [
@@ -136,9 +136,10 @@
     async function typeText(text, delay = 30) {
       box.textContent = '';
       typing = true;
+      const safeDelay = text.length > 500 ? 10 : delay;
       for (let i = 0; i <= text.length; i++) {
         box.textContent = text.substring(0, i);
-        await new Promise(res => setTimeout(res, delay));
+        await new Promise(res => setTimeout(res, safeDelay));
       }
       typing = false;
     }
@@ -155,7 +156,11 @@
 
       if (!bgmStarted) {
         bgm.volume = 0.5;
-        bgm.play().catch(err => console.warn("🔇 자동재생 차단:", err));
+        try {
+          bgm.play();
+        } catch (e) {
+          console.warn("🔇 BGM autoplay 차단됨");
+        }
         bgmStarted = true;
       }
 
@@ -171,8 +176,9 @@
     button.addEventListener('click', handleNext);
     button.addEventListener('touchstart', handleNext);
 
-    // 첫 페이지 표시
-    showPage(index);
+    window.addEventListener('DOMContentLoaded', () => {
+      showPage(index);
+    });
   </script>
 </body>
 </html>
