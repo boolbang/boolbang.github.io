@@ -112,6 +112,7 @@ header p {
     flex-direction: column;
     align-items: center;
     text-align: center;
+    
   }
 
   .nav-icon img {
@@ -120,19 +121,20 @@ header p {
   }
 
   .label {
-    font-size: 14px;
-    margin-top: 2px;
+   font-size: 0.8rem;
+    margin-top: 0px;  /* 👈 여백 제거 */
+    line-height: 0.6;   /* 👈 줄간격도 줄임 */
     
   }
 }
 
 .nav-icon .label {
   
-  font-size: 0.7rem;
+  font-size: 0.6rem;
   font-weight: 400;
   color: #222;
-  font-family: 'Press Start 2P';
-  src: url('../fonts/PressStart2P-Regular.woff2') format('woff2');
+  /* font-family: 'Press Start 2P';
+  src: url('../fonts/PressStart2P-Regular.woff2') format('woff2'); */
 }
 
 /* 메인 컨테이너 */
