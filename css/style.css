@@ -128,11 +128,11 @@ header p {
 
 .nav-icon .label {
   
-  font-size: 0.2rem;
-  font-weight: 300;
+  font-size: 0.7rem;
+  font-weight: 400;
   color: #222;
-  /* font-family: 'Press Start 2P';
-  src: url('../fonts/PressStart2P-Regular.woff2') format('woff2'); */
+  font-family: 'Press Start 2P';
+  src: url('../fonts/PressStart2P-Regular.woff2') format('woff2');
 }
 
 /* 메인 컨테이너 */
