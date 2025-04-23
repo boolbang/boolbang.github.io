@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>달리는 똘배</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style3.css">
   <style>
     body { margin: 0; overflow: hidden; }
     canvas { display: block; }
@@ -14,7 +14,6 @@
       left: 10px;
       color: #000;
       padding: 10px 15px;
-      font-family: 'Press Start 2P', monospace;
       font-size: 10px;
       line-height: 1.5;
       border: 1px solid #000;
@@ -39,9 +38,48 @@
       background-color: rgba(0, 0, 0, 0.6);
       color: white;
     }
+
+    #titleScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    #titleScreen h1 {
+      font-size: 4rem;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    #startButton {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #ffeb3b;
+      border: 2px solid black;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    #startButton:hover {
+      background-color: #ffd000;
+    }
   </style>
 </head>
 <body>
+  <div id="titleScreen">
+    <h1>달리는 똘배</h1>
+    <button id="startButton">▶ START</button>
+  </div>
+
   <div id="controls">
     Control<br>
     WASD : Move<br>
@@ -51,13 +89,15 @@
   </div>
 
   <div class="mobile-controls">
-    <button id="btn-up">⬆️</button>
     <button id="btn-left">⬅️</button>
-    <button id="btn-right">➡️</button>
+    <button id="btn-up">⬆️</button>
     <button id="btn-down">⬇️</button>
+    <button id="btn-right">➡️</button>
     <button id="btn-jump">⏫</button>
     <button id="btn-run">🏃</button>
   </div>
+
+  <audio id="bgm" src="/BGM/8bit Bossa.mp3"></audio>
 
   <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -78,8 +118,60 @@
     const footprintSpacing = 1.5;
     let walkAction, runAction;
 
+    const holes = [];
+    let holesAvoided = 0;
+
     init();
     animate();
+
+    function createHoles() {
+  for (let i = 0; i < 10; i++) {
+    const x = Math.random() * 100 - 50;
+    const z = Math.random() * 100 - 50;
+
+    // 예고 구멍 먼저 생성 (반투명 붉은색)
+    const preview = new THREE.Mesh(
+      new THREE.CircleGeometry(4.8, 32),
+      new THREE.MeshBasicMaterial({ color: 0x87CEEB, transparent: true, opacity: 0.5 })
+    );
+    preview.rotation.x = -Math.PI / 2;
+    preview.position.set(x, 0.01, z);
+    scene.add(preview);
+
+    // 1초 후 진짜 구멍으로 교체
+    setTimeout(() => {
+      scene.remove(preview);
+
+      const hole = new THREE.Mesh(
+        new THREE.CircleGeometry(4.8, 32),
+        new THREE.MeshBasicMaterial({ color: 0x87CEEB })
+      );
+      hole.rotation.x = -Math.PI / 2;
+      hole.position.set(x, 0.01, z);
+      hole.userData.radius = 4.8; // 충돌용 반지름 정보 저장
+      scene.add(hole);
+      holes.push(hole);
+    }, 1000);
+  }
+} 
+
+function checkHoleCollision() {
+  if (!model) return;
+  const pos = model.position;
+  for (let hole of holes) {
+    const dx = pos.x - hole.position.x;
+    const dz = pos.z - hole.position.z;
+    const distance = Math.sqrt(dx * dx + dz * dz);
+    const radius = hole.userData.radius || 4.8;
+    if (distance < radius * 0.95) { // 약간 여유 있게 판정
+      gameOver = true;
+      alert(`☠️ 구멍에 빠졌습니다!\n당신의 똘배지수: ${holesAvoided}`);
+      setTimeout(() => window.location.reload(), 1000);
+      break;
+    }
+  }
+}
+
 
     function init() {
       scene = new THREE.Scene();
@@ -123,6 +215,13 @@
         runAction = mixer.clipAction(animations[0]);
         walkAction.play();
       });
+
+      setInterval(() => {
+        if (!gameOver) {
+          createHoles();
+          holesAvoided += 10;
+        }
+      }, 5000);
     }
 
     function animate() {
@@ -153,14 +252,6 @@
           model.position.add(moveVector);
           model.lookAt(model.position.clone().add(moveVector));
           maybeLeaveFootprint();
-
-          if (isRunning && runAction && !runAction.isRunning()) {
-            walkAction.stop();
-            runAction.play();
-          } else if (!isRunning && walkAction && !walkAction.isRunning()) {
-            runAction.stop();
-            walkAction.play();
-          }
         }
 
         velocityY += gravity;
@@ -173,9 +264,11 @@
           isJumping = false;
         }
 
+        checkHoleCollision();
+
         if (model.position.y < -5) {
           gameOver = true;
-          alert("\uD83D\uDC80 거길 왜 떨어져? 염소니?");
+          alert(`💀 거길 왜 떨어져? 염소니?\n당신의 똘배지수: ${holesAvoided}`);
           setTimeout(() => window.location.reload(), 1000);
         }
       }
@@ -201,7 +294,13 @@
       scene.add(mesh);
     }
 
-    // 키보드 입력 처리
+    document.getElementById('startButton').addEventListener('click', () => {
+      document.getElementById('titleScreen').style.display = 'none';
+      const bgm = document.getElementById('bgm');
+      bgm.volume = 0.3;
+      bgm.play().catch(err => console.error('BGM 재생 실패:', err));
+    });
+
     document.addEventListener('keydown', e => {
       switch (e.code) {
         case 'KeyW': case 'ArrowUp': moveForward = true; break;
@@ -217,6 +316,7 @@
           break;
       }
     });
+
     document.addEventListener('keyup', e => {
       switch (e.code) {
         case 'KeyW': case 'ArrowUp': moveForward = false; break;
@@ -227,7 +327,6 @@
       }
     });
 
-    // 모바일 버튼 조작 처리
     const bindMobileButton = (id, downFn, upFn) => {
       const el = document.getElementById(id);
       el.addEventListener('touchstart', e => { e.preventDefault(); downFn(); });

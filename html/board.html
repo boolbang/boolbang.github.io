@@ -2,16 +2,16 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
+  <link rel="stylesheet" href="/css/style3.css">
   <title>불방 게시판</title>
-  <link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts-nine@1.0/NanumGothicCoding.woff2" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  
   <style>
   
   #postPagination button {
   background-color: #f1ff33;
   color: #000000;
   border: 1px solid #000;
-  font-family: 'Nanum Gothic Coding', monospace;
+  
   padding: 5px 7px;
   margin: 0 5px;
   cursor: pointer;
@@ -25,7 +25,7 @@
 #closeButton {
   background-color: #0011ff;
   color: rgb(255, 255, 255);
-  font-family: 'Press Start 2P', monospace;
+ 
   padding: 8px 10px;
   border: 1px solid black;
   cursor: pointer;
@@ -43,7 +43,7 @@
     #textBanner {
       background-color: #000;
       color: #adff6a;
-      font-family: 'Press Start 2P', cursive;
+      
       overflow: hidden;
     }
     .text-slide-wrap {
@@ -63,7 +63,7 @@
     a { color: #0000cc; text-decoration: none; }
     a:hover { color: #ff2929; }
     body {
-      font-family:'Nanum Gothic Coding', monospace;
+      
       text-align: center;
       background-color: hsl(0, 0%, 79%);
       color: #003cff;
@@ -72,20 +72,20 @@
       padding: 0;
     }
     h2 {
-      font-family: 'Press Start 2P', cursive;
+     
       font-size: 1.3rem;
       margin-top: 50px;
     }
     table {
       margin: auto;
       border-collapse: collapse;
-      width: 90%;
+      width: 100%;
       background-color: #fff;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
     }
     th, td {
-      border: 0.5px solid #cccccc;
-      padding: 2px;
+      border: 0.5px solid #141414;
+      padding: 6px 5px;
     }
     .modal {
       display: none;
@@ -121,12 +121,12 @@
       margin: 0 auto;
     }
     .retro-box {
-      max-width: 700px;
+      max-width: 800px;
       margin: 3rem auto;
       padding: 1.8rem;
       background-color: #a9e4ff;
       border: 2px solid #000;
-      box-shadow: 3px 3px 0px #000;
+      /* box-shadow: 3px 3px 0px #000; */
       position: relative;
     }
     .retro-box::before {
@@ -139,7 +139,7 @@
       padding: 0 4px;
       color: #444;
       border: 2px solid #000000;
-      font-family: 'Press Start 2P', cursive;
+    
     }
     #pagination {
       margin: 1rem auto;
@@ -154,13 +154,17 @@
 <div id="textBanner">
   <div class="text-slide-wrap">
     <div class="text-slide-track">
+      
       <span>VIDEO</span><span>GAME</span><span>SOFTWERE</span><span>GRAPHICS</span>
       <span>WEB</span><span>INTERACTIVE</span><span>DRAWING</span>
     </div>
   </div>
 </div>
 
-<h2>Portfolio Board</h2>
+<h2><span class="retro">
+  Portfolio Board
+</span>
+</h2>
 <div class="retro-box">
   <table id="postTable">
     <thead>
