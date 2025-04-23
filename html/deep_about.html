@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/style3.css">
   <title>불방 이력서</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding&display=swap" rel="stylesheet" />
   <style>
     body {
       margin: 0;
       padding: 0;
       background: black;
       color: rgb(0, 255, 64);
-      font-family: 'Nanum Gothic Coding', monospace;
+      /* font-family: 'Nanum Gothic Coding', monospace; */
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -41,34 +41,26 @@
     }
 
     #nextButton {
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0s linear 0.3s;
-      margin-top: 0;
+      opacity: 1 !important;
+      visibility: visible !important;
+      transition: none;
       padding: 7px 10px;
       font-size: 1rem;
       font-weight: bold;
-      background-color: yellow;
-      color: black;
+      background-color: #000000;
+      color: #ffffff;
       border: none;
-      border-radius: 0px;
+      border-radius: 0;
       cursor: pointer;
       position: fixed;
-      bottom: 10vh;
-      left: 50%;
-      transform: translateX(-50%);
+      top: 15px;
+      right: 15px;
       z-index: 1000;
-    }
-
-    #nextButton.show {
-      opacity: 1;
-      visibility: visible;
-      transition: opacity 0.3s ease, visibility 0s linear;
     }
 
     #nextButton:hover {
       background-color: #ff1313;
-      transform: translateX(-50%) scale(1.07);
+      transform: scale(1.07);
       color: black;
     }
 
@@ -86,15 +78,15 @@
       #nextButton {
         font-size: 0.9rem;
         padding: 5px 8px;
-        bottom: 5vh;
-        z-index: 1000;
+        top: 10px;
+        right: 10px;
       }
     }
 
     @media (hover: none) {
       #nextButton:hover {
         background-color: unset;
-        transform: translateX(-50%);
+        transform: none;
       }
     }
   </style>
@@ -103,7 +95,7 @@
   <div id="titleBox"></div>
   <div id="typewriterBox"></div>
   <audio id="bgm" src="/BGM/8bit Bossa.mp3" loop preload="auto"></audio>
-  <button id="nextButton">다음</button>
+  <button id="nextButton">.</button>
 
   <script>
     const textList = [
@@ -141,38 +133,36 @@
     let typing = false;
     let bgmStarted = false;
 
-    async function typeText(text, delay = 30) { // delay 매개변수 추가 (기본값 40ms)
-  box.textContent = '';
-  typing = true;
-  for (let i = 0; i <= text.length; i++) {
-    box.textContent = text.substring(0, i);
-    await new Promise(res => setTimeout(res, delay)); // 딜레이로 속도 조절
-  }
-  typing = false;
-}
+    async function typeText(text, delay = 30) {
+      box.textContent = '';
+      typing = true;
+      for (let i = 0; i <= text.length; i++) {
+        box.textContent = text.substring(0, i);
+        await new Promise(res => setTimeout(res, delay));
+      }
+      typing = false;
+    }
 
     async function showPage(i) {
-      button.classList.remove('show');
       titleBox.textContent = textList[i].title;
       await typeText(textList[i].content);
       button.textContent = i < textList.length - 1 ? "다음" : "완료";
-      button.classList.add('show');
-      console.log(`Page ${i}: Button should be visible with 'show' class`);
     }
 
     function handleNext(e) {
       e.preventDefault();
       if (typing) return;
+
       if (!bgmStarted) {
         bgm.volume = 0.5;
         bgm.play().catch(err => console.warn("🔇 자동재생 차단:", err));
         bgmStarted = true;
       }
+
       index++;
       if (index < textList.length) {
         showPage(index);
       } else {
-        button.classList.remove('show');
         titleBox.textContent = "GAME OVER";
         box.textContent = "CLEAR";
       }
@@ -181,7 +171,7 @@
     button.addEventListener('click', handleNext);
     button.addEventListener('touchstart', handleNext);
 
-    // 첫 페이지
+    // 첫 페이지 표시
     showPage(index);
   </script>
 </body>

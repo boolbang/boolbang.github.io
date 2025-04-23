@@ -131,8 +131,8 @@ header p {
   font-size: 0.2rem;
   font-weight: 300;
   color: #222;
-  font-family: 'Press Start 2P';
-  src: url('../fonts/PressStart2P-Regular.woff2') format('woff2');
+  /* font-family: 'Press Start 2P';
+  src: url('../fonts/PressStart2P-Regular.woff2') format('woff2'); */
 }
 
 /* 메인 컨테이너 */
