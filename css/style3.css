@@ -12,9 +12,27 @@
   /* =============================
      Pretendard – 한글 + 본문용 폰트
      ============================= */
-  @font-face {
+
+     @font-face {
+      font-family: 'Pretendard';
+      src: url('../fonts/Pretendard-ExtraLight.woff2') format('woff2');
+      font-weight: 200;
+      font-style: normal;
+      font-display: swap;
+    }
+
+
+    @font-face {
+      font-family: 'Pretendard';
+      src: url('../fonts/Pretendard-Light.woff2') format('woff2');
+      font-weight: 300;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face { 
     font-family: 'Pretendard';
-    src: url('../fonts/PretendardStd-Regular.woff') format('woff');
+    src: url('../fonts/Pretendard-Regular.woff2') format('woff2');
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -22,17 +40,25 @@
   
   @font-face {
     font-family: 'Pretendard';
-    src: url('../fonts/PretendardStd-Medium.woff') format('woff');
+    src: url('../fonts/Pretendard-Medium.woff2') format('woff2');
     font-weight: 500;
     font-style: normal;
   }
   
-  @font-face {
-    font-family: 'Pretendard';
-    src: url('../fonts/PretendardStd-Bold.woff') format('woff');
-    font-weight: 700;
-    font-style: normal;
+  
+  table, body, td, th {
+    font-family: 'Pretendard', sans-serif;
+    font-weight: 400;
   }
+  
+  #three-container pre {
+    font-family: monospace !important;
+    font-size: 8px !important;
+    line-height: 8px !important;
+    letter-spacing: normal !important;
+    word-spacing: normal !important;
+  }
+  
   
 /* =============================
    Press Start 2P 적용 클래스
