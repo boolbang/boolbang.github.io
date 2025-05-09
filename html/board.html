@@ -177,10 +177,30 @@
   height: 100%;
   border: 0;
 }
+.home-button {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      background-color: #808080;
+      color: #ffffff;
+      padding: 5px 5px;
+      font-size: 0.5rem;
+      border: 2px solid #ffffff;
+      text-decoration: none;
+      z-index: 10000;
+      box-shadow: 0px 0px 0px #000;
+      transition: background-color 0.2s;
+    }
 
+    .home-button:hover {
+      background-color: #ffe600;
+      color: #000;
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body>
+  <a href="/boolbang.github.io/" class="home-button">HOME</a>
 <div id="textBanner">
   <div class="text-slide-wrap">
     <div class="text-slide-track">

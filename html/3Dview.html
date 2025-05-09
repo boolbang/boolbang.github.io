@@ -35,10 +35,30 @@
       font-size: 1.2rem;
       color: #fff;
     } */
-    
+    .home-button {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      background-color: #808080;
+      color: #ffffff;
+      padding: 5px 5px;
+      font-size: 0.5rem;
+      border: 2px solid #ffffff;
+      text-decoration: none;
+      z-index: 10000;
+      box-shadow: 0px 0px 0px #000;
+      transition: background-color 0.2s;
+    }
+
+    .home-button:hover {
+      background-color: #ffe600;
+      color: #000;
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body>
+  <a href="/boolbang.github.io/" class="home-button">HOME</a>
   <!-- Three.js 및 로더 CDN을 script 방식으로 로드 -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/examples/js/loaders/GLTFLoader.js"></script>
