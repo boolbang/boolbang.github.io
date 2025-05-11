@@ -227,40 +227,56 @@ a:hover {
    ============================= */
 @media (max-width: 767px) {
   body {
-    font-size: 1.1rem;
-    padding: 10px;
+    font-size: 0.9rem;
+    padding: 8px;
+    background-color: #e0e0e0;
   }
+
   h2 {
-    font-size: 1.5rem;
-  }
-  table {
-    font-size: 1rem;
-  }
-  .modal-content {
-    width: 95%;
-    max-width: none;
-    font-size: 1rem;
-    padding: 16px;
-    border-radius: 6px;
-  }
-  #modalTitle {
     font-size: 1.2rem;
+    margin-top: 1rem;
   }
-  #modalContent {
-    font-size: 0.95rem;
+
+  table {
+    font-size: 0.8rem;
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
   }
-  #closeButton {
-    padding: 8px 10px;
-    font-size: 1rem;
+
+  th, td {
+    padding: 4px 6px;
   }
+
+  .retro-box {
+    width: 100%;
+    padding: 1rem;
+    margin: 1rem auto;
+    overflow-x: auto;
+  }
+
   .text-slide-track span {
+    font-size: 0.75rem;
+    margin: 0 1.2rem;
+    letter-spacing: 0.5px;
+  }
+
+  .modal-content {
+    font-size: 0.9rem;
+    padding: 1rem;
+    width: 95%;
+  }
+
+  #modalTitle {
     font-size: 1rem;
   }
-  .home-button {
-    font-size: 0.5rem;
-    padding: 5px 7px;
+
+  #modalContent {
+    font-size: 0.85rem;
   }
-  .youtube-wrap iframe {
-    border-radius: 6px;
+
+  .home-button {
+    font-size: 0.6rem;
+    padding: 4px 6px;
   }
 }
