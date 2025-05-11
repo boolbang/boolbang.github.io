@@ -6,70 +6,63 @@
   <link rel="stylesheet" href="/css/fonts.css">
   <title>불방 이력서</title>
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: black;
-      color: rgb(0, 255, 64);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      overflow: hidden;
-      text-align: center;
-    }
+ body {
+  margin: 0;
+  padding: 0;
+  background: black;
+  color: rgb(0, 255, 64);
+  text-align: center;
+  overflow-y: auto; /* 내용 많아지면 스크롤 */
+  font-family: Pretendard, sans-serif;
+}
 
-    #titleBox {
-      font-size: 1.7rem;
-      margin-bottom: 3.8rem;
-      min-height: 2.5rem;
-      color: rgb(0, 255, 64);
-      font-weight: bold;
-      margin-top: -5vh;
-    }
+#contentWrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+  box-sizing: border-box;
+  max-width: 900px;
+  margin: 0 auto;
+}
 
-    #typewriterBox {
-      max-width: 90%;
-      width: 900px;
-      font-size: 1.5rem;
-      line-height: 2.5rem;
-      white-space: pre-wrap;
-      min-height: 150px;
-      margin-top: -3vh;
-    }
+#titleBox {
+  font-size: 1.7rem;
+  margin-bottom: 1.8rem;
+  color: rgb(0, 255, 64);
+  font-weight: bold;
+}
 
-    #nextButton {
-  position: fixed;
-  top: 15px;
-  right: 15px;
-  z-index: 1000;
+#typewriterBox {
+  font-size: 1.5rem;
+  line-height: 2.5rem;
+  white-space: pre-wrap;
+  min-height: 150px;
+  max-width: 90%;
+}
+
+#nextButton {
+  margin-top: 3rem;
   padding: 7px 10px;
   font-size: 1rem;
   font-weight: bold;
-  background-color: #ffffff;
+  background-color: #a0a0a0;
   color: #000000;
   border: none;
-  border-radius: 0;
   cursor: pointer;
-
-  /* 고정 보이기 안정화 */
-  display: block;
-  opacity: 1 !important;
-  visibility: visible !important;
-  pointer-events: auto;
+  transition: background-color 0.2s ease;
 }
 
-    #nextButton:hover {
-      background-color: #ff1313;
-      transform: scale(1.07);
-      color: black;
-    }
+#nextButton:hover {
+  background-color: #ff1313;
+}
 
     @media (max-width: 800px) {
       #titleBox {
         font-size: 1.1rem;
-        margin-bottom: 2.8rem;
+        margin-bottom: 3.8rem;
       }
 
       #typewriterBox {
@@ -95,10 +88,13 @@
   </style>
 </head>
 <body>
-  <div id="titleBox"></div>
-  <div id="typewriterBox"></div>
+ <div id="contentWrapper">
+    <div id="titleBox"></div>
+    <div id="typewriterBox"></div>
+    <button id="nextButton">다음</button>
+  </div>
   <audio id="bgm" src="/BGM/8bit Bossa.mp3" loop preload="auto"></audio>
-  <button id="nextButton">다음</button>
+  
 
   <script>
     const textList = [
@@ -128,88 +124,90 @@
       }
     ];
 
-    const titleBox = document.getElementById('titleBox');
-    const box = document.getElementById('typewriterBox');
-    const button = document.getElementById('nextButton');
-    const bgm = document.getElementById('bgm');
-    let index = 0;
-    let typing = false;
-    let bgmStarted = false;
+  const titleBox = document.getElementById('titleBox');
+  const box = document.getElementById('typewriterBox');
+  const button = document.getElementById('nextButton');
+  const bgm = document.getElementById('bgm');
 
-    async function typeText(text, delay = 30) {
-      box.textContent = '';
-      typing = true;
-      const safeDelay = text.length > 500 ? 10 : delay;
-      for (let i = 0; i <= text.length; i++) {
-        box.textContent = text.substring(0, i);
-        await new Promise(res => setTimeout(res, safeDelay));
+  let index = 0;
+  let typing = false;
+  let bgmStarted = false;
+
+  // 💡 모바일 뷰포트 높이 보정
+  function fixViewportHeight() {
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+  }
+  window.addEventListener('resize', fixViewportHeight);
+  window.addEventListener('orientationchange', fixViewportHeight);
+  fixViewportHeight();
+
+  // ⌨️ 타이핑 애니메이션
+  async function typeText(text, delay = 30) {
+    box.textContent = '';
+    typing = true;
+    const safeDelay = text.length > 500 ? 10 : delay;
+    for (let i = 0; i <= text.length; i++) {
+      box.textContent = text.substring(0, i);
+      await new Promise(res => setTimeout(res, safeDelay));
+    }
+    typing = false;
+
+    // ✅ 타이핑 끝나면 버튼 다시 보이도록 스타일 재적용 (혹시 사라졌다면)
+    forceShowButton();
+  }
+
+  async function showPage(i) {
+    titleBox.textContent = textList[i].title;
+    await typeText(textList[i].content);
+    button.textContent = i < textList.length - 1 ? "다음" : "완료";
+  }
+
+  function forceShowButton() {
+    // 💡 버튼이 안 보이는 상태일 경우 강제로 보여줌
+    button.style.display = 'block';
+    button.style.opacity = '1';
+    button.style.visibility = 'visible';
+    button.style.pointerEvents = 'auto';
+    button.style.transform = 'translateZ(0)';
+  }
+
+  function handleNext(e) {
+    e.preventDefault();
+    if (typing) return;
+
+    if (!bgmStarted) {
+      bgm.volume = 0.5;
+      try {
+        bgm.play();
+      } catch (e) {
+        console.warn("🔇 BGM autoplay 차단됨");
       }
-      typing = false;
+      bgmStarted = true;
     }
 
-    async function showPage(i) {
-      titleBox.textContent = textList[i].title;
-      await typeText(textList[i].content);
-      button.textContent = i < textList.length - 1 ? "다음" : "완료";
-    }
-
-    function handleNext(e) {
-      e.preventDefault();
-      if (typing) return;
-
-      if (!bgmStarted) {
-        bgm.volume = 0.5;
-        try {
-          bgm.play();
-        } catch (e) {
-          console.warn("🔇 BGM autoplay 차단됨");
-        }
-        bgmStarted = true;
-      }
-
+    if (index < textList.length - 1) {
       index++;
-      if (index < textList.length) {
-        showPage(index);
-      } else {
-        titleBox.textContent = "GAME OVER";
-        box.textContent = "CLEAR";
-      }
-    }
-
-    button.addEventListener('click', handleNext);
-    button.addEventListener('touchstart', handleNext);
-
-    window.addEventListener('DOMContentLoaded', () => {
       showPage(index);
-    });
-    function handleNext(e) {
-  e.preventDefault();
-  if (typing) return;
-
-  if (!bgmStarted) {
-    bgm.volume = 0.5;
-    try {
-      bgm.play();
-    } catch (e) {
-      console.warn("🔇 BGM autoplay 차단됨");
+    } else if (index === textList.length - 1) {
+      index++;
+      titleBox.textContent = "GAME OVER";
+      box.textContent = "CLEAR";
+      button.textContent = "HOME";
+    } else {
+      window.location.href = "/boolbang.github.io/"; // 홈 링크
     }
-    bgmStarted = true;
+
+    forceShowButton(); // ⬅️ 다음 눌렀을 때도 항상 버튼 다시 보이게
   }
 
-  if (index < textList.length - 1) {
-    index++;
+  button.addEventListener('click', handleNext);
+  button.addEventListener('touchstart', handleNext);
+
+  window.addEventListener('DOMContentLoaded', () => {
     showPage(index);
-  } else if (index === textList.length - 1) {
-    // 마지막 페이지 → CLEAR 표시
-    index++;
-    titleBox.textContent = "GAME OVER";
-    box.textContent = "CLEAR";
-    button.textContent = "HOME";
-  } else {
-      window.location.href = "/boolbang.github.io/"; // 원하는 경로로 변경 가능
-  }
-}
-
-  </script>
+    forceShowButton();
+  });
+</script>
 </body>
 </html>
