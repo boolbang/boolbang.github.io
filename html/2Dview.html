@@ -90,19 +90,29 @@
       width: 220px;
       height: 15px;
       background: #444;
+    
       z-index: 9999;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    #customFill {
+      height: 100%;
+      background: #00ff00;
+      width: 50%;
     }
 
     #customKnob {
       position: absolute;
-      top: 1.0px;
+      top: 0px;
       left: 50%;
       width: 12px;
-      height: 12px;
-      background: #00ff00;
-      border-radius: 50%;
+      height: 15px;
+      background: #ffffff;
+      
       cursor: pointer;
       transform: translateX(-50%);
+      touch-action: none;
     }
   </style>
 </head>
@@ -112,11 +122,14 @@
   <button id="nextButton">BGM</button>
   <audio id="bgm" src="/BGM/8bit Bossa.mp3" loop preload="auto"></audio>
   <div id="container"></div>
+
+  <!-- ✅ 슬라이더 구성 -->
   <div id="customSlider">
+    <div id="customFill"></div>
     <div id="customKnob"></div>
   </div>
 
-  
+  <!-- 라이브러리 -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/examples/js/renderers/CSS3DRenderer.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/examples/js/controls/OrbitControls.js"></script>
@@ -176,7 +189,6 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-
     const bgm = document.getElementById('bgm');
     const nextButton = document.getElementById('nextButton');
     let isPlaying = false;
@@ -195,26 +207,37 @@
       }
     });
 
+    // ✅ 슬라이더 조작 (마우스 + 터치)
     const slider = document.getElementById('customSlider');
     const knob = document.getElementById('customKnob');
+    const fill = document.getElementById('customFill');
     let isDragging = false;
 
-    knob.addEventListener('mousedown', (e) => {
-      isDragging = true;
-    });
-
-    window.addEventListener('mouseup', () => {
-      isDragging = false;
-    });
-
-    window.addEventListener('mousemove', (e) => {
-      if (!isDragging) return;
+    function updateSlider(clientX) {
       const rect = slider.getBoundingClientRect();
-      let x = e.clientX - rect.left;
+      let x = clientX - rect.left;
       x = Math.max(0, Math.min(x, rect.width));
       knob.style.left = `${x}px`;
+      fill.style.width = `${x}px`;
       const ratio = (x / rect.width - 0.5) * 2; // -1 ~ 1
-      group.rotation.y = ratio * Math.PI * 0.3; // 회전 각도 제한
+      group.rotation.y = ratio * Math.PI * 0.3;
+    }
+
+    knob.addEventListener('mousedown', () => isDragging = true);
+    window.addEventListener('mouseup', () => isDragging = false);
+    window.addEventListener('mousemove', (e) => {
+      if (isDragging) updateSlider(e.clientX);
+    });
+
+    knob.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      e.preventDefault();
+    });
+    window.addEventListener('touchend', () => isDragging = false);
+    window.addEventListener('touchmove', (e) => {
+      if (isDragging && e.touches.length > 0) {
+        updateSlider(e.touches[0].clientX);
+      }
     });
   </script>
 </body>
