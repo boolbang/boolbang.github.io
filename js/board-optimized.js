@@ -161,6 +161,7 @@ function renderPostPage() {
 
 function closeModal() {
   document.getElementById('postModal').style.display = 'none';
+   fetchPosts();
 }
 
 function formatDate(timestamp) {
