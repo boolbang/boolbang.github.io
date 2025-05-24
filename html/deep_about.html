@@ -112,11 +112,11 @@
       },
       {
         title: "인터랙션, 코딩",
-        content: "3D와 영상 등을 다루면서 인터랙션에 대한 관심이 생기며, 자연스럽게 코딩에 빠져들게 되었습니다. JS 기반은 풀스택으로 다루고 있으며, C#은 Unity를 위해 사용하고 있습니다. 설치 없이 브라우저 상에서 동작할 수 있는 인터랙션에 대한 관심 때문에 WebGL과 WebGPU, 그리고 Unity를 잘 다룹니다. C++도 계속 공부하고 있으나, 저는 JS와 C#을 아주 잘 다루는 프로그래머를 목표로 하고 있어서 그쪽에 더 정진하고 있습니다."
+        content: "3D와 영상 등을 다루면서 인터랙션에 대한 관심이 생기며, 자연스럽게 코딩에 빠져들게 되었습니다. 웹은 풀스택으로 다루고 있으며, C#은 Unity를 위해 사용하고 있습니다. 브라우저 상에서 동작할 수 있는 인터랙션에 대한 관심 때문에 WebGL과 WebGPU, 그리고 PICO-8을 잘 가지고 놉니다. 물론 C언어도 공부하고 있으나, 저희는 크리에이티브한 작업에 관심이 많습니다. 관련해서 프로그래밍을 다루며, 소프트웨어 개발도 진행하고 있습니다."
       },
       {
         title: "게임",
-        content: "저는 '기승전게임', 그야말로 게임 제작을 위해 인생을 살아왔다고 생각합니다. 게임을 즐길 줄 알며, 프로그래밍은 물론 아트워크까지 소화 가능하니, 잘 만들어야 하지 않겠습니까? 언젠가는 좋은 게임을 만들어 공개하고, 인정받고, 돈 많이 버는 그날을 생각하며 살고 있습니다."
+        content: "저는 '기승전게임', 그야말로 게임 제작을 위해 인생을 살아왔다고 생각합니다. 게임을 즐길 줄 알며, 프로그래밍은 물론 아트워크까지 소화 가능하니, 잘 만들어야 하지 않겠습니까? :) 언젠가는 좋은 게임을 만들어 공개하고, 인정받고, 돈 많이 버는 그날을 생각하며 살고 있습니다."
       },
       {
         title: "♥ Thank You ♥",
@@ -133,7 +133,7 @@
   let typing = false;
   let bgmStarted = false;
 
-  // 💡 모바일 뷰포트 높이 보정
+  
   function fixViewportHeight() {
     let vh = window.innerHeight * 0.01;
     document.documentElement.style.setProperty('--vh', `${vh}px`);
@@ -142,7 +142,7 @@
   window.addEventListener('orientationchange', fixViewportHeight);
   fixViewportHeight();
 
-  // ⌨️ 타이핑 애니메이션
+  
   async function typeText(text, delay = 30) {
     box.textContent = '';
     typing = true;
@@ -153,7 +153,7 @@
     }
     typing = false;
 
-    // ✅ 타이핑 끝나면 버튼 다시 보이도록 스타일 재적용 (혹시 사라졌다면)
+    
     forceShowButton();
   }
 
@@ -164,7 +164,6 @@
   }
 
   function forceShowButton() {
-    // 💡 버튼이 안 보이는 상태일 경우 강제로 보여줌
     button.style.display = 'block';
     button.style.opacity = '1';
     button.style.visibility = 'visible';
@@ -198,7 +197,7 @@
       window.location.href = "/boolbang.github.io/"; // 홈 링크
     }
 
-    forceShowButton(); // ⬅️ 다음 눌렀을 때도 항상 버튼 다시 보이게
+    forceShowButton(); // 
   }
 
   button.addEventListener('click', handleNext);
