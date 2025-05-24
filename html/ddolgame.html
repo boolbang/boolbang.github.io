@@ -149,7 +149,7 @@
     <button id="btn-run">Run</button>
   </div>
 
-<!-- ✅ 흐림 + 랭킹 컨테이너를 통합하는 오버레이 추가 -->
+
 <div id="rankingOverlay" style="display:none;">
   <div id="rankingContainer">
     <h2>🏆TOP 10</h2>
@@ -251,13 +251,15 @@ window.saveScore = async function(name, score) {
       color: 'white'
     });
 
-    stick.on('move', (evt, data) => {
-      const angle = data.angle.degree;
-      moveForward = angle > 45 && angle < 135;
-      moveBackward = angle > 225 && angle < 315;
-      moveLeft = angle > 135 && angle < 225;
-      moveRight = angle < 45 || angle > 315;
-    });
+  stick.on('move', (evt, data) => {
+  const angle = data.angle.degree;
+
+  moveForward = angle > 20 && angle < 160;
+  moveBackward = angle > 200 && angle < 340;
+  moveLeft = angle > 110 && angle < 250;
+  moveRight = angle < 70 || angle > 290;
+});
+
 
     stick.on('end', () => {
       moveForward = moveBackward = moveLeft = moveRight = false;
