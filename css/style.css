@@ -151,7 +151,7 @@ header p {
   max-width: 600px;
   margin: 2rem auto;
   padding: 1rem;
-  background-color: #000000;
+  background-color: #120035;
   border: 1px solid #ffffff;
   border-radius: 0;
   color: #ffffff;
@@ -161,7 +161,7 @@ header p {
   max-width: 600px;
   margin: 2rem auto;
   padding: 1rem;
-  background-color: #000000;
+  background-color: #120035;
   border: 1px solid #ffffff;
   border-radius: 0;
   
@@ -178,8 +178,8 @@ header p {
   max-width: 600px;
   margin: 2rem auto;
   padding: 1rem;
-  background-color: #ffffff;
-  border: 1px solid #000000;
+  background-color: #120035;
+  border: 1px solid #fffdfd;
   border-radius: 0;
 }
 
@@ -188,7 +188,7 @@ header p {
   font-weight: bold;
   margin: 0 0 0.5rem;
   padding: 2px 0px;
-  color: #34d0ff;
+  color: #ffffff;
   border-bottom: 0px solid #000000;
 }
 
@@ -198,8 +198,8 @@ header p {
   font-weight: bold;
   margin: 0 0 0.5rem;
   padding: 2px 0px;
-  color: #000000;
-  border-bottom: 1px solid #000000;
+  color: #ffffff;
+  border-bottom: 1px solid #ffffff;
 }
 
 .notice-section ul,
@@ -212,7 +212,7 @@ header p {
 .recent-posts li {
   line-height: 1.6;
   padding: 0.2rem 0;
-  border-bottom: 1px solid #000000;
+  border-bottom: 1px solid #ffffff;
   
 }
 
@@ -223,7 +223,7 @@ header p {
   font-weight: normal;
   display: inline-block;
   width: auto;
-  color: #000;
+  color: #ffffff;
   text-decoration: none;
 }
 
