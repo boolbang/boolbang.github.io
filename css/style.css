@@ -147,9 +147,33 @@ header p {
   text-align: center;
   border: 1px solid #000000;
 }
-
+.intro{
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background-color: #000000;
+  border: 1px solid #ffffff;
+  border-radius: 0;
+  color: #ffffff;
+}
 /* 공지사항 & 최근 게시글 공통 */
-.notice-section,
+.notice-section{
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background-color: #000000;
+  border: 1px solid #ffffff;
+  border-radius: 0;
+  
+}
+.link-a, .link-b {
+  display: inline-block;
+  margin: 0 0.3rem;
+  text-decoration: none;
+  border: none;
+  color: #ffee04;
+}
+
 .recent-posts {
   max-width: 600px;
   margin: 2rem auto;
@@ -159,14 +183,22 @@ header p {
   border-radius: 0;
 }
 
-.notice-section h3,
+.notice-section h3 {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0 0 0.5rem;
+  padding: 2px 0px;
+  color: #34d0ff;
+  border-bottom: 0px solid #000000;
+}
+
 .recent-posts h3 {
   
   font-size: 18px;
   font-weight: bold;
   margin: 0 0 0.5rem;
-  padding: 2px 0;
-  color: #222;
+  padding: 2px 0px;
+  color: #000000;
   border-bottom: 1px solid #000000;
 }
 
@@ -181,6 +213,7 @@ header p {
   line-height: 1.6;
   padding: 0.2rem 0;
   border-bottom: 1px solid #000000;
+  
 }
 
 /* 공통 링크 스타일 */
