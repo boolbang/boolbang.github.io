@@ -8,7 +8,7 @@
   <style>
     body {
       margin: 0;
-      background-color: #8400ff;
+      background-color: #9fe4ff;
       min-height: 100vh;
     }
 
@@ -21,7 +21,7 @@
     /* 상단 전체 너비를 차지하는 Game List */
     .sidebar {
       width: 100%;
-      background-color: hsl(118, 100%, 50%);
+      background-color: hsl(118, 100%, 55%);
       color: rgb(12, 12, 12);
       padding: 1rem;
       text-align: center;
@@ -138,16 +138,16 @@
       <h3>
         <span class="retro">GAME LIST</h3></span>
       <div class="game-list">
-        <div class="game-item" onclick="showGame('../images/game_horse.jpg', 'horsegame.html')">경마</div>
+        <div class="game-item" onclick="showGame('../images/game_horse.jpg', 'horsegame.html')">경마 시뮬레이터</div>
         <div class="game-item" onclick="showGame('../images/game_ddol.png', 'ddolgame.html')">달려라 똘배!</div>
-        <div class="game-item" onclick="showGame('../images/game_main.png', 'game3.html')">대작곧출시됨</div>
+        <div class="game-item" onclick="showGame('../images/game_main.png', 'slot_index.html')">지옥의 슬롯머신</div>
       </div>
     </div>
 
     <div class="content">
       <div class="preview-wrapper">
-        <a id="previewLink" href="horsegame.html" target="_blank" class="preview-link">
-          <img id="preview" src="../images/game_main2.png" alt="게임 미리보기" class="preview-image" />
+        <a id="previewLink"  class="preview-link">
+          <img id="preview" src="../images/doom.gif" alt="게임 미리보기" class="preview-image" />
         </a>
         <p id="description" class="description">상단 메뉴에서 선택하세요</p>
       </div>
@@ -169,7 +169,7 @@
       } else if (imageSrc === '../images/game_ddol.png') {
         description.textContent = '들판을 달리는 똘배를 통해 힐링하세요';
       } else if (imageSrc === '../images/game_main.png') {
-        description.textContent = '2025년에 괜츈한 게임이 출시될겁니다.';
+        description.textContent = '도박해서 돈 갚아~';
       } else {
         description.textContent = '';
       }

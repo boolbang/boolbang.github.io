@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Slot Machine</title>
+  <style>
+    body {
+      background-color: #000;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+      flex-direction: column;
+      transition: all 0.3s ease;
+    }
+
+  #slot-machine {
+      background-color: #000;
+      padding: 20px;
+      border-radius: 0;
+      box-shadow: 0 0 0px;
+      z-index: 10;
+      position: relative;
+      border: 1px solid;
+    }
+
+    .reel-container {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin-top: 20px;
+    }
+
+    .reel {
+      width: 60px;
+      height: 180px;
+      border: 2px solid currentColor;
+      background-color: #000000;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .symbol-strip {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      transition: top 1s ease-out;
+    }
+
+    .symbol {
+      width: 100%;
+      height: 60px;
+      line-height: 60px;
+      font-size: 24px;
+      text-align: center;
+    }
+
+    .yellow-win {
+      color: yellow !important;
+      font-weight: bold;
+    }
+
+    button {
+      margin: 5px;
+      padding: 7px 10px;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      transition: all 0.2s ease;
+    }
+
+    #result, #money, #stage-info, #spin-count {
+      margin-top: 10px;
+      font-size: 18px;
+    }
+
+    #guide {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    #bet-options {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center; 
+      gap: 2px;                
+      margin-top: 10px;
+      
+      
+      
+    }
+
+    /* Theme: x1 (흰색) */
+    .theme-x1 {
+      color: #ffbb02;
+    }
+    .theme-x1 #slot-machine {
+      border-color: #ffbb02;
+    }
+    .theme-x1 button {
+      background-color: #ff0000;
+      color: #000;
+    }
+    .theme-x1 button:hover {
+      background-color: #e100ff;
+    }
+
+    /* Theme: x2 (녹색) */
+    .theme-x2 {
+      color: #0f0;
+    }
+    .theme-x2 #slot-machine {
+      border-color: #0f0;
+    }
+    .theme-x2 button {
+      background-color: #ff0000;
+      color: #000;
+    }
+    .theme-x2 button:hover {
+      background-color: #e100ff;
+    }
+
+    /* Theme: x5 (빨간색) */
+    .theme-x5 {
+      color: #f00;
+    }
+    .theme-x5 #slot-machine {
+      border-color: #f00;
+    }
+    .theme-x5 button {
+      background-color: #f00;
+      color: #000;
+    }
+    .theme-x5 button:hover {
+      background-color: #e100ff;
+    }
+  </style>
+</head>
+<body class="theme-x1">
+  <audio id="bgm" src="../BGM/MA_Elena_Anisimova_Night_Movements_Main.mp3" loop></audio>
+  <div id="slot-machine">
+    <img src="../images/bluefire.gif" alt="불" style="width: 40px; vertical-align: middle;" />
+    <img src="../images/bluefire.gif" alt="불" style="width: 40px; vertical-align: middle;" />
+    <img src="../images/bluefire.gif" alt="불" style="width: 40px; vertical-align: middle;" />
+    <h1>지옥의 슬롯머신</h1>
+    <div id="stage-info"></div>
+    <div id="spin-count"></div>
+    <div class="reel-container" id="reels"></div>
+
+    <div id="bet-options">
+      
+      <button onclick="setBet(1)">1배</button>
+      <button onclick="setBet(2)">2배</button>
+      <button onclick="setBet(5)">5배</button>
+    </div>
+
+    <button id="spin-button">돌려!</button>
+    <button id="restart-button" style="display:none;">Restart</button>
+
+    <div id="result"></div>
+    <div id="money"></div>
+    <div id="guide">
+      <strong>룰:</strong> <span id="symbol-guide"></span>
+    </div>
+  </div>
+
+  <script>
+    const symbols = ['★', '♦', '♠', '♣', '♥'];
+    const symbolScoresByStage = {
+      1: { '★': 500, '♦': 70, '♠': 50, '♣': 30, '♥': 20 },
+      2: { '★': 700, '♦': 100, '♠': 70, '♣': 40, '♥': 30 },
+      3: { '★': 1000, '♦': 200, '♠': 100, '♣': 60, '♥': 40 },
+    };
+
+    let money = 100, stage = 1, target = 500, spinCount = 0, betMultiplier = 1;
+    let bgmStarted = false;
+
+    const reelsContainer = document.getElementById('reels');
+    const resultDisplay = document.getElementById('result');
+    const moneyDisplay = document.getElementById('money');
+    const spinButton = document.getElementById('spin-button');
+    const restartButton = document.getElementById('restart-button');
+    const stageInfoDisplay = document.getElementById('stage-info');
+    const spinCountDisplay = document.getElementById('spin-count');
+    const symbolGuide = document.getElementById('symbol-guide');
+    const bgm = document.getElementById('bgm');
+    bgm.volume = 0.3;
+
+    const reelCount = 3;
+    const rowCount = 3;
+    const spinSymbolsCount = 30;
+    let strips = [];
+
+    function setBet(x) {
+      betMultiplier = x;
+      document.body.classList.remove('theme-x1', 'theme-x2', 'theme-x5');
+      document.body.classList.add(`theme-x${x}`);
+      updateDisplay();
+    }
+
+    function currentBet() {
+      return (10 * Math.pow(2, stage - 1)) * betMultiplier;
+    }
+
+    function getScores() {
+      return symbolScoresByStage[stage] || symbolScoresByStage[3];
+    }
+
+    function updateSymbolGuide() {
+      const scores = getScores();
+      symbolGuide.textContent = symbols.map(s => `${s}=${scores[s] * betMultiplier}`).join(', ');
+    }
+
+    function updateStageInfo() {
+      stageInfoDisplay.textContent = `Stage ${stage} | 빚: ${target}만원`;
+    }
+
+    function updateDisplay() {
+      moneyDisplay.textContent = `자금: ${money}만원`;
+      spinCountDisplay.textContent = `베팅금액: ${currentBet()}만원`;
+      updateStageInfo();
+      updateSymbolGuide();
+    }
+
+    function initReels() {
+      reelsContainer.innerHTML = '';
+      strips = [];
+      for (let col = 0; col < reelCount; col++) {
+        const reel = document.createElement('div');
+        reel.className = 'reel';
+        const strip = document.createElement('div');
+        strip.className = 'symbol-strip';
+        for (let i = 0; i < spinSymbolsCount; i++) {
+          const symbol = document.createElement('div');
+          symbol.className = 'symbol';
+          symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+          strip.appendChild(symbol);
+        }
+        reel.appendChild(strip);
+        reelsContainer.appendChild(reel);
+        strips.push(strip);
+      }
+    }
+
+    function gameOver() {
+      resultDisplay.textContent = '파산! 사채업자 등장.';
+      spinButton.disabled = true;
+      restartButton.style.display = 'inline-block';
+    }
+
+    function nextStage() {
+      stage++;
+      target *= 2;
+      resultDisplay.textContent = `✔️ 빚 갚음! 다음 빚: ${target}만원`;
+    }
+
+    function spin() {
+      const bet = currentBet();
+      if (money < bet) return gameOver();
+
+      document.querySelectorAll('.symbol').forEach(el => el.classList.remove('yellow-win'));
+      money -= bet;
+      spinCount++;
+      updateDisplay();
+      resultDisplay.textContent = '제발~~';
+      spinButton.disabled = true;
+
+      const grid = [[], [], []];
+      const targets = [];
+
+      strips.forEach((strip, col) => {
+        const maxIndex = spinSymbolsCount - rowCount - 1;
+        const targetIndex = Math.floor(Math.random() * maxIndex) + 1;
+        const topOffset = -(targetIndex * 60);
+        strip.style.transition = 'top 0.9s ease-out';
+        strip.style.top = `${topOffset}px`;
+        targets.push(targetIndex);
+      });
+
+      setTimeout(() => {
+        for (let col = 0; col < reelCount; col++) {
+          for (let row = 0; row < rowCount; row++) {
+            const el = strips[col].children[targets[col] + row];
+            grid[col][row] = { value: el.textContent, element: el };
+          }
+        }
+
+        const lines = [
+          [grid[0][0], grid[1][0], grid[2][0]], // 가로
+          [grid[0][1], grid[1][1], grid[2][1]],
+          [grid[0][2], grid[1][2], grid[2][2]],
+          [grid[0][0], grid[0][1], grid[0][2]], // 세로
+          [grid[1][0], grid[1][1], grid[1][2]],
+          [grid[2][0], grid[2][1], grid[2][2]],
+          [grid[0][0], grid[1][1], grid[2][2]], // 대각선
+          [grid[0][2], grid[1][1], grid[2][0]]
+        ];
+
+        let totalWin = 0;
+        let winMessages = [];
+        const scoreTable = getScores();
+
+        lines.forEach(line => {
+          if (line.every(cell => cell.value === line[0].value)) {
+            const symbol = line[0].value;
+            const winScore = (scoreTable[symbol] || 0) * betMultiplier;
+            totalWin += winScore;
+            winMessages.push(`${symbol} +${winScore}`);
+            line.forEach(cell => cell.element.classList.add('yellow-win'));
+          }
+        });
+
+        if (totalWin > 0) {
+          if (Math.random() < 0.05) {
+            totalWin *= 2;
+            winMessages.push("🎉 터졌다!");
+          }
+          resultDisplay.textContent = `🎉 터졌다! ${winMessages.join(', ')}`;
+          money += totalWin;
+          if (money >= target) nextStage();
+        } else {
+          resultDisplay.textContent = '꽝!';
+        }
+
+        updateDisplay();
+        if (money < currentBet()) gameOver();
+        else spinButton.disabled = false;
+      }, 1000);
+    }
+
+    spinButton.addEventListener('click', () => {
+      if (!bgmStarted) {
+        bgm.play().catch(() => {});
+        bgmStarted = true;
+      }
+      spin();
+    });
+
+    restartButton.addEventListener('click', () => {
+      money = 100;
+      stage = 1;
+      target = 500;
+      spinCount = 0;
+      resultDisplay.textContent = '';
+      spinButton.disabled = false;
+      restartButton.style.display = 'none';
+      initReels();
+      updateDisplay();
+    });
+
+    initReels();
+    updateDisplay();
+  </script>
+</body>
+</html>
