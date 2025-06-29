@@ -25,7 +25,7 @@
       box-shadow: 0 0 0px;
       z-index: 10;
       position: relative;
-      border: 1px solid;
+      border: 5px solid;
     }
 
     .reel-container {
@@ -140,10 +140,44 @@
     .theme-x5 button:hover {
       background-color: #e100ff;
     }
+
+    @keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.yellow-win {
+  color: rgb(255, 255, 255) !important;
+  font-weight: bold;
+  animation: blink 0.5s infinite;
+}
+
+@keyframes title-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+#slot-machine h1 {
+  animation: title-blink 0.3s infinite;
+}
+
+@keyframes crazy-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+#slot-machine.crazy-blink {
+  animation: crazy-blink 0.2s infinite;
+}
+
+
   </style>
 </head>
 <body class="theme-x1">
   <audio id="bgm" src="../BGM/MA_Elena_Anisimova_Night_Movements_Main.mp3" loop></audio>
+  <audio id="click-sound" src="../BGM/btn.mp3"></audio>
+  <audio id="win-sound" src="../BGM/bonus.mp3"></audio>
+
   <div id="slot-machine">
     <img src="../images/bluefire.gif" alt="불" style="width: 40px; vertical-align: middle;" />
     <img src="../images/bluefire.gif" alt="불" style="width: 40px; vertical-align: middle;" />
@@ -171,6 +205,18 @@
   </div>
 
   <script>
+    const clickSound = document.getElementById('click-sound');
+    const winSound = document.getElementById('win-sound');
+    
+
+document.querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    clickSound.volume = 0.3
+    clickSound.currentTime = 0; // 매번 처음부터 재생
+    clickSound.play().catch(() => {}); // 모바일 제한 방지용
+  });
+});
+
     const symbols = ['★', '♦', '♠', '♣', '♥'];
     const symbolScoresByStage = {
       1: { '★': 500, '♦': 70, '♠': 50, '♣': 30, '♥': 20 },
@@ -260,79 +306,110 @@
       resultDisplay.textContent = `✔️ 빚 갚음! 다음 빚: ${target}만원`;
     }
 
-    function spin() {
-      const bet = currentBet();
-      if (money < bet) return gameOver();
+function spin() {
+  const minBet = 10 * Math.pow(2, stage - 1); // 1배 기준 베팅금
+  const bet = minBet * betMultiplier;         // 실제 베팅금
 
-      document.querySelectorAll('.symbol').forEach(el => el.classList.remove('yellow-win'));
-      money -= bet;
-      spinCount++;
-      updateDisplay();
-      resultDisplay.textContent = '제발~~';
-      spinButton.disabled = true;
+  if (money < minBet) {
+    gameOver();
+    return;
+  }
 
-      const grid = [[], [], []];
-      const targets = [];
+  if (money < bet) {
+    resultDisplay.textContent = '잔액이 부족합니다. 배율을 낮춰주세요.';
+    return;
+  }
 
-      strips.forEach((strip, col) => {
-        const maxIndex = spinSymbolsCount - rowCount - 1;
-        const targetIndex = Math.floor(Math.random() * maxIndex) + 1;
-        const topOffset = -(targetIndex * 60);
-        strip.style.transition = 'top 0.9s ease-out';
-        strip.style.top = `${topOffset}px`;
-        targets.push(targetIndex);
-      });
+  document.querySelectorAll('.symbol').forEach(el => el.classList.remove('yellow-win'));
+  money -= bet;
+  spinCount++;
+  updateDisplay();
+  resultDisplay.textContent = '제발~~';
+  spinButton.disabled = true;
 
-      setTimeout(() => {
-        for (let col = 0; col < reelCount; col++) {
-          for (let row = 0; row < rowCount; row++) {
-            const el = strips[col].children[targets[col] + row];
-            grid[col][row] = { value: el.textContent, element: el };
-          }
-        }
+  const grid = [[], [], []];
+  const targets = [];
 
-        const lines = [
-          [grid[0][0], grid[1][0], grid[2][0]], // 가로
-          [grid[0][1], grid[1][1], grid[2][1]],
-          [grid[0][2], grid[1][2], grid[2][2]],
-          [grid[0][0], grid[0][1], grid[0][2]], // 세로
-          [grid[1][0], grid[1][1], grid[1][2]],
-          [grid[2][0], grid[2][1], grid[2][2]],
-          [grid[0][0], grid[1][1], grid[2][2]], // 대각선
-          [grid[0][2], grid[1][1], grid[2][0]]
-        ];
+  strips.forEach((strip, col) => {
+    const maxIndex = spinSymbolsCount - rowCount - 1;
+    const targetIndex = Math.floor(Math.random() * maxIndex) + 1;
+    const topOffset = -(targetIndex * 60);
+    strip.style.transition = 'top 0.9s ease-out';
+    strip.style.top = `${topOffset}px`;
+    targets.push(targetIndex);
+  });
 
-        let totalWin = 0;
-        let winMessages = [];
-        const scoreTable = getScores();
-
-        lines.forEach(line => {
-          if (line.every(cell => cell.value === line[0].value)) {
-            const symbol = line[0].value;
-            const winScore = (scoreTable[symbol] || 0) * betMultiplier;
-            totalWin += winScore;
-            winMessages.push(`${symbol} +${winScore}`);
-            line.forEach(cell => cell.element.classList.add('yellow-win'));
-          }
-        });
-
-        if (totalWin > 0) {
-          if (Math.random() < 0.05) {
-            totalWin *= 2;
-            winMessages.push("🎉 터졌다!");
-          }
-          resultDisplay.textContent = `🎉 터졌다! ${winMessages.join(', ')}`;
-          money += totalWin;
-          if (money >= target) nextStage();
-        } else {
-          resultDisplay.textContent = '꽝!';
-        }
-
-        updateDisplay();
-        if (money < currentBet()) gameOver();
-        else spinButton.disabled = false;
-      }, 1000);
+  setTimeout(() => {
+    for (let col = 0; col < reelCount; col++) {
+      for (let row = 0; row < rowCount; row++) {
+        const el = strips[col].children[targets[col] + row];
+        grid[col][row] = { value: el.textContent, element: el };
+      }
     }
+
+    const lines = [
+      [grid[0][0], grid[1][0], grid[2][0]],
+      [grid[0][1], grid[1][1], grid[2][1]],
+      [grid[0][2], grid[1][2], grid[2][2]],
+      [grid[0][0], grid[0][1], grid[0][2]],
+      [grid[1][0], grid[1][1], grid[1][2]],
+      [grid[2][0], grid[2][1], grid[2][2]],
+      [grid[0][0], grid[1][1], grid[2][2]],
+      [grid[0][2], grid[1][1], grid[2][0]]
+    ];
+
+    let totalWin = 0;
+    let winMessages = [];
+    const scoreTable = getScores();
+
+    lines.forEach(line => {
+      if (line.every(cell => cell.value === line[0].value)) {
+        const symbol = line[0].value;
+        const winScore = (scoreTable[symbol] || 0) * betMultiplier;
+        totalWin += winScore;
+        winMessages.push(`${symbol} +${winScore}`);
+        line.forEach(cell => cell.element.classList.add('yellow-win'));
+    // ★ 심볼 맞출 경우 전체 반짝임 추가
+if (symbol === '★') {
+  const machine = document.getElementById('slot-machine');
+  machine.classList.add('crazy-blink');
+  setTimeout(() => machine.classList.remove('crazy-blink'), 2000);
+}
+
+  }
+});
+  
+
+if (totalWin > 0) {
+  if (Math.random() < 0.05) {
+    totalWin *= 2;
+    winMessages.push("🎉 터졌다!");
+  }
+
+  resultDisplay.textContent = `🎉 터졌다! ${winMessages.join(', ')}`;
+  money += totalWin;
+
+  // 🔊 당첨 효과음 재생
+  bgm.pause();
+  winSound.currentTime = 0;
+  winSound.play().catch(() => {});
+
+  // 효과음 끝나면 BGM 재개
+  winSound.onended = () => {
+    bgm.play().catch(() => {});
+  };
+
+  if (money >= target) nextStage();
+} else {
+  resultDisplay.textContent = '꽝!';
+}
+
+    updateDisplay();
+    if (money < minBet) gameOver();
+    else spinButton.disabled = false;
+  }, 1000);
+}
+
 
     spinButton.addEventListener('click', () => {
       if (!bgmStarted) {
