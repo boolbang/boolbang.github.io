@@ -214,16 +214,17 @@ a:hover {
 /* =============================
    PC 전용 스타일
    ============================= */
-@media (min-width: 768px) {
+@media (min-width: 1080px) {
   .modal-content {
     max-width: 900px;
+    max-height: 80vh;
   }
 }
 
 /* =============================
    모바일 반응형 스타일
    ============================= */
-@media (max-width: 767px) {
+@media (max-width: 1079px) {
   body {
     font-size: 1.1rem;
     padding: 10px;
@@ -235,11 +236,12 @@ a:hover {
     font-size: 1rem;
   }
   .modal-content {
-    width: 95%;
+    width: 90%;
     max-width: none;
     font-size: 1rem;
     padding: 16px;
     border-radius: 6px;
+    max-height: 92vh;
   }
   #modalTitle {
     font-size: 1.2rem;
@@ -256,7 +258,7 @@ a:hover {
   }
   .home-button {
     font-size: 0.5rem;
-    padding: 5px 7px;
+    padding: 3px 5px;
   }
   .youtube-wrap iframe {
     border-radius: 6px;

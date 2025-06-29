@@ -1,126 +1,123 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BoolBang Game</title>
-  <link rel="stylesheet" href="/css/fonts.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BOOLBANG GAMES</title>
+  <link rel="stylesheet" href="../css/fonts.css">
+  
   <style>
     body {
       margin: 0;
-      background-color: #9fe4ff;
+      background-color: #1d1d1d;
+      color: #ffffff;
+      font-family: 'Pretendard', monospace;
       min-height: 100vh;
-    }
-
-    .container {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    /* 상단 전체 너비를 차지하는 Game List */
-    .sidebar {
-      width: 100%;
-      background-color: hsl(118, 100%, 55%);
-      color: rgb(12, 12, 12);
-      padding: 1rem;
-      text-align: center;
-    }
-
-    .sidebar h2 {
-      font-size: 0.8rem;
-      margin: 0;
-    }
-
-    .game-list {
       display: flex;
       justify-content: center;
-      gap: 1.5rem;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-
-    .game-item {
-      cursor: pointer;
-      font-size: 0.9rem;
-      padding: 0.3rem 0.6rem;
-      color: #000000;
-    }
-
-    .game-item:hover {
-      color: rgb(255, 255, 255);
-    }
-
-    .content {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       padding: 2rem;
     }
 
-    .preview-wrapper {
+    .container {
+      max-width: 800px;
+      width: 100%;
+    }
+
+    /* 상단 소개 영역 */
+    .intro-section {
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      width: 400px;
-      height: 500px;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
     }
 
-    .preview-link {
-      width: 400px;
-      height: 400px;
-      border: 3px solid #cbff69;
-      background-color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
-
-    .preview-image {
-      width: 100%;
-      height: 100%;
+    .intro-image {
+      width: 250px;
+      height: 250px;
       object-fit: cover;
-      display: block;
+      border: 3px solid #ff9900;
+      background-color: #ffffff;
     }
 
-    .description {
-      margin-top: 10px;
-      font-size: 0.9rem;
+    .intro-text {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .intro-text h2 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 1.5rem;
+      color: #ff2222;
+      margin: 0 0 0.8rem 0;
+      line-height: 1.2;
+    }
+
+    .intro-text p {
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #c7c7c7;
+      margin: 0;
+    }
+
+    .highlight {
+      color: #c4b000;
+      font-size: 0.7rem;
+    }
+
+
+    .card {
+      margin-bottom: 2rem;
+      padding: 1rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      transition: transform 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .card:hover {
+      transform: scale(1.02);
+      background-color: #140085;
+    }
+
+    .card img {
+      width: 150px;
+      height: 150px;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border: 3px solid #cacaca;
+      background-color: #fff;
+    }
+
+    .card-content h3 {
       color: #ffffff;
-      text-align: center;
-      word-break: keep-all;
-      height: 60px;
-      overflow-y: auto;
+      font-size: 1.2rem;
+      margin: 0 0 0.5rem 0;
     }
 
-    @media (max-width: 768px) {
-      .preview-wrapper {
-        width: 100%;
-        max-width: 400px;
-        height: auto;
-      }
-
-      .preview-link {
-        width: 100%;
-        height: auto;
-        aspect-ratio: 1 / 1;
-      }
+    .card-content p {
+      color: #c2c2c2;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      margin: 0;
     }
+
     .home-button {
       position: fixed;
       top: 15px;
       left: 15px;
       background-color: #808080;
       color: #ffffff;
-      padding: 5px 5px;
+      padding: 5px 8px;
       font-size: 0.5rem;
       border: 2px solid #ffffff;
       text-decoration: none;
       z-index: 10000;
-      box-shadow: 0px 0px 0px #000;
       transition: background-color 0.2s;
     }
 
@@ -129,51 +126,81 @@
       color: #000;
       transform: scale(1.05);
     }
-  </style>
-</head>
-<body>
-  <a href="/boolbang.github.io/" class="home-button">HOME</a>
-  <div class="container">
-    <div class="sidebar">
-      <h3>
-        <span class="retro">GAME LIST</h3></span>
-      <div class="game-list">
-        <div class="game-item" onclick="showGame('../images/game_horse.jpg', 'horsegame.html')">경마 시뮬레이터</div>
-        <div class="game-item" onclick="showGame('../images/game_ddol.png', 'ddolgame.html')">달려라 똘배!</div>
-        <div class="game-item" onclick="showGame('../images/game_main.png', 'slot_index.html')">지옥의 슬롯머신</div>
-      </div>
-    </div>
 
-    <div class="content">
-      <div class="preview-wrapper">
-        <a id="previewLink"  class="preview-link">
-          <img id="preview" src="../images/doom.gif" alt="게임 미리보기" class="preview-image" />
-        </a>
-        <p id="description" class="description">상단 메뉴에서 선택하세요</p>
-      </div>
-    </div>
-  </div>
+    @media (max-width: 600px) {
+      .intro-image {
+        width: 100px;
+        height: 100px;
+      }
 
-  <script>
-    function showGame(imageSrc, gameUrl) {
-      const preview = document.getElementById('preview');
-      const previewLink = document.getElementById('previewLink');
-      const description = document.getElementById('description');
+      .intro-text h2 {
+        font-size: 1.2rem;
+      }
 
-      preview.src = imageSrc;
-      preview.alt = `미리보기: ${imageSrc}`;
-      previewLink.href = gameUrl;
-
-      if (imageSrc === '../images/game_horse.jpg') {
-        description.textContent = '경주마의 순위를 니 맘대로 정해보세요';
-      } else if (imageSrc === '../images/game_ddol.png') {
-        description.textContent = '들판을 달리는 똘배를 통해 힐링하세요';
-      } else if (imageSrc === '../images/game_main.png') {
-        description.textContent = '도박해서 돈 갚아~';
-      } else {
-        description.textContent = '';
+      .intro-text p {
+        font-size: 0.85rem;
       }
     }
-  </script>
+
+    
+
+    .divider {
+  border: none;
+  border-top: 2px solid #555;
+  margin: 2rem 0;
+}
+
+  </style>
+</head>
+
+<body>
+  <a href="/boolbang.github.io/" class="home-button">HOME</a>
+  <hr class="divider">
+
+
+  <div class="container">
+
+    <!-- 상단 소개 영역 -->
+    <div class="intro-section">
+      <img src="../images/lovegame.gif" alt="BOOLBANG 로고" class="intro-image">
+      <div class="intro-text">
+        <h2>BOOLBANG GAMES</h2>
+        <p>생각을 비우면 할만합니다. 어찌 되었든 업뎃은 계속됩니다.</p>
+      </div>
+    </div>
+<hr class="divider">
+    <!-- 게임 리스트 -->
+    <a href="horsegame.html" class="card">
+      <img src="../images/game_horse.jpg" alt="경마 시뮬레이터">
+      <div class="card-content">
+        <h3>경마 시뮬레이터</h3>
+        <p>경주마의 순위를 니 맘대로 정해보세요. 시각 데이터로 활용
+          <br><span class="highlight">#PC전용</span>
+        </p>
+         
+      </div>
+    </a>
+
+    <a href="ddolgame.html" class="card">
+      <img src="../images/game_ddol.png" alt="달려라 똘배">
+      <div class="card-content">
+        <h3>달려라 똘배!</h3>
+        <p>들판을 달리는 똘배를 통해 여유와 재미를 동시에 느껴보세요.
+          <br><span class="highlight">#모바일대응 #가로화면전용</span>
+        </p>
+      </div>
+    </a>
+
+    <a href="slot_index.html" class="card">
+      <img src="../images/game_main.png" alt="지옥의 슬롯머신">
+      <div class="card-content">
+        <h3>지옥의 슬롯머신</h3>
+        <p>도박을 통해 위기를 벗어나세요. 슬롯머신의 세계에 빠져보세요.
+          <br><span class="highlight">#모바일대응</span>
+        </p>
+      </div>
+    </a>
+
+  </div>
 </body>
 </html>
