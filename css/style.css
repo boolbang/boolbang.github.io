@@ -6,8 +6,7 @@
 }
 
 body {
-
-  background-color: #f3f4f6;
+  background-color: #b9b9b9;
   color: #333;
   line-height: 1.6;
 }
@@ -30,9 +29,8 @@ a:hover {
 
 /* 헤더 */
 header {
-  
   background-color: #292929;
-  color: #ff0a0a;
+  color: #ff0000;
   padding: 1.5rem 0.5rem;
   text-align: center;
   border-bottom: 1px solid #000000;
@@ -50,7 +48,6 @@ header h1 {
     font-size: 0.8rem; /* 모바일에서 줄임 */
   }
 }
-
 
 header p {
   font-size: 1rem;
@@ -107,12 +104,11 @@ header p {
   }
 
   .nav-icon {
-    flex: 0 0 10%; 
+    flex: 0 0 10%;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    
   }
 
   .nav-icon img {
@@ -121,15 +117,13 @@ header p {
   }
 
   .label {
-   font-size: 0.8rem;
-    margin-top: 0px;  /* 👈 여백 제거 */
-    line-height: 0.6;   /* 👈 줄간격도 줄임 */
-    
+    font-size: 0.8rem;
+    margin-top: 0px; /* 👈 여백 제거 */
+    line-height: 0.6; /* 👈 줄간격도 줄임 */
   }
 }
 
 .nav-icon .label {
-  
   font-size: 0.6rem;
   font-weight: 400;
   color: #222;
@@ -147,27 +141,27 @@ header p {
   text-align: center;
   border: 1px solid #000000;
 }
-.intro{
+.intro {
   max-width: 600px;
   margin: 2rem auto;
   padding: 1rem;
-  background-color: #5e5e5e;
+  background-color: #000000;
   border: 1px solid #ffffff;
   border-radius: 0;
   color: #ffffff;
 }
 /* 공지사항 & 최근 게시글 공통 */
-.notice-section{
+.notice-section {
   max-width: 600px;
   margin: 2rem auto;
   padding: 1rem;
-  background-color: #5e5e5e;
+  background-color: #e40000;
   border: 1px solid #ffffff;
   border-radius: 0;
   color: #ffffff;
-  
 }
-.link-a, .link-b {
+.link-a,
+.link-b {
   display: inline-block;
   margin: 0 0.3rem;
   text-decoration: none;
@@ -179,7 +173,7 @@ header p {
   max-width: 600px;
   margin: 2rem auto;
   padding: 1rem;
-  background-color: #5e5e5e;
+  background-color: #1900a5;
   border: 1px solid #fffdfd;
   border-radius: 0;
   color: #ffffff;
@@ -195,7 +189,6 @@ header p {
 }
 
 .recent-posts h3 {
-  
   font-size: 18px;
   font-weight: bold;
   margin: 0 0 0.5rem;
@@ -215,7 +208,6 @@ header p {
   line-height: 1.6;
   padding: 0.2rem 0;
   border-bottom: 1px solid #ffffff;
-  
 }
 
 /* 공통 링크 스타일 */
