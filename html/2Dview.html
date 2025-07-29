@@ -1,244 +1,254 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <title>Drawing Log</title>
-  <link rel="stylesheet" href="/css/fonts.css">
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background: #2e2e2e;
-    }
-
-    #container {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-    }
-
-    #title {
-      position: absolute;
-      top: 60px;
-      width: 100%;
-      text-align: center;
-      color: #2bff00;
-      font-size: 1rem;
-      z-index: 10;
-    }
-
-    #nextButton {
-      position: absolute;
-      top: 110px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 10;
-      background: #fbff00;
-      color: #000000;
-      border: none;
-      padding: 6px 13px;
-      font-size: 0.7rem;
-      cursor: pointer;
-    }
-
-    @media (min-width: 1025px) {
-      .video-wrapper {
-        width: 1080px;
-        height: 1920px;
+  <head>
+    <meta charset="UTF-8" />
+    <title>Drawing Log</title>
+    <link rel="stylesheet" href="/css/fonts.css" />
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        background: #2e2e2e;
       }
-      iframe {
-        width: 1080px;
-        height: 1920px;
+
+      #container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
       }
-    }
 
-    @media (max-width: 1024px) {
-      .video-wrapper {
-        width: 1260px;
-        height: 2220px;
+      #title {
+        position: absolute;
+        top: 60px;
+        width: 100%;
+        text-align: center;
+        color: #2bff00;
+        font-size: 1rem;
+        z-index: 10;
       }
-      iframe {
-        width: 1260px;
-        height: 2220px;
+
+      #nextButton {
+        position: absolute;
+        top: 110px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        background: #fbff00;
+        color: #000000;
+        border: none;
+        padding: 6px 13px;
+        font-size: 0.7rem;
+        cursor: pointer;
       }
-    }
 
-    .home-button {
-      position: fixed;
-      top: 15px;
-      left: 15px;
-      background-color: #808080;
-      color: #ffffff;
-      padding: 5px 5px;
-      font-size: 0.5rem;
-      border: 2px solid #ffffff;
-      text-decoration: none;
-      z-index: 10000;
-    }
+      @media (min-width: 1025px) {
+        .video-wrapper {
+          width: 1080px;
+          height: 1920px;
+        }
+        iframe {
+          width: 1080px;
+          height: 1920px;
+        }
+      }
 
-    .home-button:hover {
-      background-color: #ffe600;
-      color: #000;
-      transform: scale(1.05);
-    }
+      @media (max-width: 1024px) {
+        .video-wrapper {
+          width: 1260px;
+          height: 2220px;
+        }
+        iframe {
+          width: 1260px;
+          height: 2220px;
+        }
+      }
 
-    #customSlider {
-      position: fixed;
-      bottom: 90px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 220px;
-      height: 15px;
-      background: #444;
-    
-      z-index: 9999;
-      overflow: hidden;
-      touch-action: none;
-    }
+      .home-button {
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        background-color: #808080;
+        color: #ffffff;
+        padding: 5px 5px;
+        font-size: 0.5rem;
+        border: 2px solid #ffffff;
+        text-decoration: none;
+        z-index: 10000;
+      }
 
-    #customFill {
-      height: 100%;
-      background: #00ff00;
-      width: 50%;
-    }
+      .home-button:hover {
+        background-color: #ffe600;
+        color: #000;
+        transform: scale(1.05);
+      }
 
-    #customKnob {
-      position: absolute;
-      top: 0px;
-      left: 50%;
-      width: 12px;
-      height: 15px;
-      background: #ffffff;
-      
-      cursor: pointer;
-      transform: translateX(-50%);
-      touch-action: none;
-    }
-  </style>
-</head>
-<body>
-  <a href="/boolbang.github.io/" class="home-button">HOME</a>
-  <div id="title"><span class="retro">"2025–Now: My Daily Drawing Log"</span></div>
-  <button id="nextButton">BGM</button>
-  <audio id="bgm" src="/BGM/8bit Bossa.mp3" loop preload="auto"></audio>
-  <div id="container"></div>
+      #customSlider {
+        position: fixed;
+        bottom: 90px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 220px;
+        height: 15px;
+        background: #444;
 
-  <!-- ✅ 슬라이더 구성 -->
-  <div id="customSlider">
-    <div id="customFill"></div>
-    <div id="customKnob"></div>
-  </div>
+        z-index: 9999;
+        overflow: hidden;
+        touch-action: none;
+      }
 
-  <!-- 라이브러리 -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/examples/js/renderers/CSS3DRenderer.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/examples/js/controls/OrbitControls.js"></script>
+      #customFill {
+        height: 100%;
+        background: #00ff00;
+        width: 50%;
+      }
 
-  <script>
-    const container = document.getElementById('container');
+      #customKnob {
+        position: absolute;
+        top: 0px;
+        left: 50%;
+        width: 12px;
+        height: 15px;
+        background: #ffffff;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 5000);
-    camera.position.set(0, 0, 2000);
+        cursor: pointer;
+        transform: translateX(-50%);
+        touch-action: none;
+      }
+    </style>
+  </head>
+  <body>
+    <a href="/boolbang.github.io/" class="home-button">HOME</a>
+    <div id="title">
+      <span class="retro">"2025–Now: My Daily Drawing Log"</span>
+    </div>
+    <button id="nextButton">BGM</button>
+    <audio id="bgm" src="/BGM/8bit Bossa.mp3" loop preload="auto"></audio>
+    <div id="container"></div>
 
-    const renderer = new THREE.CSS3DRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    container.appendChild(renderer.domElement);
+    <!-- ✅ 슬라이더 구성 -->
+    <div id="customSlider">
+      <div id="customFill"></div>
+      <div id="customKnob"></div>
+    </div>
 
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enablePan = true;
-    controls.enableZoom = true;
-    controls.minDistance = 1000;
-    controls.maxDistance = 3000;
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.1;
-    controls.rotateSpeed = 0.4;
-    controls.minPolarAngle = Math.PI / 2;
-    controls.maxPolarAngle = Math.PI / 2;
+    <!-- 라이브러리 -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/examples/js/renderers/CSS3DRenderer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/examples/js/controls/OrbitControls.js"></script>
 
-    const group = new THREE.Group();
+    <script>
+      const container = document.getElementById("container");
 
-    const wrapper = document.createElement('div');
-    wrapper.className = 'video-wrapper';
-    wrapper.style.pointerEvents = 'auto';
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        1,
+        5000
+      );
+      camera.position.set(0, 0, 2000);
 
-    const iframe = document.createElement('iframe');
-    iframe.allow = 'autoplay; encrypted-media';
-    iframe.allowFullscreen = true;
-    iframe.frameBorder = '0';
-    iframe.style.pointerEvents = 'auto';
-    const playlistId = 'PL33_f3LZOk2-2djWF0gkSSICLDONlqdjG';
-    iframe.src = `https://www.youtube.com/embed/videoseries?list=${playlistId}&autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&loop=1&origin=${location.origin}`;
-    wrapper.appendChild(iframe);
-
-    const object = new THREE.CSS3DObject(wrapper);
-    group.add(object);
-    scene.add(group);
-
-    function animate() {
-      requestAnimationFrame(animate);
-      controls.update();
-      renderer.render(scene, camera);
-    }
-
-    animate();
-
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
+      const renderer = new THREE.CSS3DRenderer();
       renderer.setSize(window.innerWidth, window.innerHeight);
-    });
+      container.appendChild(renderer.domElement);
 
-    const bgm = document.getElementById('bgm');
-    const nextButton = document.getElementById('nextButton');
-    let isPlaying = false;
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enablePan = true;
+      controls.enableZoom = true;
+      controls.minDistance = 1000;
+      controls.maxDistance = 3000;
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.1;
+      controls.rotateSpeed = 0.4;
+      controls.minPolarAngle = Math.PI / 2;
+      controls.maxPolarAngle = Math.PI / 2;
 
-    nextButton.addEventListener('click', () => {
-      if (!isPlaying) {
-        bgm.volume = 0.3;
-        bgm.play().then(() => {
-          isPlaying = true;
-          nextButton.textContent = "Pause";
-        }).catch(err => console.warn("🔇 BGM 실패:", err));
-      } else {
-        bgm.pause();
-        isPlaying = false;
-        nextButton.textContent = "BGM";
+      const group = new THREE.Group();
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "video-wrapper";
+      wrapper.style.pointerEvents = "auto";
+
+      const iframe = document.createElement("iframe");
+      iframe.allow = "autoplay; encrypted-media";
+      iframe.allowFullscreen = true;
+      iframe.frameBorder = "0";
+      iframe.style.pointerEvents = "auto";
+      const playlistId = "PL33_f3LZOk2-2djWF0gkSSICLDONlqdjG";
+      iframe.src = `https://www.youtube.com/embed/videoseries?list=${playlistId}&autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&loop=1&origin=${location.origin}`;
+      wrapper.appendChild(iframe);
+
+      const object = new THREE.CSS3DObject(wrapper);
+      group.add(object);
+      scene.add(group);
+
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
       }
-    });
 
-    // ✅ 슬라이더 조작 (마우스 + 터치)
-    const slider = document.getElementById('customSlider');
-    const knob = document.getElementById('customKnob');
-    const fill = document.getElementById('customFill');
-    let isDragging = false;
+      animate();
 
-    function updateSlider(clientX) {
-      const rect = slider.getBoundingClientRect();
-      let x = clientX - rect.left;
-      x = Math.max(0, Math.min(x, rect.width));
-      knob.style.left = `${x}px`;
-      fill.style.width = `${x}px`;
-      const ratio = (x / rect.width - 0.5) * 2; // -1 ~ 1
-      group.rotation.y = ratio * Math.PI * 0.3;
-    }
+      window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
 
-    knob.addEventListener('mousedown', () => isDragging = true);
-    window.addEventListener('mouseup', () => isDragging = false);
-    window.addEventListener('mousemove', (e) => {
-      if (isDragging) updateSlider(e.clientX);
-    });
+      const bgm = document.getElementById("bgm");
+      const nextButton = document.getElementById("nextButton");
+      let isPlaying = false;
 
-    knob.addEventListener('touchstart', (e) => {
-      isDragging = true;
-      e.preventDefault();
-    });
-    window.addEventListener('touchend', () => isDragging = false);
-    window.addEventListener('touchmove', (e) => {
-      if (isDragging && e.touches.length > 0) {
-        updateSlider(e.touches[0].clientX);
+      nextButton.addEventListener("click", () => {
+        if (!isPlaying) {
+          bgm.volume = 0.3;
+          bgm
+            .play()
+            .then(() => {
+              isPlaying = true;
+              nextButton.textContent = "Pause";
+            })
+            .catch((err) => console.warn("🔇 BGM 실패:", err));
+        } else {
+          bgm.pause();
+          isPlaying = false;
+          nextButton.textContent = "BGM";
+        }
+      });
+
+      // ✅ 슬라이더 조작 (마우스 + 터치)
+      const slider = document.getElementById("customSlider");
+      const knob = document.getElementById("customKnob");
+      const fill = document.getElementById("customFill");
+      let isDragging = false;
+
+      function updateSlider(clientX) {
+        const rect = slider.getBoundingClientRect();
+        let x = clientX - rect.left;
+        x = Math.max(0, Math.min(x, rect.width));
+        knob.style.left = `${x}px`;
+        fill.style.width = `${x}px`;
+        const ratio = (x / rect.width - 0.5) * 2; // -1 ~ 1
+        group.rotation.y = ratio * Math.PI * 0.3;
       }
-    });
-  </script>
-</body>
+
+      knob.addEventListener("mousedown", () => (isDragging = true));
+      window.addEventListener("mouseup", () => (isDragging = false));
+      window.addEventListener("mousemove", (e) => {
+        if (isDragging) updateSlider(e.clientX);
+      });
+
+      knob.addEventListener("touchstart", (e) => {
+        isDragging = true;
+        e.preventDefault();
+      });
+      window.addEventListener("touchend", () => (isDragging = false));
+      window.addEventListener("touchmove", (e) => {
+        if (isDragging && e.touches.length > 0) {
+          updateSlider(e.touches[0].clientX);
+        }
+      });
+    </script>
+  </body>
 </html>
