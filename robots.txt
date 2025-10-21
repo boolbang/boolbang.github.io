@@ -1,0 +1,20 @@
+# robots.txt for boolbang.com
+
+User-agent: *
+Allow: /
+
+# Disallow private/temporary files
+Disallow: /googlec76e16f1aa2b9a78.html
+Disallow: /naver7abf11b4172d4aee765b97e6f0d7b3b0.html
+
+# Allow important directories
+Allow: /html/
+Allow: /css/
+Allow: /js/
+Allow: /images/
+Allow: /models/
+Allow: /fonts/
+Allow: /BGM/
+
+# Sitemap location
+Sitemap: https://www.boolbang.com/sitemap.xml
