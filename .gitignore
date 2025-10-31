@@ -1,1 +1,34 @@
+# 개발/테스트 파일
 html/write_boolbang_write.html
+
+# OS 관련
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 에디터 관련
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 임시 파일
+*.log
+*.tmp
+.cache/
+
+# 환경 변수 (있을 경우)
+.env
+.env.local
+
+# Node modules (있을 경우)
+node_modules/
+
+# 빌드 결과물 (있을 경우)
+dist/
+build/
+
+# 백업 파일
+*.bak
+*.backup

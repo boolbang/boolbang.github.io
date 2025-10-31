@@ -1,209 +1,192 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BOOLBANG GAMES</title>
-  <title>불방 게임 - BoolBang Interactive</title>
-<meta name="description" content="불방에서 직접 만든 HTML5 기반 미니게임과 인터랙티브 콘텐츠들을 만나보세요.">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BOOLBANG GAMES</title>
+    <title>불방 게임 - BoolBang Interactive</title>
+    <meta
+      name="description"
+      content="불방에서 직접 만든 HTML5 기반 미니게임과 인터랙티브 콘텐츠들을 만나보세요."
+    />
 
-  <link rel="stylesheet" href="../css/fonts.css">
-  
-  <style>
-    body {
-      margin: 0;
-      background-color: #1d1d1d;
-      color: #ffffff;
-      font-family: 'Pretendard', monospace;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 2rem;
-    }
+    <link rel="stylesheet" href="../css/fonts.css" />
 
-    .container {
-      max-width: 800px;
-      width: 100%;
-    }
+    <style>
+      body {
+        margin: 0;
+        background-color: #1d1d1d;
+        color: #ffffff;
+        font-family: "Pretendard", monospace;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 2rem;
+      }
 
-    /* 상단 소개 영역 */
-    .intro-section {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-    }
+      .container {
+        max-width: 800px;
+        width: 100%;
+      }
 
-    .intro-image {
-      width: 250px;
-      height: 250px;
-      object-fit: cover;
-      border: 3px solid #ff9900;
-      background-color: #ffffff;
-    }
+      /* 상단 소개 영역 */
+      .intro-section {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+      }
 
-    .intro-text {
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .intro-text h2 {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 1.5rem;
-      color: #ff2222;
-      margin: 0 0 0.8rem 0;
-      line-height: 1.2;
-    }
-
-    .intro-text p {
-      font-size: 1rem;
-      line-height: 1.5;
-      color: #c7c7c7;
-      margin: 0;
-    }
-
-    .highlight {
-      color: #c4b000;
-      font-size: 0.7rem;
-    }
-
-
-    .card {
-      margin-bottom: 2rem;
-      padding: 1rem;
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-      transition: transform 0.2s;
-      cursor: pointer;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .card:hover {
-      transform: scale(1.02);
-      background-color: #140085;
-    }
-
-    .card img {
-      width: 150px;
-      height: 150px;
-      aspect-ratio: 1 / 1;
-      object-fit: cover;
-      border: 3px solid #cacaca;
-      background-color: #fff;
-    }
-
-    .card-content h3 {
-      color: #ffffff;
-      font-size: 1.2rem;
-      margin: 0 0 0.5rem 0;
-    }
-
-    .card-content p {
-      color: #c2c2c2;
-      font-size: 0.9rem;
-      line-height: 1.4;
-      margin: 0;
-    }
-
-    .home-button {
-      position: fixed;
-      top: 15px;
-      left: 15px;
-      background-color: #808080;
-      color: #ffffff;
-      padding: 5px 8px;
-      font-size: 0.5rem;
-      border: 2px solid #ffffff;
-      text-decoration: none;
-      z-index: 10000;
-      transition: background-color 0.2s;
-    }
-
-    .home-button:hover {
-      background-color: #ffe600;
-      color: #000;
-      transform: scale(1.05);
-    }
-
-    @media (max-width: 600px) {
       .intro-image {
-        width: 70px;
-        height: 70px;
+        width: 250px;
+        height: 250px;
+        object-fit: cover;
+        border: 3px solid #ff9900;
+        background-color: #ffffff;
+      }
+
+      .intro-text {
+        flex: 1;
+        min-width: 200px;
       }
 
       .intro-text h2 {
-        font-size: 0.9rem;
+        font-family: "Press Start 2P", monospace;
+        font-size: 1.5rem;
+        color: #ff2222;
+        margin: 0 0 0.8rem 0;
+        line-height: 1.2;
       }
 
       .intro-text p {
-        font-size: 0.85rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #c7c7c7;
+        margin: 0;
       }
-    }
 
-    
+      .highlight {
+        color: #c4b000;
+        font-size: 0.7rem;
+      }
 
-    .divider {
-  border: none;
-  border-top: 2px solid #c4c4c4;
-  margin: 2rem 0;
-}
+      .card {
+        margin-bottom: 2rem;
+        padding: 1rem;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        transition: transform 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+      }
 
-  </style>
-</head>
+      .card:hover {
+        transform: scale(1.02);
+        background-color: #140085;
+      }
 
-<body>
-  <a href="/boolbang.github.io/" class="home-button">HOME</a>
-  <hr class="divider">
+      .card img {
+        width: 150px;
+        height: 150px;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        border: 3px solid #cacaca;
+        background-color: #fff;
+      }
 
+      .card-content h3 {
+        color: #ffffff;
+        font-size: 1.2rem;
+        margin: 0 0 0.5rem 0;
+      }
 
-  <div class="container">
+      .card-content p {
+        color: #c2c2c2;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        margin: 0;
+      }
 
-    <!-- 상단 소개 영역 -->
-    <div class="intro-section">
-      <img src="../images/lovegame.gif" alt="BOOLBANG 로고" class="intro-image">
-      <div class="intro-text">
-        <h2>BOOLBANG GAMES</h2>
-        <p>생각을 비우면 할만합니다. 어찌 되었든 업뎃은 계속됩니다.</p>
+      @media (max-width: 600px) {
+        .intro-image {
+          width: 70px;
+          height: 70px;
+        }
+
+        .intro-text h2 {
+          font-size: 0.9rem;
+        }
+
+        .intro-text p {
+          font-size: 0.85rem;
+        }
+      }
+
+      .divider {
+        border: none;
+        border-top: 2px solid #c4c4c4;
+        margin: 2rem 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <hr class="divider" />
+
+    <div class="container">
+      <!-- 상단 소개 영역 -->
+      <div class="intro-section">
+        <img
+          src="../images/lovegame.gif"
+          alt="BOOLBANG 로고"
+          class="intro-image"
+        />
+        <div class="intro-text">
+          <h2>BOOLBANG GAMES</h2>
+          <p>생각을 비우면 할만합니다. 어찌 되었든 업뎃은 계속됩니다.</p>
+        </div>
       </div>
+      <hr class="divider" />
+      <!-- 게임 리스트 -->
+      <a href="horsegame.html" class="card">
+        <img src="../images/game_horse.jpg" alt="경마 시뮬레이터" />
+        <div class="card-content">
+          <h3>경마 시뮬레이터</h3>
+          <p>
+            경주마의 순위를 니 맘대로 정해보세요. 시각 데이터로 활용 <br /><span
+              class="highlight"
+              >#PC전용</span
+            >
+          </p>
+        </div>
+      </a>
+
+      <a href="ddolgame.html" class="card">
+        <img src="../images/game_ddol.png" alt="달려라 똘배" />
+        <div class="card-content">
+          <h3>달려라 똘배!</h3>
+          <p>
+            들판을 달리는 똘배를 통해 여유와 재미를 동시에 느껴보세요.
+            <br /><span class="highlight">#모바일대응 #가로화면전용</span>
+          </p>
+        </div>
+      </a>
+
+      <a href="slot_index.html" class="card">
+        <img src="../images/game_main.png" alt="지옥의 슬롯머신" />
+        <div class="card-content">
+          <h3>지옥의 슬롯머신</h3>
+          <p>
+            도박을 통해 위기를 벗어나세요. 슬롯머신의 세계에 빠져보세요.
+            <br /><span class="highlight">#모바일대응</span>
+          </p>
+        </div>
+      </a>
     </div>
-<hr class="divider">
-    <!-- 게임 리스트 -->
-    <a href="horsegame.html" class="card">
-      <img src="../images/game_horse.jpg" alt="경마 시뮬레이터">
-      <div class="card-content">
-        <h3>경마 시뮬레이터</h3>
-        <p>경주마의 순위를 니 맘대로 정해보세요. 시각 데이터로 활용
-          <br><span class="highlight">#PC전용</span>
-        </p>
-         
-      </div>
-    </a>
-
-    <a href="ddolgame.html" class="card">
-      <img src="../images/game_ddol.png" alt="달려라 똘배">
-      <div class="card-content">
-        <h3>달려라 똘배!</h3>
-        <p>들판을 달리는 똘배를 통해 여유와 재미를 동시에 느껴보세요.
-          <br><span class="highlight">#모바일대응 #가로화면전용</span>
-        </p>
-      </div>
-    </a>
-
-    <a href="slot_index.html" class="card">
-      <img src="../images/game_main.png" alt="지옥의 슬롯머신">
-      <div class="card-content">
-        <h3>지옥의 슬롯머신</h3>
-        <p>도박을 통해 위기를 벗어나세요. 슬롯머신의 세계에 빠져보세요.
-          <br><span class="highlight">#모바일대응</span>
-        </p>
-      </div>
-    </a>
-
-  </div>
-</body>
+  </body>
 </html>

@@ -1,15 +1,138 @@
 /* =============================
-   게시판 스타일
+   메인 페이지 A4 레이아웃
    ============================= */
 body {
-  text-align: center;
-  background-color: hsl(0, 0%, 79%);
-  color: #ff0015;
+  background-color: #000000;
+  color: #b5d0f4;
   line-height: 1.6;
   margin: 0;
-  padding: 0;
+  padding: 20px 0;
+  font-family: "D2Coding", monospace;
 }
 
+.main-container {
+  width: 600px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background-color: #000000;
+  border-left: 1px solid #b5d0f4;
+  border-right: 1px solid #b5d0f4;
+  padding: 40px 50px;
+  box-sizing: border-box;
+}
+
+/* 헤더 */
+.main-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #b5d0f4;
+}
+
+.main-header h1 {
+  font-size: 2rem;
+  margin: 0 0 10px 0;
+  color: #b5d0f4;
+  font-weight: 700;
+}
+
+.main-header p {
+  font-size: 0.9rem;
+  color: #cccccc;
+  margin: 5px 0;
+}
+
+/* 소개 섹션 */
+.intro-section {
+  margin: 30px 0;
+  padding: 20px;
+  background-color: #000000;
+  border-left: 4px solid #b5d0f4;
+  font-size: 0.85rem;
+  line-height: 1.8;
+  color: #b5d0f4;
+}
+
+/* 네비게이션 섹션 */
+.nav-section {
+  margin: 30px 0;
+}
+
+.nav-section h2 {
+  font-size: 1.3rem;
+  color: #5e7ea8;
+  margin: 0 0 15px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #b5d0f4;
+  font-weight: 700;
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nav-link {
+  display: block;
+  padding: 15px 20px;
+  background-color: #000000;
+  border: 1px solid #ffffff;
+  border-left: 5px solid #ffffff;
+  color: #ffffff;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-weight: 400;
+}
+
+.nav-link:hover {
+  background-color: #ffffff;
+  color: #000000;
+  transform: translateX(5px);
+  border-left-color: #ffffff;
+}
+
+.nav-link::before {
+  content: "▶ ";
+  margin-right: 8px;
+}
+
+/* 텍스트 링크 스타일 */
+.text-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.text-link {
+  color: #b5d0f4;
+  text-decoration: none;
+  padding: 4px 0;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.text-link:hover {
+  color: #ffffff;
+  padding-left: 10px;
+}
+
+.text-link::before {
+  content: "→ ";
+  margin-right: 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.text-link:hover::before {
+  opacity: 1;
+}
+
+/* =============================
+   게시판 스타일
+   ============================= */
 h2 {
   font-size: 1.3rem;
   margin-top: 50px;
@@ -52,6 +175,12 @@ td {
   text-align: left;
   max-height: 80vh;
   overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.modal-content::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 @media (max-width: 1080px) {
@@ -247,10 +376,43 @@ a:hover {
 /* =============================
    모바일 반응형 스타일
    ============================= */
+@media (max-width: 768px) {
+  body {
+    padding: 0;
+  }
+
+  .main-container {
+    width: 100%;
+    padding: 20px 15px;
+    box-shadow: none;
+  }
+
+  .main-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .main-header p {
+    font-size: 0.8rem;
+  }
+
+  .nav-section h2 {
+    font-size: 1.1rem;
+  }
+
+  .nav-link {
+    padding: 12px 15px;
+    font-size: 0.9rem;
+  }
+
+  .intro-section {
+    font-size: 0.8rem;
+    padding: 15px;
+  }
+}
+
 @media (max-width: 1079px) {
   body {
     font-size: 1.1rem;
-    padding: 10px;
   }
   h2 {
     font-size: 1.5rem;
