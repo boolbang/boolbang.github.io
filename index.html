@@ -264,6 +264,8 @@
         getFirestore,
         collection,
         getDocs,
+        doc,
+        getDoc,
       } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
       const firebaseConfig = {
@@ -287,12 +289,25 @@
       const modalImage = document.getElementById("modalImage");
       const closeButton = document.getElementById("closeButton");
 
-      closeButton.addEventListener("click", () => {
+      function closeModal() {
         modal.style.display = "none";
-      });
+        // 히스토리에서 모달 상태 제거
+        if (window.location.hash === "#modal") {
+          history.back();
+        }
+      }
+
+      closeButton.addEventListener("click", closeModal);
 
       modal.addEventListener("click", (e) => {
         if (e.target === modal) {
+          closeModal();
+        }
+      });
+
+      // 뒤로가기 감지
+      window.addEventListener("popstate", (e) => {
+        if (modal.style.display === "block") {
           modal.style.display = "none";
         }
       });
@@ -327,16 +342,12 @@
 
       async function showPostModal(postId) {
         try {
-          const querySnapshot = await getDocs(collection(db, "posts"));
-          let postData = null;
+          // 특정 게시글만 가져오기 (효율적)
+          const docRef = doc(db, "posts", postId);
+          const docSnap = await getDoc(docRef);
 
-          querySnapshot.forEach((doc) => {
-            if (doc.id === postId) {
-              postData = doc.data();
-            }
-          });
-
-          if (postData) {
+          if (docSnap.exists()) {
+            const postData = docSnap.data();
             // 제목에서 [WORKS] 또는 [works] 제거
             let title = postData.title || "제목 없음";
             title = title.replace(/\[WORKS\]/gi, "").trim();
@@ -373,6 +384,8 @@
             }
 
             modal.style.display = "block";
+            // 히스토리에 모달 상태 추가
+            history.pushState({ modal: true }, "", "#modal");
           }
         } catch (e) {
           console.error("게시글 로드 실패:", e);
