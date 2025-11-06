@@ -48,138 +48,167 @@
   </head>
   <body>
     <div class="main-container">
-      <!-- 헤더 -->
       <header class="main-header">
-        <h1 style="font-size: 1.5rem; color: #b5d0f4">불방 인터랙티브</h1>
-        <p style="color: #b5d0f4; font-size: 15.2px">
-          영상과 코딩을 잘하는 듀오.
-        </p>
+        <h1 style="font-size: 1.5rem; color: #000000; font-weight: normal">
+          불방 인터랙티브
+        </h1>
+        <p style="color: #000000; font-size: 15.2px">영상과 코딩 하는 듀오.</p>
       </header>
 
-      <!-- 소개 섹션 -->
       <section
         class="intro-section"
         style="border-left: none; margin-bottom: 0"
       >
-        <p style="color: #b5d0f4; font-size: 15.2px">
+        <p style="color: #000000; font-size: 15.2px">
           const office = { "kr-seoul": "서울시 영등포구 국제금융로",
           "kr-gyeonggi-do": "경기도 성남시 분당구 판교역로" };
         </p>
       </section>
 
-      <!-- About -->
       <section class="nav-section" style="margin: 30px 0">
-        <!-- 3D 도넛 그래픽 -->
-        <div
-          id="three-container"
-          style="
-            width: 100%;
-            max-width: 250px;
-            height: 245px;
-            max-height: 245px;
-            margin: 0 auto 10px auto;
-            overflow: hidden;
-            line-height: 0;
-            font-size: 0;
-          "
-        ></div>
         <p
           style="
             margin-top: 10px;
-            color: #b5d0f4;
+            margin-bottom: 0;
+            color: #000000;
             font-size: 0.95rem;
             line-height: 1.8;
           "
         >
-          <strong>Languages & Frameworks</strong><br />
-          C++, JavaScript (React, Next.js), SQL 등<br /><br />
-          <strong>Creative Tools</strong><br />
+          Languages & Frameworks<br />
+          C++, JavaScript (React, Next.js), SQL 등
+        </p>
+        <p
+          style="
+            margin-top: 10px;
+            margin-bottom: 0;
+            color: #000000;
+            font-size: 0.95rem;
+            line-height: 1.8;
+          "
+        >
+          Creative Tools<br />
           Adobe Premiere Pro (Pr), DaVinci Resolve (Resolve), Blender 등
         </p>
-        <div style="margin-top: 15px">
+        <div style="margin-top: 10px">
           <a
-            href="/html/deep_about.html"
-            style="color: #b5d0f4; text-decoration: none; padding: 0"
-            >딥한이력서VER ←click</a
+            href="/html/about.html"
+            style="
+              color: #ffffff;
+              background-color: #000000;
+              text-decoration: none;
+              padding: 4px 8px;
+              display: inline-block;
+            "
+            >딥한이력서_VER</a
           >
         </div>
-        <div style="border-top: 1px solid #b5d0f4; margin-top: 30px"></div>
+        <div style="border-top: 1px solid #a8a8a8; margin-top: 30px"></div>
       </section>
 
-      <!-- Works 게시판 -->
       <section class="nav-section" style="margin: 30px 0">
-        <ul id="post-list" style="list-style: none; padding: 0; margin: 0">
-          <li style="padding: 8px; color: #b5d0f4">로딩 중...</li>
+        <h3
+          style="
+            font-size: 1rem;
+            color: #000000;
+            margin: 0 0 10px 0;
+            padding-bottom: 5px;
+            font-weight: normal;
+          "
+        >
+          Portfolio Section 1
+        </h3>
+        <ul
+          id="post-list"
+          style="list-style: none; padding: 0; margin: 0; margin-left: 0"
+        >
+          <li style="padding: 8px; color: #000000">로딩 중...</li>
         </ul>
 
-        <!-- 게임 목록 -->
-        <div style="margin-left: 20px; padding-left: 15px; margin-top: 20px">
-          <h3
+        <div style="margin-top: 0">
+          <a
+            href="/html/3Dview.html"
             style="
-              font-size: 1rem;
-              color: #b5d0f4;
-              margin: 0 0 10px 0;
-              padding-bottom: 5px;
+              color: #000000;
+              text-decoration: none;
+              cursor: pointer;
+              padding: 2px 0;
+              display: block;
             "
+            >→ 3D 모델링</a
           >
-            ├─ Games
-          </h3>
-          <div class="text-links" style="margin-left: 10px">
-            <a href="/html/horsegame.html" class="text-link">경마 시뮬레이터</a>
-            <a href="/html/ddolgame.html" class="text-link">달려라 똘배!</a>
-            <a href="/html/slot_index.html" class="text-link"
-              >지옥의 슬롯머신</a
-            >
-          </div>
         </div>
 
-        <!-- 드로잉 & 모델링 -->
-        <div style="margin-left: 20px; padding-left: 15px; margin-top: 15px">
-          <h3
+        <div style="border-top: 1px solid #a8a8a8; margin-top: 30px"></div>
+
+        <h3
+          style="
+            font-size: 1rem;
+            color: #000000;
+            margin: 15px 0 10px 0;
+            padding-bottom: 5px;
+            font-weight: normal;
+          "
+        >
+          Portfolio Section 2
+        </h3>
+        <div style="margin-top: 0">
+          <a
+            href="/html/horsegame.html"
             style="
-              font-size: 1rem;
-              color: #b5d0f4;
-              margin: 0 0 10px 0;
-              padding-bottom: 5px;
+              color: #000000;
+              text-decoration: none;
+              cursor: pointer;
+              padding: 2px 0;
+              display: block;
             "
+            >→ 경마 시뮬레이터</a
           >
-            └─ Drawing & Modeling
-          </h3>
-          <div class="text-links" style="margin-left: 10px">
-            <a href="/html/2Dview.html" class="text-link">드로잉 갤러리</a>
-            <a href="/html/3Dview.html" class="text-link">3D 모델링</a>
-          </div>
+          <a
+            href="/html/ddolgame.html"
+            style="
+              color: #000000;
+              text-decoration: none;
+              cursor: pointer;
+              padding: 2px 0;
+              display: block;
+            "
+            >→ 달려라 똘배!</a
+          >
+          <a
+            href="/html/slot_index.html"
+            style="
+              color: #000000;
+              text-decoration: none;
+              cursor: pointer;
+              padding: 2px 0;
+              display: block;
+            "
+            >→ 지옥의 슬롯머신</a
+          >
         </div>
-        <div style="border-top: 1px solid #b5d0f4; margin-top: 30px"></div>
+        <div style="border-top: 1px solid #a8a8a8; margin-top: 30px"></div>
       </section>
 
-      <!-- SNS 섹션 -->
       <section class="nav-section" style="margin-bottom: 0">
         <div style="display: flex; gap: 20px; align-items: center">
           <a
-            href="https://www.boolbang.com/boolwiki"
-            target="_blank"
-            style="color: #b5d0f4; text-decoration: none"
-            >불방위키</a
-          >
-          <a
             href="https://www.youtube.com/@boolbang"
             target="_blank"
-            style="color: #b5d0f4; text-decoration: none"
-            >유튜브 채널</a
+            style="color: #000000; text-decoration: none"
+            >유튜브</a
           >
         </div>
       </section>
 
-      <!-- 푸터 -->
       <footer
         style="
           margin-top: 30px;
           padding-top: 20px;
-          border-top: 1px solid #b5d0f4;
+          border-top: 1px solid #a8a8a8;
           text-align: center;
           font-size: 0.85rem;
-          color: #b5d0f4;
+          color: #808080;
         "
       >
         © 2016–2025 BoolBang Interactive. Site launched in 2025. All rights
@@ -187,69 +216,10 @@
       </footer>
     </div>
 
-    <!-- Three.js 스크립트 -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/examples/js/effects/AsciiEffect.js"></script>
-    <script>
-      const container = document.getElementById("three-container");
-      if (container) {
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(
-          45,
-          container.clientWidth / container.clientHeight,
-          0.1,
-          1000
-        );
-        camera.position.z = 4;
-        camera.position.y = -0.3;
-
-        const renderer = new THREE.WebGLRenderer();
-        renderer.setSize(container.clientWidth, container.clientHeight);
-
-        const effect = new THREE.AsciiEffect(renderer, " .:-+*=%@#", {
-          invert: true,
-        });
-        effect.setSize(container.clientWidth, container.clientHeight);
-        effect.domElement.style.color = "#b5d0f4";
-        effect.domElement.style.display = "block";
-        effect.domElement.style.margin = "0";
-        effect.domElement.style.padding = "0";
-
-        container.appendChild(effect.domElement);
-
-        const geometry = new THREE.TorusGeometry(0.8, 0.3, 14, 100);
-        const material = new THREE.MeshBasicMaterial({
-          color: 0xff3300,
-          wireframe: true,
-        });
-        const torus = new THREE.Mesh(geometry, material);
-        scene.add(torus);
-
-        function animate() {
-          requestAnimationFrame(animate);
-          torus.rotation.x += 0.01;
-          torus.rotation.y += 0.02;
-          effect.render(scene, camera);
-        }
-
-        animate();
-
-        window.addEventListener("resize", () => {
-          const width = container.clientWidth;
-          const height = container.clientHeight;
-          camera.aspect = width / height;
-          camera.updateProjectionMatrix();
-          renderer.setSize(width, height);
-          effect.setSize(width, height);
-        });
-      }
-    </script>
-
-    <!-- 모달 -->
     <div id="modal" class="modal">
       <div class="modal-content">
-        <h2 id="modalTitle"></h2>
-        <p id="modalDate" style="color: #b5d0f4; font-size: 0.9rem"></p>
+        <h2 id="modalTitle" style="color: #0000aa"></h2>
+        <p id="modalDate" style="color: #808080; font-size: 0.9rem"></p>
         <p id="modalContent"></p>
         <div id="modalImage"></div>
         <div style="text-align: center; margin-top: 20px">
@@ -259,29 +229,21 @@
     </div>
 
     <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
       import {
         getFirestore,
         collection,
         getDocs,
         doc,
         getDoc,
-      } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+      } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-      const firebaseConfig = {
-        apiKey: "AIzaSyCqAQCELh1q2pWxrXtx-8lBwRe2CTSG_HdQ",
-        authDomain: "boolbang-board.firebaseapp.com",
-        projectId: "boolbang-board",
-        storageBucket: "boolbang-board.appspot.com",
-        messagingSenderId: "1563061617526",
-        appId: "1:1563061617526:web:066768f311fc53cd017257",
-        measurementId: "G-2CBKFZ5Q85",
-      };
+      import { firebaseConfig } from "/js/firebase-config.js";
+      import { parseMedia } from "/js/utils.js";
 
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
-      // 모달 관련
       const modal = document.getElementById("modal");
       const modalTitle = document.getElementById("modalTitle");
       const modalDate = document.getElementById("modalDate");
@@ -291,7 +253,6 @@
 
       function closeModal() {
         modal.style.display = "none";
-        // 히스토리에서 모달 상태 제거
         if (window.location.hash === "#modal") {
           history.back();
         }
@@ -305,60 +266,29 @@
         }
       });
 
-      // 뒤로가기 감지
       window.addEventListener("popstate", (e) => {
         if (modal.style.display === "block") {
           modal.style.display = "none";
         }
       });
 
-      function parseMedia(content) {
-        let parsed = content.replace(/\n/g, "<br>");
-        // 이미지 URL 파싱
-        parsed = parsed.replace(
-          /(https?:\/\/[^\s<]+?\.(jpg|jpeg|png|gif|webp|bmp|svg))/gi,
-          (_, url) =>
-            `<img src="${url}" style="max-width:100%; margin:10px auto; display:block;" loading="lazy" />`
-        );
-        // Google Storage 이미지
-        parsed = parsed.replace(
-          /(https?:\/\/[^\s<]*(gstatic\.com|googleusercontent\.com)[^\s<]*)/gi,
-          (_, url) =>
-            `<img src="${url}" style="max-width:100%; margin:10px auto; display:block;" loading="lazy" />`
-        );
-        // YouTube 링크
-        parsed = parsed.replace(
-          /https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-]+)[^\s<]*/g,
-          (_, videoId) =>
-            `<div class="youtube-wrap"><iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe></div>`
-        );
-        parsed = parsed.replace(
-          /https?:\/\/youtu\.be\/([\w-]+)[^\s<]*/g,
-          (_, videoId) =>
-            `<div class="youtube-wrap"><iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe></div>`
-        );
-        return parsed;
-      }
+      // parseMedia 함수는 utils.js에서 import
 
       async function showPostModal(postId) {
         try {
-          // 특정 게시글만 가져오기 (효율적)
           const docRef = doc(db, "posts", postId);
           const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
             const postData = docSnap.data();
-            // 제목에서 [WORKS] 또는 [works] 제거
             let title = postData.title || "제목 없음";
             title = title.replace(/\[WORKS\]/gi, "").trim();
             modalTitle.textContent = title;
             modalDate.textContent = postData.date || "";
 
-            // 컨텐츠를 미디어 파싱하여 표시
             const rawContent = postData.content || "";
             modalContent.innerHTML = parseMedia(rawContent);
 
-            // 이미지 섹션
             modalImage.innerHTML = "";
 
             if (Array.isArray(postData.images) && postData.images.length > 0) {
@@ -384,7 +314,6 @@
             }
 
             modal.style.display = "block";
-            // 히스토리에 모달 상태 추가
             history.pushState({ modal: true }, "", "#modal");
           }
         } catch (e) {
@@ -401,7 +330,7 @@
           const querySnapshot = await getDocs(collection(db, "posts"));
           if (querySnapshot.empty) {
             list.innerHTML =
-              '<li style="padding: 8px; color: #b5d0f4;">게시글이 없습니다.</li>';
+              '<li style="padding: 8px; color: #000000;">게시글이 없습니다.</li>';
             return;
           }
 
@@ -420,19 +349,16 @@
 
           posts.forEach((post) => {
             const li = document.createElement("li");
-            li.style.cssText = "padding: 4px 0; cursor: pointer;";
-            // 제목에서 [WORKS] 제거
+            li.style.cssText = "padding: 2px 0; margin: 0; cursor: pointer;";
             const cleanTitle = post.title.replace(/\[WORKS\]/gi, "").trim();
             li.innerHTML = `
-              <a href="#" class="post-link" data-id="${post.id}" style="color: #b5d0f4; text-decoration: none;">
-                ● ${cleanTitle}
+              <a href="#" class="post-link" data-id="${post.id}" style="color: #000000; text-decoration: none; cursor: pointer;">
+                → ${cleanTitle}
               </a>
-              <small style="color: #b5d0f4; margin-left: 8px; font-size: 0.85rem;">${post.date}</small>
             `;
             list.appendChild(li);
           });
 
-          // 링크 클릭 이벤트 추가
           document.querySelectorAll(".post-link").forEach((link) => {
             link.addEventListener("click", (e) => {
               e.preventDefault();
@@ -443,7 +369,7 @@
         } catch (e) {
           console.error("글 불러오기 실패:", e);
           list.innerHTML =
-            '<li style="padding: 8px; color: #b5d0f4;">게시글을 불러오는 중 오류가 발생했습니다.</li>';
+            '<li style="padding: 8px; color: #000000;">게시글을 불러오는 중 오류가 발생했습니다.</li>';
         }
       }
 

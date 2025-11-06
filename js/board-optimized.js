@@ -1,4 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getFirestore,
   collection,
@@ -8,16 +8,10 @@ import {
   doc,
   orderBy,
   updateDoc,
-} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCqAQCELh1q2pWxrXtx-8lBwRe2CTSG_HdQ",
-  authDomain: "boolbang-board.firebaseapp.com",
-  projectId: "boolbang-board",
-  storageBucket: "boolbang-board.appspot.com",
-  messagingSenderId: "1563061617526",
-  appId: "1:1563061617526:web:066768f311fc53cd017257",
-};
+import { firebaseConfig } from "./firebase-config.js";
+import { parseMedia, formatDate } from "./utils.js";
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -192,49 +186,7 @@ function closeModal() {
   fetchPosts();
 }
 
-function formatDate(timestamp) {
-  if (!timestamp || !timestamp.seconds) return "";
-  const date = new Date(timestamp.seconds * 1000);
-  return new Intl.DateTimeFormat("ko-KR", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-    timeZone: "Asia/Seoul",
-  }).format(date);
-}
-
-function parseMedia(content) {
-  let parsed = content.replace(/\n/g, "<br>");
-  parsed = parsed.replace(
-    /(https?:\/\/[^\s<]+?\.(jpg|jpeg|png|gif|webp|bmp|svg))/gi,
-    (_, url) =>
-      `<img src="${url}" style="max-width:100%; margin:10px auto; display:block;" loading="lazy" />`
-  );
-  parsed = parsed.replace(
-    /(https?:\/\/[^\s<]*(gstatic\.com|googleusercontent\.com)[^\s<]*)/gi,
-    (_, url) =>
-      `<img src="${url}" style="max-width:100%; margin:10px auto; display:block;" loading="lazy" />`
-  );
-  parsed = parsed.replace(
-    /https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-]+)[^\s<]*/g,
-    (_, videoId) =>
-      `<div class="youtube-wrap"><iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe></div>`
-  );
-  parsed = parsed.replace(
-    /https?:\/\/youtu\.be\/([\w-]+)[^\s<]*/g,
-    (_, videoId) =>
-      `<div class="youtube-wrap"><iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe></div>`
-  );
-  parsed = parsed.replace(
-    /(?<!src=")(https?:\/\/[^\s<]+)(?![^>]*>)/g,
-    '<a href="$1" target="_blank">$1</a>'
-  );
-  return parsed;
-}
+// formatDate와 parseMedia 함수는 utils.js에서 import
 
 window.viewPostById = viewPostById;
 window.closeModal = closeModal;

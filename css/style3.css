@@ -2,8 +2,8 @@
    메인 페이지 A4 레이아웃
    ============================= */
 body {
-  background-color: #000000;
-  color: #b5d0f4;
+  background-color: #d4d4d4;
+  color: #000000;
   line-height: 1.6;
   margin: 0;
   padding: 20px 0;
@@ -11,13 +11,21 @@ body {
   font-size: 15.2px;
 }
 
+/* Three.js ASCII Effect 박스 제거 */
+#three-container,
+#three-container *,
+#three-container pre,
+#three-container div {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 .main-container {
   width: 600px;
   min-height: 100vh;
   margin: 0 auto;
-  background-color: #000000;
-  border-left: 1px solid #b5d0f4;
-  border-right: 1px solid #b5d0f4;
+  background-color: #d4d4d4;
   padding: 25px 50px 40px 50px;
   box-sizing: border-box;
 }
@@ -27,19 +35,19 @@ body {
   text-align: center;
   margin-bottom: 20px;
   padding-bottom: 20px;
-  border-bottom: 1px solid #b5d0f4;
+  border-bottom: 1px solid #a8a8a8;
 }
 
 .main-header h1 {
   font-size: 2rem;
   margin: 0 0 10px 0;
-  color: #b5d0f4;
+  color: #000000;
   font-weight: 700;
 }
 
 .main-header p {
   font-size: 0.9rem;
-  color: #cccccc;
+  color: #000000;
   margin: 5px 0;
 }
 
@@ -47,11 +55,11 @@ body {
 .intro-section {
   margin: 10px 0 30px 0;
   padding: 20px;
-  background-color: #000000;
-  border-left: 4px solid #b5d0f4;
+  background-color: #a8a8a8;
+  border-left: 4px solid #0000aa;
   font-size: 0.85rem;
   line-height: 1.8;
-  color: #b5d0f4;
+  color: #000000;
 }
 
 /* 네비게이션 섹션 */
@@ -61,10 +69,10 @@ body {
 
 .nav-section h2 {
   font-size: 1.3rem;
-  color: #5e7ea8;
+  color: #0000aa;
   margin: 0 0 15px 0;
   padding-bottom: 8px;
-  border-bottom: 1px solid #b5d0f4;
+  border-bottom: 1px solid #a8a8a8;
   font-weight: 700;
 }
 
@@ -77,20 +85,20 @@ body {
 .nav-link {
   display: block;
   padding: 15px 20px;
-  background-color: #000000;
-  border: 1px solid #ffffff;
-  border-left: 5px solid #ffffff;
-  color: #ffffff;
+  background-color: #d4d4d4;
+  border: 2px solid #000000;
+  border-left: 5px solid #0000aa;
+  color: #000000;
   text-decoration: none;
   transition: all 0.3s ease;
   font-weight: 400;
 }
 
 .nav-link:hover {
-  background-color: #ffffff;
-  color: #000000;
+  background-color: #0000aa;
+  color: #ffffff;
   transform: translateX(5px);
-  border-left-color: #ffffff;
+  border-left-color: #0000aa;
 }
 
 .nav-link::before {
@@ -107,16 +115,19 @@ body {
 }
 
 .text-link {
-  color: #b5d0f4;
+  color: #000000;
   text-decoration: none;
-  padding: 4px 0;
+  padding: 2px 0;
+  margin: 0;
   border-bottom: 1px solid transparent;
   transition: all 0.2s ease;
   display: inline-block;
+  cursor: pointer;
 }
 
 .text-link:hover {
-  color: #ffffff;
+  color: #000000;
+  text-decoration: none;
   padding-left: 10px;
 }
 
@@ -166,13 +177,14 @@ td {
 }
 
 .modal-content {
-  color: #d3d3d3;
-  background: rgb(0, 0, 0);
+  color: #000000;
+  background: #d4d4d4;
   padding: 30px;
   margin: 5% auto;
-  width: 35%;
+  width: 600px;
   max-width: 600px;
-  border-radius: 8px;
+  border: 3px solid #000000;
+  border-radius: 0;
   text-align: left;
   max-height: 80vh;
   overflow-y: auto;
@@ -256,36 +268,41 @@ td {
    링크 및 버튼
    ============================= */
 a {
-  color: #ff0015;
+  color: #000000;
   text-decoration: none;
+  cursor: pointer;
 }
 a:hover {
-  color: #ff2929;
+  color: #000000;
+  text-decoration: none;
 }
 
 #postPagination button {
-  background-color: #ffffff;
+  background-color: #d4d4d4;
   color: #000000;
-  border: 1px solid #000;
+  border: 2px solid #000000;
   padding: 5px 7px;
   margin: 0 5px;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 #postPagination button:hover {
-  background-color: #ff2929;
+  background-color: #0000aa;
+  color: #ffffff;
 }
 
 #closeButton {
-  background-color: #48ff00;
-  color: rgb(0, 0, 0);
+  background-color: #0000aa;
+  color: #ffffff;
   padding: 8px 10px;
-  border: 1px solid black;
+  border: 2px solid #000000;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  font-weight: bold;
 }
 #closeButton:hover {
-  background-color: #ff2929;
+  background-color: #000000;
+  color: #ffffff;
 }
 
 /* =============================

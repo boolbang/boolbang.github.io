@@ -27,10 +27,15 @@
       z-index: 10;
       position: relative;
       border: 5px solid;
-      background-image: url("../images/backwave.gif"); 
-      background-size: cover; /* 박스에 꽉 채움 */
+      background-image: url("../images/backwave.gif");
+      background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
+      /* 고정 크기로 테마 전환시 레이아웃 변화 방지 */
+      min-width: 400px;
+      max-width: 400px;
+      width: 400px;
+      box-sizing: border-box;
     }
 
     .reel-container {
@@ -82,11 +87,16 @@
     #result, #money, #stage-info, #spin-count {
       margin-top: 10px;
       font-size: 18px;
+      min-height: 24px; /* 고정 높이로 레이아웃 안정화 */
     }
 
     #guide {
       margin-top: 20px;
       font-size: 14px;
+      min-height: 40px; /* 고정 높이로 레이아웃 안정화 */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     #bet-options {
@@ -176,12 +186,34 @@
 }
 
 #slot-machine.stage-transition {
-  background-image: url("../images/stage.gif"); /* 원하는 이미지 경로 */
+  background-image: url("../images/stage.gif");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
+/* 모바일 반응형 */
+@media (max-width: 600px) {
+  #slot-machine {
+    min-width: 90vw;
+    max-width: 90vw;
+    width: 90vw;
+    padding: 15px;
+  }
+
+  #result, #money, #stage-info, #spin-count {
+    font-size: 16px;
+  }
+
+  #guide {
+    font-size: 12px;
+  }
+
+  button {
+    font-size: 14px;
+    padding: 6px 8px;
+  }
+}
 
   </style>
 </head>
@@ -230,12 +262,20 @@ document.querySelectorAll('button').forEach(btn => {
 });
 
     const symbols = ['★', '♦', '♠', '♣', '♥'];
-    const symbolScoresByStage = {
-      1: { '★': 500, '♦': 70, '♠': 50, '♣': 30, '♥': 20 },
-      2: { '★': 700, '♦': 100, '♠': 70, '♣': 40, '♥': 30 },
-      3: { '★': 1000, '♦': 200, '♠': 100, '♣': 60, '♥': 40 },
+
+    // 기본 보상 테이블 (Stage 1 기준)
+    // 각 스테이지마다 2배씩 증가 (지수적 증가)
+    const baseScores = {
+      '★': 500,  // 가장 높은 보상
+      '♦': 70,
+      '♠': 50,
+      '♣': 30,
+      '♥': 20    // 가장 낮은 보상
     };
 
+    // 게임 상태 변수
+    // money: 현재 자금, stage: 현재 스테이지, target: 클리어 목표
+    // spinCount: 총 플레이 횟수, betMultiplier: 베팅 배율 (1, 2, 5배)
     let money = 100, stage = 1, target = 500, spinCount = 0, betMultiplier = 1;
     let bgmStarted = false;
 
@@ -262,12 +302,28 @@ document.querySelectorAll('button').forEach(btn => {
       updateDisplay();
     }
 
+    // 현재 베팅금 계산 (지수적 증가)
+    // Stage 1: 10만원, Stage 2: 20만원, Stage 3: 40만원, Stage 4: 80만원...
+    // betMultiplier로 1배, 2배, 5배 선택 가능
     function currentBet() {
       return (10 * Math.pow(2, stage - 1)) * betMultiplier;
     }
 
+    // 스테이지에 따라 보상을 지수적으로 증가 (베팅 증가와 균형 맞춤)
+    // Stage 1: 기본 보상 (★=500)
+    // Stage 2: 2배 보상 (★=1000)
+    // Stage 3: 4배 보상 (★=2000)
+    // Stage 4: 8배 보상 (★=4000)...
+    // 이제 무한 스테이지 플레이 가능!
     function getScores() {
-      return symbolScoresByStage[stage] || symbolScoresByStage[3];
+      const stageMultiplier = Math.pow(2, stage - 1);
+
+      const scores = {};
+      for (let symbol in baseScores) {
+        scores[symbol] = baseScores[symbol] * stageMultiplier;
+      }
+
+      return scores;
     }
 
     function updateSymbolGuide() {
@@ -276,7 +332,8 @@ document.querySelectorAll('button').forEach(btn => {
     }
 
     function updateStageInfo() {
-      stageInfoDisplay.textContent = `Stage ${stage} | 빚: ${target}만원`;
+      const stageMultiplier = Math.pow(2, stage - 1);
+      stageInfoDisplay.textContent = `Stage ${stage} | 빚: ${target}만원 | 보상배율: x${stageMultiplier}`;
     }
 
     function updateDisplay() {
