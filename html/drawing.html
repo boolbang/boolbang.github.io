@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>드로잉 - 불방 인터렉티브</title>
+    <meta name="description" content="불방 인터렉티브 - 드로잉 작업물" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    <link rel="icon" href="../images/pavicon.png" type="image/png" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "D2Coding", monospace;
+        background: #d4d4d4;
+        color: #000;
+        padding: 40px 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .back-link {
+        display: inline-block;
+        color: #000;
+        text-decoration: none;
+        margin-bottom: 30px;
+        font-size: 0.95rem;
+        transition: opacity 0.2s;
+      }
+
+      .back-link:hover {
+        opacity: 0.6;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+        font-weight: normal;
+        margin-bottom: 30px;
+        color: #000;
+      }
+
+      /* 썸네일 갤러리 */
+      .thumbnail-gallery {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 40px;
+        overflow-x: auto;
+        padding-bottom: 10px;
+      }
+
+      .thumbnail-item {
+        flex-shrink: 0;
+        width: 100px;
+        height: 100px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        overflow: hidden;
+        background: #f5f5f5;
+      }
+
+      .thumbnail-item:hover {
+        opacity: 0.7;
+      }
+
+      .thumbnail-item.active {
+        opacity: 1;
+      }
+
+      .thumbnail-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      /* 메인 이미지 컨테이너 */
+      .main-image-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 500px;
+        background: #d4d4d4;
+        padding: 20px;
+      }
+
+      .main-image-container img {
+        max-width: 100%;
+        max-height: 70vh;
+        width: auto;
+        height: auto;
+        display: block;
+        object-fit: contain;
+      }
+
+      /* 반응형 */
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 1.2rem;
+          margin-bottom: 20px;
+        }
+
+        .thumbnail-gallery {
+          gap: 6px;
+        }
+
+        .thumbnail-item {
+          width: 50px;
+          height: 50px;
+        }
+
+        .main-image-container {
+          min-height: 300px;
+          padding: 15px;
+        }
+
+        .main-image-container img {
+          max-height: 50vh;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <a href="/" class="back-link">← 메인으로 돌아가기</a>
+      <h1>드로잉</h1>
+
+      <!-- 썸네일 갤러리 -->
+      <div class="thumbnail-gallery">
+        <div
+          class="thumbnail-item active"
+          onclick="changeImage(this, '/images/drawing/인형흑백.webp')"
+        >
+          <img src="/images/drawing/인형흑백.webp" alt="드로잉 1" />
+        </div>
+        <div
+          class="thumbnail-item"
+          onclick="changeImage(this, '/images/drawing/stand.webp')"
+        >
+          <img src="/images/drawing/stand.webp" alt="드로잉 2" />
+        </div>
+        <div
+          class="thumbnail-item"
+          onclick="changeImage(this, '/images/drawing/사진 2024. 11. 5. 오전 2 06 37.webp')"
+        >
+          <img
+            src="/images/drawing/사진 2024. 11. 5. 오전 2 06 37.webp"
+            alt="드로잉 3"
+          />
+        </div>
+        <div
+          class="thumbnail-item"
+          onclick="changeImage(this, '/images/drawing/1.webp')"
+        >
+          <img src="/images/drawing/1.webp" alt="드로잉 4" />
+        </div>
+        <div
+          class="thumbnail-item"
+          onclick="changeImage(this, '/images/drawing/2제목_없는_아트워크.webp')"
+        >
+          <img src="/images/drawing/2제목_없는_아트워크.webp" alt="드로잉 5" />
+        </div>
+        <div
+          class="thumbnail-item"
+          onclick="changeImage(this, '/images/drawing/3제목_없는_아트워크.webp')"
+        >
+          <img src="/images/drawing/3제목_없는_아트워크.webp" alt="드로잉 6" />
+        </div>
+        <div
+          class="thumbnail-item"
+          onclick="changeImage(this, '/images/drawing/4제목_없는_아트워크.webp')"
+        >
+          <img src="/images/drawing/4제목_없는_아트워크.webp" alt="드로잉 7" />
+        </div>
+        <div
+          class="thumbnail-item"
+          onclick="changeImage(this, '/images/drawing/ㅛ제목_없는_아트워크.webp')"
+        >
+          <img src="/images/drawing/ㅛ제목_없는_아트워크.webp" alt="드로잉 8" />
+        </div>
+      </div>
+
+      <!-- 메인 이미지 -->
+      <div class="main-image-container">
+        <img
+          id="mainImage"
+          src="/images/drawing/인형흑백.webp"
+          alt="선택된 드로잉"
+        />
+      </div>
+    </div>
+
+    <script>
+      function changeImage(thumbnail, imageSrc) {
+        // 메인 이미지 변경
+        const mainImage = document.getElementById("mainImage");
+        mainImage.src = imageSrc;
+
+        // 모든 썸네일에서 active 클래스 제거
+        const thumbnails = document.querySelectorAll(".thumbnail-item");
+        thumbnails.forEach((item) => item.classList.remove("active"));
+
+        // 클릭한 썸네일에 active 클래스 추가
+        thumbnail.classList.add("active");
+      }
+    </script>
+  </body>
+</html>

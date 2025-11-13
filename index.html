@@ -48,11 +48,33 @@
   </head>
   <body>
     <div class="main-container">
-      <header class="main-header">
+      <header class="main-header" style="position: relative">
+        <button
+          id="langToggle"
+          style="
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #e8e8e8;
+            border: none;
+            color: #808080;
+            font-size: 0.75rem;
+            cursor: pointer;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          "
+        >
+          ENG
+        </button>
         <h1 style="font-size: 1.5rem; color: #000000; font-weight: normal">
           불방 인터랙티브
         </h1>
-        <p style="color: #000000; font-size: 15.2px">영상과 코딩 하는 듀오.</p>
+        <p style="color: #000000; font-size: 15.2px">"영상과 코딩 하는 듀오"</p>
       </header>
 
       <section
@@ -76,7 +98,7 @@
           "
         >
           Languages & Frameworks<br />
-          C++, JavaScript (React, Next.js), SQL 등
+          C++, JavaScript (React, Next.js), Python, SQL 등
         </p>
         <p
           style="
@@ -125,20 +147,6 @@
           <li style="padding: 8px; color: #000000">로딩 중...</li>
         </ul>
 
-        <div style="margin-top: 0">
-          <a
-            href="/html/3Dview.html"
-            style="
-              color: #000000;
-              text-decoration: none;
-              cursor: pointer;
-              padding: 2px 0;
-              display: block;
-            "
-            >→ 3D 모델링</a
-          >
-        </div>
-
         <div style="border-top: 1px solid #a8a8a8; margin-top: 30px"></div>
 
         <h3
@@ -153,7 +161,8 @@
           Portfolio Section 2
         </h3>
         <div style="margin-top: 0">
-          <a
+          <!-- 경마 시뮬레이터는 개발 중이므로 임시로 숨김 처리 -->
+          <!-- <a
             href="/html/horsegame.html"
             style="
               color: #000000;
@@ -163,7 +172,7 @@
               display: block;
             "
             >→ 경마 시뮬레이터</a
-          >
+          > -->
           <a
             href="/html/ddolgame.html"
             style="
@@ -185,6 +194,43 @@
               display: block;
             "
             >→ 지옥의 슬롯머신</a
+          >
+        </div>
+        <div style="border-top: 1px solid #a8a8a8; margin-top: 30px"></div>
+
+        <h3
+          style="
+            font-size: 1rem;
+            color: #000000;
+            margin: 15px 0 10px 0;
+            padding-bottom: 5px;
+            font-weight: normal;
+          "
+        >
+          Portfolio Section 3
+        </h3>
+        <div style="margin-top: 0">
+          <a
+            href="/html/3Dview.html"
+            style="
+              color: #000000;
+              text-decoration: none;
+              cursor: pointer;
+              padding: 2px 0;
+              display: block;
+            "
+            >→ 모델링</a
+          >
+          <a
+            href="/html/drawing.html"
+            style="
+              color: #000000;
+              text-decoration: none;
+              cursor: pointer;
+              padding: 2px 0;
+              display: block;
+            "
+            >→ 드로잉</a
           >
         </div>
         <div style="border-top: 1px solid #a8a8a8; margin-top: 30px"></div>
@@ -320,6 +366,14 @@
             }
 
             modal.style.display = "block";
+            // 모달 내용을 최상단으로 스크롤
+            const modalContentElement =
+              document.querySelector(".modal-content");
+            if (modalContentElement) {
+              modalContentElement.scrollTop = 0;
+            }
+            // 페이지 자체도 최상단으로 스크롤 (모바일 대응)
+            window.scrollTo(0, 0);
             history.pushState({ modal: true }, "", "#modal");
           }
         } catch (e) {
@@ -356,7 +410,16 @@
           posts.forEach((post) => {
             const li = document.createElement("li");
             li.style.cssText = "padding: 2px 0; margin: 0; cursor: pointer;";
-            const cleanTitle = post.title.replace(/\[WORKS\]/gi, "").trim();
+            let cleanTitle = post.title.replace(/\[WORKS\]/gi, "").trim();
+
+            // 현재 언어에 맞는 제목 번역 적용
+            if (
+              postTitleTranslations[currentLang] &&
+              postTitleTranslations[currentLang][cleanTitle]
+            ) {
+              cleanTitle = postTitleTranslations[currentLang][cleanTitle];
+            }
+
             li.innerHTML = `
               <a href="#" class="post-link" data-id="${post.id}" style="color: #000000; text-decoration: none; cursor: pointer;">
                 → ${cleanTitle}
@@ -380,6 +443,166 @@
       }
 
       window.addEventListener("DOMContentLoaded", renderPosts);
+
+      // 언어 전환 기능
+      let currentLang = localStorage.getItem("lang") || "ko";
+      const langToggle = document.getElementById("langToggle");
+
+      const translations = {
+        ko: {
+          title: "불방 인터랙티브",
+          subtitle: "영상과 코딩 하는 듀오.",
+          office:
+            'const office = { "kr-seoul": "서울시 영등포구 국제금융로", "kr-gyeonggi-do": "경기도 성남시 분당구 판교역로" };',
+          langBtn: "ENG",
+          frameworks: "Languages & Frameworks",
+          frameworksDetail: "C++, JavaScript (React, Next.js), SQL 등",
+          tools: "Creative Tools",
+          toolsDetail:
+            "Adobe Premiere Pro (Pr), DaVinci Resolve (Resolve), Blender 등",
+          resume: "딥한이력서_VER",
+          portfolio1: "Portfolio Section 1",
+          portfolio2: "Portfolio Section 2",
+          portfolio3: "Portfolio Section 3",
+          modeling: "→ 모델링",
+          drawing: "→ 드로잉",
+          horseGame: "→ 경마 시뮬레이터",
+          ddolGame: "→ 달려라 똘배!",
+          slotGame: "→ 지옥의 슬롯머신",
+          youtube: "유튜브",
+          instagram: "인스타그램",
+          loading: "로딩 중...",
+          noPost: "게시글이 없습니다.",
+          closeBtn: "닫기",
+        },
+        en: {
+          title: "BoolBang Interactive",
+          subtitle: "A duo working on video and coding.",
+          office:
+            'const office = { "kr-seoul": "Yeouido, Seoul", "kr-gyeonggi-do": "Pangyo, Gyeonggi-do" };',
+          langBtn: "KOR",
+          frameworks: "Languages & Frameworks",
+          frameworksDetail: "C++, JavaScript (React, Next.js), SQL, etc.",
+          tools: "Creative Tools",
+          toolsDetail:
+            "Adobe Premiere Pro (Pr), DaVinci Resolve, Blender, etc.",
+          resume: "Resume_VER",
+          portfolio1: "Portfolio Section 1",
+          portfolio2: "Portfolio Section 2",
+          portfolio3: "Portfolio Section 3",
+          modeling: "→ Modeling",
+          drawing: "→ Drawing",
+          horseGame: "→ Horse Racing Simulator",
+          ddolGame: "→ Run, Ddolbae!",
+          slotGame: "→ Hell Slot Machine",
+          youtube: "YouTube",
+          instagram: "Instagram",
+          loading: "Loading...",
+          noPost: "No posts available.",
+          closeBtn: "Close",
+        },
+      };
+
+      // 게시글 제목 번역 매핑
+      const postTitleTranslations = {
+        ko: {
+          "3D VFX 외 작업물": "3D, VFX",
+          "사진 작업들": "사진",
+          "불방의 영상들": "영상",
+          "불방 LIVE 송출 스튜디오: 3년간의 운영 이야기 (2022–2025)": "컨설팅",
+          "3D Modeling": "3D Modeling",
+        },
+        en: {
+          "3D VFX 외 작업물": "3D, VFX",
+          "사진 작업들": "Photography",
+          "불방의 영상들": "Videos",
+          "불방 LIVE 송출 스튜디오: 3년간의 운영 이야기 (2022–2025)":
+            "Consulting",
+          "3D Modeling": "3D Modeling",
+        },
+      };
+
+      function updateLanguage() {
+        const t = translations[currentLang];
+        document.querySelector("h1").textContent = t.title;
+        document.querySelector("header p").textContent = t.subtitle;
+        document.querySelector(".intro-section p").textContent = t.office;
+        langToggle.textContent = t.langBtn;
+
+        const paragraphs = document.querySelectorAll(".nav-section > p");
+        if (paragraphs[0]) {
+          paragraphs[0].innerHTML = `${t.frameworks}<br />${t.frameworksDetail}`;
+        }
+        if (paragraphs[1]) {
+          paragraphs[1].innerHTML = `${t.tools}<br />${t.toolsDetail}`;
+        }
+
+        document.querySelector('a[href="/html/about.html"]').textContent =
+          t.resume;
+
+        const h3Tags = document.querySelectorAll("h3");
+        if (h3Tags[0]) h3Tags[0].textContent = t.portfolio1;
+        if (h3Tags[1]) h3Tags[1].textContent = t.portfolio2;
+        if (h3Tags[2]) h3Tags[2].textContent = t.portfolio3;
+
+        const modelingLink = document.querySelector(
+          'a[href="/html/3Dview.html"]'
+        );
+        if (modelingLink) modelingLink.textContent = t.modeling;
+
+        const drawingLink = document.querySelector(
+          'a[href="/html/drawing.html"]'
+        );
+        if (drawingLink) drawingLink.textContent = t.drawing;
+
+        const horseGameLink = document.querySelector(
+          'a[href="/html/horsegame.html"]'
+        );
+        if (horseGameLink) horseGameLink.textContent = t.horseGame;
+
+        const ddolGameLink = document.querySelector(
+          'a[href="/html/ddolgame.html"]'
+        );
+        if (ddolGameLink) ddolGameLink.textContent = t.ddolGame;
+
+        const slotGameLink = document.querySelector(
+          'a[href="/html/slot_index.html"]'
+        );
+        if (slotGameLink) slotGameLink.textContent = t.slotGame;
+
+        const youtubeLink = document.querySelector(
+          'a[href="https://www.youtube.com/@boolbang"]'
+        );
+        if (youtubeLink) youtubeLink.textContent = t.youtube;
+
+        const instagramLink = document.querySelector(
+          'a[href="https://www.instagram.com/postboolbang"]'
+        );
+        if (instagramLink) instagramLink.textContent = t.instagram;
+
+        const closeButton = document.getElementById("closeButton");
+        if (closeButton) closeButton.textContent = t.closeBtn;
+      }
+
+      langToggle.addEventListener("click", () => {
+        currentLang = currentLang === "ko" ? "en" : "ko";
+        localStorage.setItem("lang", currentLang);
+        updateLanguage();
+        renderPosts(); // 게시글 목록 다시 렌더링
+      });
+
+      langToggle.addEventListener("mouseenter", () => {
+        langToggle.style.color = "#000000";
+        langToggle.style.backgroundColor = "#d4d4d4";
+      });
+
+      langToggle.addEventListener("mouseleave", () => {
+        langToggle.style.color = "#808080";
+        langToggle.style.backgroundColor = "#e8e8e8";
+      });
+
+      // 초기 언어 설정 - 페이지 로드 시 항상 실행
+      updateLanguage();
     </script>
   </body>
 </html>

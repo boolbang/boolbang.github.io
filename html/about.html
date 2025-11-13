@@ -6,6 +6,7 @@
     <title>딥한 이력서</title>
     <meta name="description" content="불방 인터렉티브 - 딥한 이력서" />
     <link rel="stylesheet" href="/css/fonts.css" />
+    <link rel="icon" href="../images/pavicon.png" type="image/png" />
     <style>
       body {
         margin: 0;
@@ -77,6 +78,30 @@
         color: #333333;
       }
 
+      .lang-toggle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #e8e8e8;
+        border: none;
+        color: #808080;
+        font-size: 0.75rem;
+        cursor: pointer;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+
+      .lang-toggle:hover {
+        color: #000000;
+        background-color: #d4d4d4;
+      }
+
       @media (max-width: 600px) {
         .container {
           padding: 20px 15px;
@@ -97,11 +122,12 @@
     </style>
   </head>
   <body>
+    <button id="langToggle" class="lang-toggle">ENG</button>
     <div class="container">
       <a href="/" class="back-link">← 메인으로 돌아가기</a>
 
-      <h3>서술형</h3>
-      <p>
+      <h3 id="narrativeTitle">서술형</h3>
+      <p id="narrativeContent">
         <strong>인생업적</strong> 대학은 한국예술종합학교 미술원에서 'FINE
         ART'를 전공, 학사 졸업하였습니다. 세부 전공은 영상인데요. 흔히 사람들은
         미술을 전공했다고 하면 그림을 떠올리지만, 학교 입학 후 여태껏 그림보다는
@@ -145,14 +171,16 @@
         싶습니다.
       </p>
 
-      <h3>CV</h3>
-      <p>
+      <h3 id="cvTitle">CV</h3>
+      <p id="cvIntro">
         2013년부터 2019년까지 미술 작가, 다큐멘터리 감독으로 활동 하였습니다.<br />
         (현재는 순수한 예술 활동은 하지 않고 있습니다.)
       </p>
 
-      <p><strong class="cv-title">전시 및 상영</strong></p>
-      <p>
+      <p id="exhibitionsTitle">
+        <strong class="cv-title">전시 및 상영</strong>
+      </p>
+      <p id="exhibitionsList">
         2019 <strong class="cv-title">개인전</strong> '파도소리 가제',
         <a
           href="https://www.tribowl.kr/_NBoard/board.php?bo_table=exhibitProgram&wr_id=33&page=4"
@@ -204,8 +232,10 @@
         >, 서울
       </p>
 
-      <p><strong class="cv-title">소장 및 레지던시 프로그램</strong></p>
-      <p>
+      <p id="collectionTitle">
+        <strong class="cv-title">소장 및 레지던시 프로그램</strong>
+      </p>
+      <p id="collectionsList">
         2018 '원수를 경마장에 데려가라'
         <strong class="cv-title">다큐멘터리VER</strong>,
         <a
@@ -219,8 +249,8 @@
         >
       </p>
 
-      <p><strong class="cv-title">출간</strong></p>
-      <p>
+      <p id="publicationsTitle"><strong class="cv-title">출간</strong></p>
+      <p id="publicationsList">
         <a
           href="https://moonji.com/bookAndAuthor/books/detail/2844"
           target="_blank"
@@ -249,7 +279,7 @@
         Published by HITE Foundation, 2014년
       </p>
 
-      <p><strong class="cv-title">비평</strong></p>
+      <p id="critiquesTitle"><strong class="cv-title">비평</strong></p>
       <p>
         <a href="/html/critique_pray.html">1</a><br />
         <a href="/html/critique1.html">2</a><br />
@@ -257,10 +287,196 @@
       </p>
 
       <h3>♥ Thank You ♥</h3>
-      <p>
+      <p id="thankYouContent">
         긴 이력서 읽어주셔서 감사합니다. '뭔가 이 녀석, 쓸 데가 있을 것 같다!'
         싶으시면 언제든지 연락 주세요. fromboolbang@gmail.com
       </p>
     </div>
+
+    <script>
+      let currentLang = localStorage.getItem("lang") || "ko";
+
+      const translations = {
+        ko: {
+          langBtn: "ENG",
+          backLink: "← 메인으로 돌아가기",
+          narrativeTitle: "서술형",
+          narrative: `<strong>인생업적</strong> 대학은 한국예술종합학교 미술원에서 'FINE ART'를 전공, 학사 졸업하였습니다. 세부 전공은 영상인데요. 흔히 사람들은 미술을 전공했다고 하면 그림을 떠올리지만, 학교 입학 후 여태껏 그림보다는 영상을 활용한 미디어 아트를 주로 다루었습니다. '현대미술'을 생각하면 대충 그려질지 모르겠네요. 입학 때도 국어와 영어 필기, 그리고 포트폴리오와 면접을 통해 들어갔고, 학업 성취도 또한 나쁘지 않은 편입니다. 참고가 될지 모르겠지만, 해당 과에 '성적우수장학생'으로 입학하였습니다. 졸업 이후 미술씬과 영화씬(찍먹)에서 작가, 감독으로 약 6~7년간 활동한 것 같습니다. 번외로 게임을 좋아하기도 하지만, 잘하기도 하는 편이라고 생각합니다. 40대에 '오버워치'를 시작하여 다이아를 찍었습니다. 중학교 때는 '버추어 파이터 2'를 살던 지역에서 가장 잘했습니다. <strong>작가, 감독 시절</strong> 주로 실험적인 영상 작업을 하는 작가로 알려져 있었습니다. 주요 미술관의 전시와 '인천아트플랫폼 레지던시 입주', '프로젝트 사루비아 스페이스 개인전' 등의 경력이 있습니다. 작업을 진행하던 중 자연스럽게 단편영화를 몇 편 만들었고, 그중 하나는 다큐멘터리로, 영화제에 상영되었습니다. DCP 시설이 갖추어진 괜찮은 영화제에서 상영되었고(인디포럼, 서울아트시네마), 해당 작품은 현재 한국영상자료원에 소장되어 있습니다. 비평가들에게 좋은 평도 많이 받았습니다. (『암점』 문학과지성사, 박준상, 2017년 출간 등) 2019년 전시를 끝으로 작가 생활은 그만두었습니다. (경제적인 이유 때문이라고 생각했으나, 후에 생각해보니 그 분야에 흥미를 잃었던 것이 원인이었던 것 같습니다.) <strong>영상으로 돈벌기 시작</strong> 작가로 활동하던 중, 2016년에는 사업자를 내고 상업적인 영상을 제작하였습니다. 처음엔 단순히 기록하는 일부터 시작했죠. 좋소 홍보영상 같은... 이후에는 많은 동료 작가들과 업계 사람들에게 필요한 색보정 기술을 익혔습니다. 영화관(블랙박스)과 미술관(화이트큐브) 양쪽 모두에서 활동한 경력이 있어, 영화관에 필요한 색보정 프로세스인 REC.709, P3 기준 색보정, 설치를 필요로 하는 미술관 영상에 맞는 다채널 솔루션 등을 제공하며 활동했습니다. 동시에 3D 프로그램을 활용한 VFX와 모델링에도 관심을 가졌고, 관련하여 상업적인 일도 다수 진행했습니다. *포트폴리오 게시판 참고. <strong>인터랙션, 코딩</strong> 3D와 영상 등을 다루면서 인터랙션에 대한 관심이 생기며, 자연스럽게 코딩에 빠져들게 되었습니다. 웹은 풀스택으로 다루고 있으며, 최적화를 위해, C++과 수학은 꾸준히 공부하고 있습니다. 개발은 주로 저희 사업에 활용하고 있습니다만, 여러 건의 웹사이트 작업도 외주로 진행하였습니다. 브라우저 상에서 동작할 수 있는 인터랙션에 대한 관심 때문에 WebGL과 WebGPU로 가능한 게임에 관심이 많습니다. 웹개발 역시 게임의 관점에서 바라보고 있습니다. <strong>게임</strong> 저는 '기승전게임', 그야말로 게임 제작을 위해 인생을 살아왔다고 생각합니다. 게임을 즐길 줄 알며, 프로그래밍은 물론 아트워크까지 소화 가능하니, 잘 만들어야 하지 않겠습니까? :) 언젠가는 좋은 게임을 만들어 공개하고 싶습니다.`,
+          thankYou: `긴 이력서 읽어주셔서 감사합니다. '뭔가 이 녀석, 쓸 데가 있을 것 같다!' 싶으시면 언제든지 연락 주세요. fromboolbang@gmail.com`,
+        },
+        en: {
+          langBtn: "KOR",
+          backLink: "← Back to Main",
+          narrativeTitle: "Narrative",
+          narrative: `<strong>Background</strong> I studied Fine Art at the Korea National University of Arts, School of Visual Arts, where I earned my Bachelor's degree. My concentration was in video, not traditional painting. So although people often associate "fine art" with drawing, most of my practice revolved around media art and video-based contemporary art. I passed the entrance examination through written tests in Korean and English, a portfolio review, and an interview. I also entered the program as a merit-based scholarship student. After graduating, I worked as an artist and a filmmaker for about six to seven years. On a side note: I love games and think I'm pretty good at them too. I reached Diamond in Overwatch in my 40s, and back in middle school, I was locally known as the best Virtua Fighter 2 player in the area. <strong>Artist and Director Era</strong> I was primarily known as an artist working with experimental video. I exhibited at major art museums, participated in the Incheon Art Platform residency, and held a solo exhibition at Project Sarubia Space. During this period, I naturally created several short films, including a documentary that was screened at reputable film festivals equipped with DCP projection facilities (Indie Forum, Seoul Art Cinema). That film is now archived at the Korean Film Archive and received strong critical acclaim from critics (e.g., Amjeom, Moonji Publishing, by Park Junsang, 2017). I ended my career as an artist in 2019 after my last exhibition. (At the time, I thought it was for financial reasons, but looking back, I realize I had simply lost interest in the field.) <strong>Transition into Commercial Video Work</strong> While still active as an artist, I registered a business in 2016 and began producing commercial video content. I started with basic documentary-style recordings—typical promotional videos—and later expanded into color grading, learning techniques necessary for both cinema (REC.709, P3 workflows) and multi-channel installations for art museums. I also developed skills in 3D software, handling VFX and modeling, and completed many commercial projects in that field. (More details are available on my portfolio board.) <strong>Interaction, Coding, and Development</strong> Working with 3D and video naturally led me into interactive media, which eventually pulled me deeper into programming. I now work as a full-stack web developer and regularly study C++ and mathematics to improve performance-oriented systems. Most of my development work is used within my own business, although I have also completed several web projects as a freelancer. Because of my interest in interaction within the browser, I'm particularly drawn to WebGL and WebGPU—and especially to what kinds of games are possible on the web. I approach web development from a "game design" perspective. <strong>Games</strong> In a way, everything in my life leads back to games. I love playing them and genuinely believe I'm pretty good. With my background—programming, art, filmmaking—I feel like I'm meant to make games. Someday, I hope to release a truly good one.`,
+          thankYou: `Thank you for reading this long resume. If you think "this person might be useful for something," please feel free to contact me anytime. fromboolbang@gmail.com`,
+          cvTitle: "CV",
+          cvIntro:
+            "From 2013 to 2019, I worked as a visual artist and documentary filmmaker.<br />(I am no longer actively engaged in fine art practice.)",
+          exhibitionsTitle: "Exhibitions & Screenings",
+          exhibitionsList: `2019 <strong class="cv-title">Solo Exhibition</strong> 'Wave Sound Temporary Title', <a href="https://www.tribowl.kr/_NBoard/board.php?bo_table=exhibitProgram&wr_id=33&page=4" target="_blank">TriBowl</a>, Incheon<br />
+        2019 'Media Punk', <a href="https://www.arko.or.kr/artcenter/board/view/507?bid=266&page=1&cid=537228&dateLocation=before&searchValue=%EB%AF%B8%EB%94%94%EC%96%B4%ED%8E%91%ED%81%AC&searchOperator=or&searchField=title,body&bid=266" target="_blank">Arko Art Center</a>, Seoul<br />
+        2018 'Indie Forum New Works Section', 'Take Your Enemy to the Horse Racing', <a href="https://www.cinematheque.seoul.kr/bbs/board.php?bo_table=program&wr_id=771" target="_blank">Seoul Art Cinema</a>, Seoul<br />
+        2018 'EXHIBITIONG OF EXHIBITIONG OF EXHIBITION', <a href="https://www.jeongdong.or.kr/portal/main/main.do" target="_blank">Cecil Theater</a>, Seoul<br />
+        2017 'Dove Audio & Video', <a href="https://www.facebook.com/doveaudiovideofestival" target="_blank">Sewoon Plaza</a>, Seoul<br />
+        2017 <strong class="cv-title">Solo Exhibition</strong> 'Take Your Enemy to the Horse Racing', <a href="https://www.sarubia.org/68" target="_blank">Sarubia Space</a>, Seoul<br />
+        2015 'Video Anthology', Incheon Art Platform, Incheon<br />
+        2014 'Video Relay Carbonation', <a href="https://www.arko.or.kr/insa/board/view/612?bid=430&dateLocation=before&cid=532230&cid=532230" target="_blank">Arko Art Center Space Filloux</a>, Seoul<br />
+        2014 <strong class="cv-title">Short Film</strong> &lt;Prayer&gt;, Cine Code Sonje, Seoul<br />
+        2014 'When the Future Ended', <a href="https://hitecollection.com/exhibitions/past/exhibitions-2014/when-the-future-ended/" target="_blank">HITE Collection</a>, Seoul`,
+          collectionTitle: "Collections & Residency Programs",
+          collectionsList: `2018 'Take Your Enemy to the Horse Racing' <strong class="cv-title">Documentary VER</strong>, <a href="https://www.kmdb.or.kr/db/kor/detail/movie/A/08516" target="_blank">Korean Film Archive Collection</a><br />
+        2015~2016 <a href="https://inartplatform.kr/home/home" target="_blank">Incheon Art Platform Residency 6th</a>`,
+          publicationsTitle: "Publications",
+          publicationsList: `<a href="https://moonji.com/bookAndAuthor/books/detail/2844" target="_blank">&lt;Amjeom (Blind Spot)&gt;</a> Park Junsang, Moonji Publishing, 2017<br />
+        <a href="https://thebooksociety.org/1032791015/?idx=104" target="_blank">&lt;Oculo Issue 5&gt;</a> Media Bus, 2017<br />
+        <a href="https://workroompress.kr/product/215204/" target="_blank">&lt;Ethics of Delay&gt;</a> Kim Hongki, Workroom Press, 2022<br />
+        <a href="https://www.leepoetique.com/default/leepoetique/critique/critique1.php" target="_blank">&lt;Work Review&gt;</a> Leepoetique, 2020<br />
+        <a href="https://hitecollection.com/publications/when-the-future-ended/" target="_blank">&lt;When the Future Ended&gt;</a> Published by HITE Foundation, 2014`,
+          critiquesTitle: "Critiques",
+        },
+      };
+
+      function updateLanguage() {
+        const t = translations[currentLang];
+        document.getElementById("langToggle").textContent = t.langBtn;
+        document.querySelector(".back-link").textContent = t.backLink;
+        document.getElementById("narrativeTitle").textContent =
+          t.narrativeTitle;
+        document.getElementById("narrativeContent").innerHTML = t.narrative;
+        document.getElementById("thankYouContent").textContent = t.thankYou;
+
+        if (currentLang === "en") {
+          document.getElementById("cvTitle").textContent = t.cvTitle;
+          document.getElementById("cvIntro").innerHTML = t.cvIntro;
+          document.getElementById("exhibitionsTitle").innerHTML =
+            '<strong class="cv-title">' + t.exhibitionsTitle + "</strong>";
+          document.getElementById("exhibitionsList").innerHTML =
+            t.exhibitionsList;
+          document.getElementById("collectionTitle").innerHTML =
+            '<strong class="cv-title">' + t.collectionTitle + "</strong>";
+          document.getElementById("collectionsList").innerHTML =
+            t.collectionsList;
+          document.getElementById("publicationsTitle").innerHTML =
+            '<strong class="cv-title">' + t.publicationsTitle + "</strong>";
+          document.getElementById("publicationsList").innerHTML =
+            t.publicationsList;
+          document.getElementById("critiquesTitle").innerHTML =
+            '<strong class="cv-title">' + t.critiquesTitle + "</strong>";
+        } else {
+          document.getElementById("cvTitle").textContent = "CV";
+          document.getElementById("cvIntro").innerHTML =
+            "2013년부터 2019년까지 미술 작가, 다큐멘터리 감독으로 활동 하였습니다.<br />(현재는 순수한 예술 활동은 하지 않고 있습니다.)";
+          document.getElementById("exhibitionsTitle").innerHTML =
+            '<strong class="cv-title">전시 및 상영</strong>';
+          document.getElementById(
+            "exhibitionsList"
+          ).innerHTML = `2019 <strong class="cv-title">개인전</strong> '파도소리 가제',
+        <a
+          href="https://www.tribowl.kr/_NBoard/board.php?bo_table=exhibitProgram&wr_id=33&page=4"
+          target="_blank"
+          >트라이보울</a
+        >, 인천<br />
+        2019 '미디어펑크',
+        <a
+          href="https://www.arko.or.kr/artcenter/board/view/507?bid=266&page=1&cid=537228&dateLocation=before&searchValue=%EB%AF%B8%EB%94%94%EC%96%B4%ED%8E%91%ED%81%AC&searchOperator=or&searchField=title,body&bid=266"
+          target="_blank"
+          >아르코미술관</a
+        >, 서울<br />
+        2018 '인디포럼 영화제 신작전', '원수를 경마장에 데려가라',
+        <a
+          href="https://www.cinematheque.seoul.kr/bbs/board.php?bo_table=program&wr_id=771"
+          target="_blank"
+          >서울아트시네마</a
+        >, 서울<br />
+        2018 'EXHIBITIONG OF EXHIBITIONG OF EXHIBITION',
+        <a
+          href="https://www.jeongdong.or.kr/portal/main/main.do"
+          target="_blank"
+          >세실극장</a
+        >, 서울<br />
+        2017 '비둘기 오디오&비디오',
+        <a
+          href="https://www.facebook.com/doveaudiovideofestival"
+          target="_blank"
+          >세운상가</a
+        >, 서울<br />
+        2017 <strong class="cv-title">개인전</strong> '원수를 경마장에
+        데려가라',
+        <a href="https://www.sarubia.org/68" target="_blank">사루비아스페이스</a
+        >, 서울<br />
+        2015 '비디오엔솔리지', 인천아트플랫폼, 인천<br />
+        2014 '비디오 릴레이 탄산',
+        <a
+          href="https://www.arko.or.kr/insa/board/view/612?bid=430&dateLocation=before&cid=532230&cid=532230"
+          target="_blank"
+          >아르코미술관 스페이스 필룩스</a
+        >, 서울<br />
+        2014 <strong class="cv-title">단편영화</strong> &lt;기도&gt;,
+        씨네코드선재, 서울<br />
+        2014 '미래가 끝났을 때',
+        <a
+          href="https://hitecollection.com/exhibitions/past/exhibitions-2014/when-the-future-ended/"
+          target="_blank"
+          >하이트콜렉션</a
+        >, 서울`;
+          document.getElementById("collectionTitle").innerHTML =
+            '<strong class="cv-title">소장 및 레지던시 프로그램</strong>';
+          document.getElementById(
+            "collectionsList"
+          ).innerHTML = `2018 '원수를 경마장에 데려가라'
+        <strong class="cv-title">다큐멘터리VER</strong>,
+        <a
+          href="https://www.kmdb.or.kr/db/kor/detail/movie/A/08516"
+          target="_blank"
+          >한국영상자료원 소장</a
+        ><br />
+        2015~2016
+        <a href="https://inartplatform.kr/home/home" target="_blank"
+          >인천아트플랫폼 레지던시 6기</a
+        >`;
+          document.getElementById("publicationsTitle").innerHTML =
+            '<strong class="cv-title">출간</strong>';
+          document.getElementById("publicationsList").innerHTML = `<a
+          href="https://moonji.com/bookAndAuthor/books/detail/2844"
+          target="_blank"
+          >&lt;암점&gt;</a
+        >
+        박준상, 문학과지성사, 2017년<br />
+        <a href="https://thebooksociety.org/1032791015/?idx=104" target="_blank"
+          >&lt;오큘로5호&gt;</a
+        >
+        미디어버스, 2017년<br />
+        <a href="https://workroompress.kr/product/215204/" target="_blank"
+          >&lt;지연의윤리학&gt;</a
+        >
+        김홍기, 워크룸프레스, 2022년<br />
+        <a
+          href="https://www.leepoetique.com/default/leepoetique/critique/critique1.php"
+          target="_blank"
+          >&lt;작품리뷰&gt;</a
+        >
+        리포에틱, 2020년<br />
+        <a
+          href="https://hitecollection.com/publications/when-the-future-ended/"
+          target="_blank"
+          >&lt;미래가 끝났을 때&gt;</a
+        >
+        Published by HITE Foundation, 2014년`;
+          document.getElementById("critiquesTitle").innerHTML =
+            '<strong class="cv-title">비평</strong>';
+        }
+      }
+
+      const langToggle = document.getElementById("langToggle");
+
+      langToggle.addEventListener("click", () => {
+        currentLang = currentLang === "ko" ? "en" : "ko";
+        localStorage.setItem("lang", currentLang);
+        updateLanguage();
+      });
+
+      updateLanguage();
+    </script>
   </body>
 </html>

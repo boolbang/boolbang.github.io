@@ -1,4 +1,4 @@
-# 개발/테스트 파일
+# 관리자 전용 파일 (민감 정보 포함)
 html/write_boolbang_write.html
 
 # OS 관련
@@ -22,19 +22,37 @@ desktop.ini
 .env
 .env.local
 .env.production
+.env.development
 
 # Firebase config (보안 강화 옵션)
 # 주의: 현재는 firebase-config.js가 공개되어 있지만,
+# Firebase Security Rules로 실제 보안 관리됨
 # 향후 보안 강화시 아래 주석을 해제하여 .env 파일로 관리
 # js/firebase-config.local.js
 
-# Node modules (있을 경우)
+# Node modules
 node_modules/
+package-lock.json
+yarn.lock
 
-# 빌드 결과물 (있을 경우)
+# 빌드 결과물
 dist/
 build/
+.next/
+out/
 
-# 백업 파일
+# 백업 및 임시 파일
 *.bak
 *.backup
+*.old
+*~
+
+# 테스트 및 디버그
+coverage/
+.nyc_output/
+debug.log
+
+# 기타 민감 정보
+credentials.json
+serviceAccountKey.json
+secrets.json
