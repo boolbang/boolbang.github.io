@@ -49,16 +49,14 @@
       /* 썸네일 갤러리 */
       .thumbnail-gallery {
         display: flex;
-        gap: 10px;
+        flex-wrap: wrap;
+        gap: 8px;
         margin-bottom: 40px;
-        overflow-x: auto;
-        padding-bottom: 10px;
       }
 
       .thumbnail-item {
-        flex-shrink: 0;
-        width: 100px;
-        height: 100px;
+        width: 70px;
+        height: 70px;
         cursor: pointer;
         transition: opacity 0.2s;
         overflow: hidden;
@@ -107,12 +105,12 @@
         }
 
         .thumbnail-gallery {
-          gap: 6px;
+          gap: 5px;
         }
 
         .thumbnail-item {
-          width: 50px;
-          height: 50px;
+          width: 45px;
+          height: 45px;
         }
 
         .main-image-container {
@@ -183,6 +181,30 @@
           onclick="changeImage(this, '/images/drawing/ㅛ제목_없는_아트워크.webp')"
         >
           <img src="/images/drawing/ㅛ제목_없는_아트워크.webp" alt="드로잉 8" />
+        </div>
+          <div
+          class="thumbnail-item"
+          onclick="changeImage(this, '/images/drawing/jul.webp')"
+        >
+          <img src="/images/drawing/jul.webp" alt="드로잉 9" />
+        </div>
+          <div
+          class="thumbnail-item"
+          onclick="changeImage(this, '/images/drawing/venus.webp')"
+        >
+          <img src="/images/drawing/venus.webp" alt="드로잉 10" />
+        </div>
+           <div
+          class="thumbnail-item"
+          onclick="changeImage(this, '/images/drawing/horse.webp')"
+        >
+          <img src="/images/drawing/horse.webp" alt="드로잉 11" />
+        </div>
+           <div
+          class="thumbnail-item"
+          onclick="changeImage(this, '/images/drawing/horsesign.webp')"
+        >
+          <img src="/images/drawing/horsesign.webp" alt="드로잉 12" />
         </div>
       </div>
 
