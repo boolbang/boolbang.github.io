@@ -435,6 +435,17 @@
               showPostModal(postId);
             });
           });
+
+          // 가격표 링크 추가
+          const priceListLi = document.createElement("li");
+          priceListLi.style.cssText = "padding: 2px 0; margin: 0;";
+          const t = translations[currentLang];
+          priceListLi.innerHTML = `
+            <a href="https://spectacled-poppy-df2.notion.site/2c9c1c1feaaa81109ea8f962300745a1" target="_blank" id="priceListLink" style="color: #000000; text-decoration: none; cursor: pointer;">
+              ${t.priceList}
+            </a>
+          `;
+          list.appendChild(priceListLi);
         } catch (e) {
           console.error("글 불러오기 실패:", e);
           list.innerHTML =
@@ -474,6 +485,7 @@
           loading: "로딩 중...",
           noPost: "게시글이 없습니다.",
           closeBtn: "닫기",
+          priceList: "→ 가격표",
         },
         en: {
           title: "BoolBang Interactive",
@@ -500,6 +512,7 @@
           loading: "Loading...",
           noPost: "No posts available.",
           closeBtn: "Close",
+          priceList: "→ Price List",
         },
       };
 
@@ -582,6 +595,10 @@
 
         const closeButton = document.getElementById("closeButton");
         if (closeButton) closeButton.textContent = t.closeBtn;
+
+        // 가격표 링크 업데이트
+        const priceListLink = document.getElementById("priceListLink");
+        if (priceListLink) priceListLink.textContent = t.priceList;
       }
 
       langToggle.addEventListener("click", () => {

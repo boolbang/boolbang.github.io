@@ -24,11 +24,7 @@ desktop.ini
 .env.production
 .env.development
 
-# Firebase config (보안 강화 옵션)
-# 주의: 현재는 firebase-config.js가 공개되어 있지만,
-# Firebase Security Rules로 실제 보안 관리됨
-# 향후 보안 강화시 아래 주석을 해제하여 .env 파일로 관리
-# js/firebase-config.local.js
+
 
 # Node modules
 node_modules/
