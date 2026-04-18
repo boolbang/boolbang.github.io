@@ -2,6 +2,7 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="/css/fonts.css" />
     <title>Modeling Log</title>
     <meta
@@ -14,9 +15,13 @@
         margin: 0;
         overflow: hidden;
         background-color: black;
+        touch-action: none;
+        -webkit-overflow-scrolling: none;
+        overscroll-behavior: none;
       }
       canvas {
         display: block;
+        touch-action: none;
       }
       /* Caption overlay style */
       #caption {
@@ -202,6 +207,7 @@
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.LinearToneMapping;
       renderer.toneMappingExposure = Math.pow(2, 1);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
 
@@ -392,11 +398,23 @@
       }
       animate();
 
-      window.addEventListener("resize", () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
+      // 모바일에서 핀치 줌 시 브라우저 기본 줌 방지
+      document.addEventListener('gesturestart', (e) => e.preventDefault());
+      document.addEventListener('gesturechange', (e) => e.preventDefault());
+      document.addEventListener('gestureend', (e) => e.preventDefault());
+
+      // 안정적인 resize: visualViewport 우선 사용
+      function handleResize() {
+        const w = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+        const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        camera.aspect = w / h;
         camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      });
+        renderer.setSize(w, h);
+      }
+      window.addEventListener("resize", handleResize);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", handleResize);
+      }
 
       // === 렌더 모드 시스템 ===
       function applyRenderMode(mode) {
