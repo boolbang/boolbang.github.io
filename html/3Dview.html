@@ -31,24 +31,162 @@
         line-height: 1.4;
         z-index: 10;
       }
-      /* Close button style */
-      /* #close-btn {
-      position: absolute;
-      top: 8px;
-      right: 16px;
-      cursor: pointer;
-      font-size: 1.2rem;
-      color: #fff;
-    } */
+
+
+      /* POI annotation labels */
+      .poi-label {
+        position: absolute;
+        pointer-events: auto;
+        color: #00ffcc;
+        font-family: 'Pretendard', monospace;
+        font-size: 0.75rem;
+        background: rgba(0, 0, 0, 0.75);
+        border: 1px solid rgba(0, 255, 204, 0.4);
+        border-radius: 4px;
+        padding: 0;
+        white-space: nowrap;
+        transform: translate(-50%, -100%);
+        z-index: 20;
+        text-shadow: 0 0 4px rgba(0,255,204,0.5);
+        cursor: pointer;
+      }
+      .poi-label .poi-header {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 10px;
+      }
+      .poi-label .poi-header .poi-arrow {
+        font-size: 0.6rem;
+        transition: transform 0.2s;
+      }
+      .poi-label.open .poi-header .poi-arrow {
+        transform: rotate(90deg);
+      }
+      .poi-label .poi-detail {
+        display: none;
+        padding: 4px 10px 6px;
+        border-top: 1px solid rgba(0,255,204,0.2);
+        font-size: 0.7rem;
+      }
+      .poi-label.open .poi-detail {
+        display: block;
+      }
+      .poi-label .poi-detail a {
+        color: #00ccff;
+        text-decoration: none;
+      }
+      .poi-label .poi-detail a:hover {
+        text-decoration: underline;
+        color: #66eeff;
+      }
+      .poi-label .poi-coords {
+        color: #888;
+        font-size: 0.6rem;
+        margin-top: 3px;
+      }
+      .poi-label::after {
+        content: '';
+        position: absolute;
+        bottom: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 6px solid rgba(0, 255, 204, 0.4);
+      }
+
+      /* Lighting Control Panel */
+      #lighting-panel {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 240px;
+        background: rgba(20, 20, 30, 0.92);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 6px;
+        padding: 12px 14px;
+        color: #ccc;
+        font-family: 'Pretendard', sans-serif;
+        font-size: 0.78rem;
+        z-index: 30;
+        user-select: none;
+      }
+      #lighting-panel h3 {
+        margin: 0 0 10px 0;
+        font-size: 0.85rem;
+        color: #fff;
+        border-bottom: 1px solid rgba(255,255,255,0.15);
+        padding-bottom: 6px;
+      }
+      .ctrl-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 7px;
+      }
+      .ctrl-row label {
+        flex: 0 0 90px;
+        font-size: 0.75rem;
+      }
+      .ctrl-row input[type="range"] {
+        flex: 1;
+        margin: 0 6px;
+        accent-color: #00ffcc;
+        height: 4px;
+      }
+
+      .ctrl-row select {
+        flex: 1;
+        margin-left: 6px;
+        background: #1a1a2e;
+        color: #ccc;
+        border: 1px solid #444;
+        border-radius: 3px;
+        padding: 2px 4px;
+        font-size: 0.75rem;
+      }
+      .ctrl-row .val {
+        width: 36px;
+        text-align: right;
+        font-size: 0.7rem;
+        color: #aaa;
+      }
+      .ctrl-row input[type="checkbox"] {
+        accent-color: #00ffcc;
+      }
+      #toggle-panel-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 31;
+        background: rgba(20,20,30,0.85);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: #ccc;
+        border-radius: 4px;
+        padding: 5px 10px;
+        cursor: pointer;
+        font-size: 0.75rem;
+        font-family: 'Pretendard', sans-serif;
+        display: none;
+      }
     </style>
   </head>
   <body>
-    <!-- Three.js 및 로더 CDN을 script 방식으로 로드 -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/examples/js/loaders/OBJLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.135.0/examples/js/controls/OrbitControls.js"></script>
-    <script>
+    <!-- Three.js ES Module (r162: texCoord 다중 UV, KHR_lights_punctual 완전 지원) -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module">
+      import * as THREE from 'three';
+      import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+      import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
       const scene = new THREE.Scene();
       scene.background = new THREE.Color("#000a17");
 
@@ -61,44 +199,73 @@
       camera.position.set(0, 2, 20);
 
       const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.LinearToneMapping;
+      renderer.toneMappingExposure = Math.pow(2, 1);
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
 
-      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      const controls = new OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
       controls.dampingFactor = 0.05;
       controls.target.set(0, 1, 0);
       controls.update();
 
-      scene.add(new THREE.AmbientLight(0xffffff, 1.5));
-      const light = new THREE.DirectionalLight(0xffffff, 1.5);
-      light.position.set(5, 10, 5);
-      scene.add(light);
+      // 고정 조명 (UI 없음, 밝기는 exposure로만 조절)
+      scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+      const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
+      dirLight.position.set(5, 10, 7);
+      scene.add(dirLight);
 
-      // const spotLight = new THREE.SpotLight(0xffffff, 1.5, 20, Math.PI / 4, 0.2);
-      // spotLight.position.set(0, 10, 0);
-      // spotLight.target.position.set(0, 0, 0);
-      // scene.add(spotLight);
-      // scene.add(spotLight.target);
-
-      const gridHelper = new THREE.GridHelper(20, 20, 0xff1414, 0xcdff38);
+      const gridHelper = new THREE.GridHelper(20, 20, 0xff1414, 0xffffff);
       gridHelper.material.opacity = 0.6;
       gridHelper.material.transparent = true;
       scene.add(gridHelper);
 
-      let currentModel;
+      // 그리드를 모델 크기에 맞게 재조정하는 함수
+      function resizeGrid(size) {
+        const maxXZ = Math.max(size.x, size.z);
+        const gridSize = Math.ceil(maxXZ / 2) * 2 + 4;
+        scene.remove(window._currentGrid);
+        const newGrid = new THREE.GridHelper(gridSize, gridSize, 0xff1414, 0xffffff);
+        newGrid.material.opacity = 0.6;
+        newGrid.material.transparent = true;
+        scene.add(newGrid);
+        window._currentGrid = newGrid;
+      }
+      window._currentGrid = gridHelper;
 
+      let currentModel;
+      const poiMarkers = [];
+      const poiLabels = [];
+      let edgeLineGroup = null;
+      let currentRenderMode = 'normal';
       function clearScene() {
         if (currentModel) {
           scene.remove(currentModel);
           currentModel.traverse((child) => {
             if (child.isMesh) {
               child.geometry.dispose();
-              if (child.material.map) child.material.map.dispose();
-              child.material.dispose();
+              const mats = Array.isArray(child.material) ? child.material : [child.material];
+              mats.forEach(m => {
+                if (m.map) m.map.dispose();
+                if (m.normalMap) m.normalMap.dispose();
+                m.dispose();
+              });
             }
           });
         }
+        if (edgeLineGroup) {
+          scene.remove(edgeLineGroup);
+          edgeLineGroup = null;
+        }
+        renderer.domElement.style.filter = '';
+        currentRenderMode = 'normal';
+        const modeSelect = document.getElementById('render-mode');
+        if (modeSelect) modeSelect.value = 'normal';
+        poiLabels.forEach(el => el.remove());
+        poiLabels.length = 0;
+        poiMarkers.length = 0;
       }
 
       function loadModelFromURL(url) {
@@ -106,42 +273,121 @@
         clearScene();
 
         if (extension === "glb" || extension === "gltf") {
-          const loader = new THREE.GLTFLoader();
+          const loader = new GLTFLoader();
           loader.load(
             url,
             (gltf) => {
               currentModel = gltf.scene;
               currentModel.scale.set(1.0, 1.0, 1.0);
-              currentModel.position.set(0, 0, 0);
+
+              // 월드 행렬 갱신 후 바운딩박스로 모델 중앙 정렬
+              currentModel.updateMatrixWorld(true);
+              const box = new THREE.Box3().setFromObject(currentModel);
+              const center = box.getCenter(new THREE.Vector3());
+              const size = box.getSize(new THREE.Vector3());
+              // XZ 중심을 원점, Y 바닥을 그리드에 맞춤
+              currentModel.position.x = -center.x;
+              currentModel.position.y = -box.min.y;
+              currentModel.position.z = -center.z;
+              currentModel.updateMatrixWorld(true);
               scene.add(currentModel);
-              controls.target.copy(currentModel.position);
+
+              // 그리드를 모델 크기에 맞게 조정
+              resizeGrid(size);
+
+              // 카메라를 모델 전체가 보이도록 자동 배치
+              const maxDim = Math.max(size.x, size.y, size.z);
+              const fov = camera.fov * (Math.PI / 180);
+              const dist = maxDim / (1.5 * Math.tan(fov / 2)) * 1.4;
+              const modelCenterY = size.y / 3;
+              camera.position.set(dist * 0.7, modelCenterY + dist * 0.3, dist);
+              controls.target.set(0, modelCenterY, 0);
+              controls.update();
+
+              // GLB 내장 lights 제거 (exposure만 사용)
+              currentModel.traverse((child) => {
+                if (child.isLight) child.visible = false;
+              });
+
+              // POI 데이터: 이름별 링크 매핑
+              const poiLinks = {
+                'boolbang': { url: 'https://blog.naver.com/post_boolbang', text: '저희 블로그도 있습니다. 많이 놀러와주세요' },
+                'backdoor': { url: 'https://boolbang.com', text: '공식 홈페이지는 여기!' }
+              };
+
+              // POI_ 접두사 노드를 찾아 좌표 라벨 생성
+              currentModel.traverse((child) => {
+                if (child.name && child.name.startsWith('POI_')) {
+                  const worldPos = new THREE.Vector3();
+                  child.getWorldPosition(worldPos);
+
+                  poiMarkers.push({ obj: child, worldPos: worldPos });
+
+                  const label = document.createElement('div');
+                  label.className = 'poi-label';
+                  const displayName = child.name.replace('POI_', '');
+                  const linkData = poiLinks[displayName] || { url: '#', text: '링크 없음' };
+
+                  label.innerHTML =
+                    '<div class="poi-header">' +
+                      '<span class="poi-arrow">&#9654;</span>' +
+                      '<strong>' + displayName + '</strong>' +
+                    '</div>' +
+                    '<div class="poi-detail">' +
+                      '<a href="' + linkData.url + '" target="_blank" rel="noopener">' + linkData.text + '</a>' +
+                      '<div class="poi-coords">x: ' + worldPos.x.toFixed(2) +
+                      ' y: ' + worldPos.y.toFixed(2) +
+                      ' z: ' + worldPos.z.toFixed(2) + '</div>' +
+                    '</div>';
+
+                  // 클릭으로 접고 펼치기
+                  label.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'A') return; // 링크 클릭은 통과
+                    e.stopPropagation();
+                    label.classList.toggle('open');
+                  });
+
+                  document.body.appendChild(label);
+                  poiLabels.push(label);
+                }
+              });
             },
             undefined,
             (error) => console.error("GLTF Load Error:", error)
           );
-        } else if (extension === "obj") {
-          const loader = new THREE.OBJLoader();
-          fetch(url)
-            .then((res) => res.text())
-            .then((text) => {
-              currentModel = loader.parse(text);
-              currentModel.scale.set(3.9, 3.9, 3.9);
-              currentModel.position.set(0, 0, 0);
-              scene.add(currentModel);
-              controls.target.copy(currentModel.position);
-            })
-            .catch((error) => console.error("OBJ Fetch Error:", error));
         } else {
           alert("지원되지 않는 파일 형식입니다.");
         }
       }
 
-      const modelUrl = "../models/akira.glb";
+      const modelUrl = "../models/boolbang_POI.glb";
       loadModelFromURL(modelUrl);
+
+      const _poiVec = new THREE.Vector3(); // 재사용 벡터 (GC 방지)
+      function updatePOILabels() {
+        for (let i = 0; i < poiMarkers.length; i++) {
+          const marker = poiMarkers[i];
+          const label = poiLabels[i];
+          _poiVec.copy(marker.worldPos).project(camera);
+          const pos = _poiVec;
+
+          if (pos.z > 1) {
+            label.style.display = 'none';
+            continue;
+          }
+          label.style.display = 'block';
+
+          const x = (pos.x * 0.5 + 0.5) * window.innerWidth;
+          const y = (-pos.y * 0.5 + 0.5) * window.innerHeight;
+          label.style.left = x + 'px';
+          label.style.top = y + 'px';
+        }
+      }
 
       function animate() {
         requestAnimationFrame(animate);
         controls.update();
+        updatePOILabels();
         renderer.render(scene, camera);
       }
       animate();
@@ -152,21 +398,127 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
       });
 
-      // // 닫기 버튼 이벤트
-      // window.addEventListener('DOMContentLoaded', () => {
-      //   const btn = document.getElementById('close-btn');
-      //   btn.addEventListener('click', () => {
-      //     document.getElementById('caption').style.display = 'none';
-      //   });
-      // });
+      // === 렌더 모드 시스템 ===
+      function applyRenderMode(mode) {
+        currentRenderMode = mode;
+
+        // 초기화: 엣지라인 제거
+        if (edgeLineGroup) {
+          scene.remove(edgeLineGroup);
+          edgeLineGroup = null;
+        }
+        if (currentModel) {
+          currentModel.traverse((child) => {
+            if (child.isMesh) child.visible = true;
+          });
+        }
+
+        if (!currentModel) return;
+
+        if (mode === 'edges') {
+          edgeLineGroup = new THREE.Group();
+          currentModel.traverse((child) => {
+            if (child.isMesh) {
+              child.visible = false;
+              const edges = new THREE.EdgesGeometry(child.geometry, 15);
+              const line = new THREE.LineSegments(edges,
+                new THREE.LineBasicMaterial({ color: 0xffffff }));
+              child.updateWorldMatrix(true, false);
+              line.applyMatrix4(child.matrixWorld);
+              edgeLineGroup.add(line);
+            }
+          });
+          scene.add(edgeLineGroup);
+        }
+      }
+
+      // === Control Panel ===
+      const toneMappingOptions = {
+        'Linear': THREE.LinearToneMapping,
+        'ACES Filmic': THREE.ACESFilmicToneMapping
+      };
+
+      // toneMapping
+      const tmSelect = document.getElementById('tm-select');
+      tmSelect.addEventListener('change', () => {
+        renderer.toneMapping = toneMappingOptions[tmSelect.value];
+      });
+
+      // exposure (2^value → 0이 기본값 1.0, +면 밝게, -면 어둡게)
+      const expSlider = document.getElementById('exposure');
+      const expVal = document.getElementById('exposure-val');
+      expSlider.addEventListener('input', () => {
+        const v = parseFloat(expSlider.value);
+        renderer.toneMappingExposure = Math.pow(2, v);
+        expVal.textContent = v.toFixed(2);
+      });
+
+      // render mode
+      const renderModeSelect = document.getElementById('render-mode');
+      renderModeSelect.addEventListener('change', () => {
+        applyRenderMode(renderModeSelect.value);
+      });
+
+      // grid toggle
+      const gridCb = document.getElementById('grid-cb');
+      gridCb.addEventListener('change', () => {
+        if (window._currentGrid) window._currentGrid.visible = gridCb.checked;
+      });
+
+      // panel toggle
+      const panel = document.getElementById('lighting-panel');
+      const toggleBtn = document.getElementById('toggle-panel-btn');
+      document.getElementById('close-panel').addEventListener('click', () => {
+        panel.style.display = 'none';
+        toggleBtn.style.display = 'block';
+      });
+      toggleBtn.addEventListener('click', () => {
+        panel.style.display = 'block';
+        toggleBtn.style.display = 'none';
+      });
     </script>
+
+    <!-- Lighting Control Panel -->
+    <button id="toggle-panel-btn">Controls ▼</button>
+    <div id="lighting-panel">
+      <h3>Controls
+        <span id="close-panel" style="float:right;cursor:pointer;color:#888;font-size:1rem;">✕</span>
+      </h3>
+
+      <div class="ctrl-row">
+        <label>toneMapping</label>
+        <select id="tm-select">
+          <option selected>Linear</option>
+          <option>ACES Filmic</option>
+        </select>
+      </div>
+
+      <div class="ctrl-row">
+        <label>exposure</label>
+        <input type="range" id="exposure" min="-4" max="4" step="0.01" value="1" />
+        <span class="val" id="exposure-val">1.00</span>
+      </div>
+
+      <div class="ctrl-row">
+        <label>렌더 모드</label>
+        <select id="render-mode">
+          <option value="normal" selected>기본</option>
+          <option value="edges">스트럭처</option>
+        </select>
+      </div>
+
+      <div class="ctrl-row">
+        <label>grid</label>
+        <input type="checkbox" id="grid-cb" checked />
+      </div>
+    </div>
 
     <!-- Caption Overlay -->
     <div id="caption">
-      <h2>아키라</h2>
+      <h2>불방 POI 뷰어</h2>
       <p>
-        아키라 아직 안봤습니다.<br />
-        캐릭터는 귀엽네요 <br />
+        GLB에 심어둔 POI 좌표가 주석처럼 표시됩니다.<br />
+        마우스로 회전/줌하며 확인하세요.
       </p>
     </div>
   </body>
