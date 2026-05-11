@@ -297,10 +297,12 @@
       }
 
       renderer.domElement.addEventListener('pointerdown', onUserInteract);
-      renderer.domElement.addEventListener('wheel', onUserInteract);
+      renderer.domElement.addEventListener('wheel', onUserInteract, { passive: true });
       renderer.domElement.addEventListener('pointermove', (e) => {
         if (e.buttons > 0) onUserInteract();
       });
+      // 모바일: 터치시작시 명시적으로 onUserInteract 호출 (pointerdown으로 커버되지만 일부 기기 안전망)
+      renderer.domElement.addEventListener('touchstart', onUserInteract, { passive: true });
 
       // 고정 조명 (UI 없음, 밝기는 exposure로만 조절)
       scene.add(new THREE.AmbientLight(0xffffff, 0.6));
@@ -317,7 +319,11 @@
       function resizeGrid(size) {
         const maxXZ = Math.max(size.x, size.z);
         const gridSize = Math.ceil(maxXZ / 2) * 2 + 4;
-        scene.remove(window._currentGrid);
+        if (window._currentGrid) {
+          scene.remove(window._currentGrid);
+          window._currentGrid.geometry.dispose();
+          window._currentGrid.material.dispose();
+        }
         const newGrid = new THREE.GridHelper(gridSize, gridSize, 0xff1414, 0xffffff);
         newGrid.material.opacity = 0.6;
         newGrid.material.transparent = true;
@@ -327,6 +333,7 @@
       window._currentGrid = gridHelper;
 
       let currentModel;
+      let loadId = 0; // race condition 방지용
       const poiMarkers = [];
       const poiLabels = [];
       let edgeLineGroup = null;
@@ -338,14 +345,23 @@
               child.geometry.dispose();
               const mats = Array.isArray(child.material) ? child.material : [child.material];
               mats.forEach(m => {
-                if (m.map) m.map.dispose();
-                if (m.normalMap) m.normalMap.dispose();
+                // 모든 텍스처 타입 dispose (누수 방지)
+                ['map','normalMap','roughnessMap','metalnessMap','emissiveMap',
+                 'aoMap','envMap','lightMap','bumpMap','displacementMap','alphaMap']
+                  .forEach(p => { if (m[p]) m[p].dispose(); });
                 m.dispose();
               });
             }
           });
+          currentModel = null;
         }
         if (edgeLineGroup) {
+          edgeLineGroup.traverse((child) => {
+            if (child.isLineSegments) {
+              child.geometry.dispose();
+              child.material.dispose();
+            }
+          });
           scene.remove(edgeLineGroup);
           edgeLineGroup = null;
         }
@@ -384,6 +400,7 @@
 
       function loadModel(key) {
         const config = modelConfigs[key];
+        const myId = ++loadId; // 이 요청의 고유 ID
 
         document.querySelector('#caption h2').textContent = config.captionTitle;
         document.querySelector('#caption p').innerHTML = config.captionBody;
@@ -394,6 +411,7 @@
         loader.load(
           config.url,
           (gltf) => {
+            if (myId !== loadId) return; // 이미 다른 모델을 로드 중이면 무시
             currentModel = gltf.scene;
             currentModel.scale.set(1.0, 1.0, 1.0);
 
@@ -432,7 +450,10 @@
                 const worldPos = new THREE.Vector3();
                 child.getWorldPosition(worldPos);
 
-                poiMarkers.push({ obj: child, worldPos: worldPos });
+                // 모델 중심 → POI 방향 벡터 저장 (정면 가시성 판별용)
+                const poiCenter = controls.target.clone();
+                const poiDir = worldPos.clone().sub(poiCenter).normalize();
+                poiMarkers.push({ obj: child, worldPos: worldPos, poiDir: poiDir });
 
                 const label = document.createElement('div');
                 label.className = 'poi-label';
@@ -467,6 +488,11 @@
                 poiLabels.push(label);
               }
             });
+            // 로드 완료 시점에 이미 poiVisible=true이면 즉시 visible 클래스 부여
+            // (로딩 중 사용자가 조작해서 visible이 선설됐지만 라벨 생성 전이었던 케이스 대응)
+            if (poiVisible) {
+              poiLabels.forEach(l => l.classList.add('visible'));
+            }
           },
           undefined,
           (error) => console.error("GLTF Load Error:", error)
@@ -476,17 +502,25 @@
       loadModel('boolbang');
 
       const _poiVec = new THREE.Vector3(); // 재사용 벡터 (GC 방지)
+      const _camDir = new THREE.Vector3();
       function updatePOILabels() {
         const cw = renderer.domElement.clientWidth;
         const ch = renderer.domElement.clientHeight;
+        // 카메라가 모델 중심 기준으로 어느 방향에 있는지 (정면 판별용)
+        _camDir.copy(camera.position).sub(controls.target).normalize();
+
         for (let i = 0; i < poiMarkers.length; i++) {
           const marker = poiMarkers[i];
           const label = poiLabels[i];
           _poiVec.copy(marker.worldPos).project(camera);
           const pos = _poiVec;
 
-          if (pos.z > 1 || !poiVisible) {
+          // POI 방향과 카메라 방향의 내적 > 0.45 일 때만 정면으로 간주 (~63도 이내)
+          const isFacing = marker.poiDir ? marker.poiDir.dot(_camDir) > 0.45 : true;
+
+          if (pos.z > 1 || !poiVisible || !isFacing) {
             label.style.left = '-9999px';
+            if (!isFacing) label.classList.remove('open');
             continue;
           }
 
@@ -525,8 +559,14 @@
 
       // === 렌더 모드 시스템 ===
       function applyRenderMode(mode) {
-        // 초기화: 엣지라인 제거
+        // 엣지라인 제거 및 리소스 해제
         if (edgeLineGroup) {
+          edgeLineGroup.traverse((child) => {
+            if (child.isLineSegments) {
+              child.geometry.dispose();
+              child.material.dispose();
+            }
+          });
           scene.remove(edgeLineGroup);
           edgeLineGroup = null;
         }
