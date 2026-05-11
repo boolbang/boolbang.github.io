@@ -82,7 +82,7 @@
         font-size: 0.75rem;
         background: rgba(0, 0, 0, 0.75);
         border: 1px solid rgba(0, 255, 204, 0.4);
-        border-radius: 4px;
+        border-radius: 0;
         padding: 0;
         transform: translate(-50%, 8px);
         z-index: 20;
@@ -150,7 +150,7 @@
         width: 240px;
         background: rgba(20, 20, 30, 0.92);
         border: 1px solid rgba(255,255,255,0.15);
-        border-radius: 6px;
+        border-radius: 0;
         color: #ccc;
         font-family: 'Pretendard', sans-serif;
         font-size: 0.78rem;
@@ -213,7 +213,7 @@
         background: #1a1a2e;
         color: #ccc;
         border: 1px solid #444;
-        border-radius: 3px;
+        border-radius: 0;
         padding: 2px 4px;
         font-size: 0.75rem;
       }
@@ -269,7 +269,7 @@
       controls.dampingFactor = 0.05;
       controls.target.set(0, 1, 0);
       controls.autoRotate = true;
-      controls.autoRotateSpeed = -0.2;
+      controls.autoRotateSpeed = -0.3;
       controls.update();
 
       // 유휴 타이머: 3초간 조작 없으면 자동 회전 + 주석 숨김
@@ -330,7 +330,6 @@
       const poiMarkers = [];
       const poiLabels = [];
       let edgeLineGroup = null;
-      let currentRenderMode = 'normal';
       function clearScene() {
         if (currentModel) {
           scene.remove(currentModel);
@@ -350,109 +349,131 @@
           scene.remove(edgeLineGroup);
           edgeLineGroup = null;
         }
-        renderer.domElement.style.filter = '';
-        currentRenderMode = 'normal';
         const modeSelect = document.getElementById('render-mode');
         if (modeSelect) modeSelect.value = 'normal';
         poiLabels.forEach(el => el.remove());
         poiLabels.length = 0;
         poiMarkers.length = 0;
+        poiVisible = false;
+        clearTimeout(idleTimer);
+        controls.autoRotate = true;
       }
 
-      function loadModelFromURL(url) {
-        const extension = url.split(".").pop().toLowerCase();
+      const modelConfigs = {
+        dino: {
+          url: '../models/dino.glb',
+          poiPrefix: 'info_',
+          poiData: {
+            'hand': { type: 'desc', content: '한대 맞으면 바로 천국' },
+            'tail': { type: 'desc', content: '꼬리 고기 맛이 참 좋죠.' }
+          },
+          captionTitle: '공룡 3D 뷰어',
+          captionBody: '화면을 클릭하면 각 부위 설명을 확인할 수 있습니다.<br />마우스 좌측 버튼 회전, 우측 버튼 이동, 휠로 줌하며 감상하세요.'
+        },
+        boolbang: {
+          url: '../models/boolbang_POI.glb',
+          poiPrefix: 'POI_',
+          poiData: {
+            'boolbang': { type: 'link', url: 'https://blog.naver.com/post_boolbang', text: '저희 블로그도 있습니다. 많이 놀러와주세요' },
+            'backdoor': { type: 'link', url: 'https://boolbang.com', text: '공식 홈페이지는 여기!' },
+          },
+          captionTitle: '불방 POI 뷰어',
+          captionBody: 'GLB에 심어둔 POI 좌표가 주석처럼 표시됩니다.<br />마우스 좌측 버튼 회전, 우측 버튼 좌우 이동, 휠로 줌하며 확인하세요.'
+        }
+      };
+
+      function loadModel(key) {
+        const config = modelConfigs[key];
+
+        document.querySelector('#caption h2').textContent = config.captionTitle;
+        document.querySelector('#caption p').innerHTML = config.captionBody;
+
         clearScene();
 
-        if (extension === "glb" || extension === "gltf") {
-          const loader = new GLTFLoader();
-          loader.load(
-            url,
-            (gltf) => {
-              currentModel = gltf.scene;
-              currentModel.scale.set(1.0, 1.0, 1.0);
+        const loader = new GLTFLoader();
+        loader.load(
+          config.url,
+          (gltf) => {
+            currentModel = gltf.scene;
+            currentModel.scale.set(1.0, 1.0, 1.0);
 
-              // 월드 행렬 갱신 후 바운딩박스로 모델 중앙 정렬
-              currentModel.updateMatrixWorld(true);
-              const box = new THREE.Box3().setFromObject(currentModel);
-              const center = box.getCenter(new THREE.Vector3());
-              const size = box.getSize(new THREE.Vector3());
-              // XZ 중심을 원점, Y 바닥을 그리드에 맞춤
-              currentModel.position.x = -center.x;
-              currentModel.position.y = -box.min.y;
-              currentModel.position.z = -center.z;
-              currentModel.updateMatrixWorld(true);
-              scene.add(currentModel);
+            // 월드 행렬 갱신 후 바운딩박스로 모델 중앙 정렬
+            currentModel.updateMatrixWorld(true);
+            const box = new THREE.Box3().setFromObject(currentModel);
+            const center = box.getCenter(new THREE.Vector3());
+            const size = box.getSize(new THREE.Vector3());
+            // XZ 중심을 원점, Y 바닥을 그리드에 맞춤
+            currentModel.position.x = -center.x;
+            currentModel.position.y = -box.min.y;
+            currentModel.position.z = -center.z;
+            currentModel.updateMatrixWorld(true);
+            scene.add(currentModel);
 
-              // 그리드를 모델 크기에 맞게 조정
-              resizeGrid(size);
+            // 그리드를 모델 크기에 맞게 조정
+            resizeGrid(size);
 
-              // 카메라를 모델 전체가 보이도록 자동 배치
-              const maxDim = Math.max(size.x, size.y, size.z);
-              const fov = camera.fov * (Math.PI / 180);
-              const dist = maxDim / (1.5 * Math.tan(fov / 2)) * 1.4;
-              const modelCenterY = size.y / 3;
-              camera.position.set(dist * 0.7, modelCenterY + dist * 0.3, dist);
-              controls.target.set(0, modelCenterY, 0);
-              controls.update();
+            // 카메라를 모델 전체가 보이도록 자동 배치
+            const maxDim = Math.max(size.x, size.y, size.z);
+            const fov = camera.fov * (Math.PI / 180);
+            const dist = maxDim / (1.5 * Math.tan(fov / 2)) * 1.4;
+            const modelCenterY = size.y / 3;
+            camera.position.set(dist * 0.7, modelCenterY + dist * 0.3, dist);
+            controls.target.set(0, modelCenterY, 0);
+            controls.update();
 
-              // GLB 내장 lights 제거 (exposure만 사용)
-              currentModel.traverse((child) => {
-                if (child.isLight) child.visible = false;
-              });
+            // GLB 내장 lights 제거 (exposure만 사용)
+            currentModel.traverse((child) => {
+              if (child.isLight) child.visible = false;
+            });
 
-              // POI 데이터: 이름별 링크 매핑
-              const poiLinks = {
-                'boolbang': { url: 'https://blog.naver.com/post_boolbang', text: '저희 블로그도 있습니다. 많이 놀러와주세요' },
-                'backdoor': { url: 'https://boolbang.com', text: '공식 홈페이지는 여기!' }
-              };
+            // POI 노드를 찾아 라벨 생성
+            currentModel.traverse((child) => {
+              if (child.name && child.name.startsWith(config.poiPrefix)) {
+                const worldPos = new THREE.Vector3();
+                child.getWorldPosition(worldPos);
 
-              // POI_ 접두사 노드를 찾아 좌표 라벨 생성
-              currentModel.traverse((child) => {
-                if (child.name && child.name.startsWith('POI_')) {
-                  const worldPos = new THREE.Vector3();
-                  child.getWorldPosition(worldPos);
+                poiMarkers.push({ obj: child, worldPos: worldPos });
 
-                  poiMarkers.push({ obj: child, worldPos: worldPos });
+                const label = document.createElement('div');
+                label.className = 'poi-label';
+                const displayName = child.name.replace(config.poiPrefix, '');
+                const poiEntry = config.poiData[displayName] || null;
 
-                  const label = document.createElement('div');
-                  label.className = 'poi-label';
-                  const displayName = child.name.replace('POI_', '');
-                  const linkData = poiLinks[displayName] || { url: '#', text: '링크 없음' };
-
-                  label.innerHTML =
-                    '<div class="poi-header">' +
-                      '<span class="poi-arrow">&#9654;</span>' +
-                      '<strong>' + displayName + '</strong>' +
-                    '</div>' +
-                    '<div class="poi-detail">' +
-                      '<a href="' + linkData.url + '" target="_blank" rel="noopener">' + linkData.text + '</a>' +
-                      '<div class="poi-coords">x: ' + worldPos.x.toFixed(2) +
-                      ' y: ' + worldPos.y.toFixed(2) +
-                      ' z: ' + worldPos.z.toFixed(2) + '</div>' +
-                    '</div>';
-
-                  // 클릭으로 접고 펼치기
-                  label.addEventListener('click', (e) => {
-                    if (e.target.tagName === 'A') return; // 링크 클릭은 통과
-                    e.stopPropagation();
-                    label.classList.toggle('open');
-                  });
-
-                  document.body.appendChild(label);
-                  poiLabels.push(label);
+                let detailHTML = '';
+                if (poiEntry && poiEntry.type === 'link') {
+                  detailHTML =
+                    '<a href="' + poiEntry.url + '" target="_blank" rel="noopener">' + poiEntry.text + '</a>' +
+                    '<div class="poi-coords">x: ' + worldPos.x.toFixed(2) +
+                    ' y: ' + worldPos.y.toFixed(2) +
+                    ' z: ' + worldPos.z.toFixed(2) + '</div>';
+                } else {
+                  detailHTML = '<span>' + (poiEntry ? poiEntry.content : displayName + ' 부분입니다.') + '</span>';
                 }
-              });
-            },
-            undefined,
-            (error) => console.error("GLTF Load Error:", error)
-          );
-        } else {
-          alert("지원되지 않는 파일 형식입니다.");
-        }
+
+                label.innerHTML =
+                  '<div class="poi-header">' +
+                    '<span class="poi-arrow">&#9654;</span>' +
+                    '<strong>' + displayName + '</strong>' +
+                  '</div>' +
+                  '<div class="poi-detail">' + detailHTML + '</div>';
+
+                label.addEventListener('click', (e) => {
+                  if (e.target.tagName === 'A') return;
+                  e.stopPropagation();
+                  label.classList.toggle('open');
+                });
+
+                document.body.appendChild(label);
+                poiLabels.push(label);
+              }
+            });
+          },
+          undefined,
+          (error) => console.error("GLTF Load Error:", error)
+        );
       }
 
-      const modelUrl = "../models/boolbang_POI.glb";
-      loadModelFromURL(modelUrl);
+      loadModel('boolbang');
 
       const _poiVec = new THREE.Vector3(); // 재사용 벡터 (GC 방지)
       function updatePOILabels() {
@@ -504,8 +525,6 @@
 
       // === 렌더 모드 시스템 ===
       function applyRenderMode(mode) {
-        currentRenderMode = mode;
-
         // 초기화: 엣지라인 제거
         if (edgeLineGroup) {
           scene.remove(edgeLineGroup);
@@ -575,12 +594,26 @@
       panelHeader.addEventListener('click', () => {
         panel.classList.toggle('open');
       });
+
+      // model select
+      const modelSelect = document.getElementById('model-select');
+      modelSelect.addEventListener('change', () => {
+        loadModel(modelSelect.value);
+      });
     </script>
 
     <!-- Lighting Control Panel -->
     <div id="lighting-panel">
       <div id="panel-header">Controls <span class="panel-arrow">▼</span></div>
       <div id="panel-body">
+        <div class="ctrl-row">
+          <label>모델</label>
+          <select id="model-select">
+            <option value="dino">공룡</option>
+            <option value="boolbang" selected>불방 POI</option>
+          </select>
+        </div>
+
         <div class="ctrl-row">
           <label>toneMapping</label>
           <select id="tm-select">
