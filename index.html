@@ -45,6 +45,192 @@
     <link rel="stylesheet" href="/css/fonts.css" />
     <link rel="stylesheet" href="/css/style3.css" />
     <link rel="icon" href="../images/pavicon.png" type="image/png" />
+
+    <style>
+      /* 포트폴리오 모달 */
+      .portfolio-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        background-color: rgba(0, 0, 0, 0.55);
+        opacity: 0;
+        transition: opacity 0.35s ease;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .portfolio-modal.is-open {
+        display: flex;
+        opacity: 1;
+      }
+
+      .portfolio-modal-content {
+        position: relative;
+        /* 메인 페이지(예: 1920×1080) 대비 살짝 작아진 정배율 (약 93.75% × 92.6%) */
+        width: 93.75vw;
+        height: 92.6vh;
+        max-width: 1800px;
+        max-height: 1000px;
+        background-color: #ffffff;
+        border-radius: 0;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+        /* 진입 모션: 살짝 작은 상태에서 정배율로 확대 */
+        transform: scale(0.85);
+        opacity: 0;
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+          opacity 0.35s ease;
+      }
+
+      .portfolio-modal.is-open .portfolio-modal-content {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      .portfolio-modal-frame {
+        width: 100%;
+        height: 100%;
+        border: none;
+        display: block;
+        background-color: #ffffff;
+      }
+
+      .portfolio-modal-close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 50%;
+        background-color: #000000;
+        color: #ffffff;
+        font-size: 1rem;
+        cursor: pointer;
+        z-index: 1;
+        transition: background-color 0.2s ease;
+      }
+
+      .portfolio-modal-close:hover {
+        background-color: #444444;
+      }
+
+      @media (max-width: 768px) {
+        /* 모바일: 모달을 화면에 꽉 차게 (풀스크린) */
+        .portfolio-modal-content {
+          width: 100vw;
+          height: 100vh;
+          height: 100dvh; /* 모바일 브라우저 UI 영역까지 정확히 채움 */
+          max-width: none;
+          max-height: none;
+        }
+      }
+
+      /* 게임 모달 내부 iframe (탭 아래 남는 영역을 채움) */
+      .game-frame {
+        flex: 1 1 auto;
+        min-height: 0;
+        width: 100%;
+        border: none;
+        display: block;
+        background-color: #ffffff;
+      }
+
+      /* 작업일지 모달은 원래 게시글 모달처럼 작은 크기로 유지 (읽기 좋은 폭) */
+      .worklog-modal-content {
+        width: 600px;
+        max-width: 92vw;
+        height: 80vh;
+        max-height: 80vh;
+      }
+
+      /* 작업일지 모달 내부: 상단 탭 고정 + 아래 스크롤 콘텐츠 */
+      .worklog-layout {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      .worklog-tabs {
+        flex: 0 0 auto;
+        display: flex;
+        gap: 8px;
+        padding: 20px 40px 12px 40px;
+        border-bottom: 1px solid #a8a8a8;
+        flex-wrap: wrap;
+      }
+
+      .worklog-tab {
+        appearance: none;
+        border: none;
+        background-color: #a8a8a8;
+        color: #ffffff;
+        font-family: inherit;
+        font-size: 0.95rem;
+        padding: 8px 16px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+
+      .worklog-tab:hover {
+        background-color: #8c8c8c;
+      }
+
+      .worklog-tab.is-active {
+        background-color: #000000;
+      }
+
+      .worklog-content {
+        flex: 1 1 auto;
+        min-height: 0; /* flex 내부 스크롤 정상 동작 */
+        overflow-y: auto;
+        padding: 32px 40px 48px 40px;
+        line-height: 1.8;
+        color: #333333;
+      }
+
+      .worklog-content h2 {
+        color: #0000aa;
+        margin-top: 0;
+        font-size: 1.3rem;
+      }
+
+      .worklog-content img {
+        max-width: 100%;
+        height: auto;
+      }
+
+      @media (max-width: 768px) {
+        /* 모바일: 작업일지 모달도 화면에 꽉 차게 */
+        .worklog-modal-content {
+          width: 100vw;
+          max-width: none;
+          height: 100vh;
+          height: 100dvh;
+          max-height: none;
+        }
+        /* 모바일: 닫기 버튼을 작게·위로 올려 탭 밑줄과 겹치지 않게 */
+        #worklogCloseButton {
+          width: 32px;
+          height: 32px;
+          top: 10px;
+          right: 12px;
+          font-size: 0.85rem;
+        }
+        .worklog-tabs {
+          /* 오른쪽에 닫기 버튼 공간 확보 */
+          padding: 14px 52px 12px 20px;
+        }
+        .worklog-content {
+          padding: 24px 20px 32px 20px;
+        }
+        .worklog-tab {
+          padding: 6px 12px;
+          font-size: 0.85rem;
+        }
+      }
+    </style>
   </head>
   <body>
     <div class="main-container">
@@ -110,128 +296,85 @@
           "
         >
           Creative Tools<br />
-          Adobe Premiere Pro (Pr), DaVinci Resolve (Resolve), Blender 등
+          Blender3D, DaVinci Resolve, Adobe Premiere Pro (Pr),
+          Photoshop (Ps), Lightroom (Lr) ...
         </p>
-        <div style="margin-top: 10px">
+        <div style="border-top: 1px solid #a8a8a8; margin-top: 30px"></div>
+        <div
+          class="home-nav"
+          style="
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 30px;
+          "
+        >
           <a
             href="/html/about.html"
             style="
-              color: #ffffff;
-              background-color: #000000;
+              color: #000000;
+              background-color: #ffffff;
               text-decoration: none;
               padding: 4px 8px;
-              display: inline-block;
             "
-            >딥한이력서_VER</a
+            >이력서</a
+          >
+          <a
+            id="portfolioTab"
+            href="#"
+            style="
+              color: #000000;
+              background-color: #ffffff;
+              text-decoration: none;
+              padding: 4px 8px;
+              cursor: pointer;
+            "
+            >포트폴리오</a
+          >
+          <a
+            id="worklogBox"
+            href="#"
+            style="
+              color: #000000;
+              background-color: #ffffff;
+              text-decoration: none;
+              padding: 4px 8px;
+              cursor: pointer;
+            "
+            >작업일지</a
+          >
+          <a
+            id="gameBox"
+            href="#"
+            style="
+              color: #000000;
+              background-color: #ffffff;
+              text-decoration: none;
+              padding: 4px 8px;
+              cursor: pointer;
+            "
+            >게임</a
+          >
+          <a
+            id="priceBox"
+            href="#"
+            style="
+              color: #000000;
+              background-color: #ffffff;
+              text-decoration: none;
+              padding: 4px 8px;
+              cursor: pointer;
+            "
+            >요금표</a
           >
         </div>
         <div style="border-top: 1px solid #a8a8a8; margin-top: 30px"></div>
       </section>
 
+      <!-- 스케치 랜덤 이미지 (스케치 갤러리에서 접속마다 1장 무작위 표시) -->
       <section class="nav-section" style="margin: 30px 0">
-        <h3
-          style="
-            font-size: 1rem;
-            color: #000000;
-            margin: 0 0 10px 0;
-            padding-bottom: 5px;
-            font-weight: normal;
-          "
-        >
-          Portfolio Section 1
-        </h3>
-        <ul
-          id="post-list"
-          style="list-style: none; padding: 0; margin: 0; margin-left: 0"
-        >
-          <li style="padding: 8px; color: #000000">로딩 중...</li>
-        </ul>
-
-        <div style="border-top: 1px solid #a8a8a8; margin-top: 30px"></div>
-
-        <h3
-          style="
-            font-size: 1rem;
-            color: #000000;
-            margin: 15px 0 10px 0;
-            padding-bottom: 5px;
-            font-weight: normal;
-          "
-        >
-          Portfolio Section 2
-        </h3>
-        <div style="margin-top: 0">
-          <!-- 경마 시뮬레이터는 개발 중이므로 임시로 숨김 처리 -->
-          <!-- <a
-            href="/html/horsegame.html"
-            style="
-              color: #000000;
-              text-decoration: none;
-              cursor: pointer;
-              padding: 2px 0;
-              display: block;
-            "
-            >→ 경마 시뮬레이터</a
-          > -->
-          <a
-            href="/html/ddolgame.html"
-            style="
-              color: #000000;
-              text-decoration: none;
-              cursor: pointer;
-              padding: 2px 0;
-              display: block;
-            "
-            >→ 달려라 똘배!</a
-          >
-          <a
-            href="/html/slot_index.html"
-            style="
-              color: #000000;
-              text-decoration: none;
-              cursor: pointer;
-              padding: 2px 0;
-              display: block;
-            "
-            >→ 지옥의 슬롯머신</a
-          >
-        </div>
-        <div style="border-top: 1px solid #a8a8a8; margin-top: 30px"></div>
-
-        <h3
-          style="
-            font-size: 1rem;
-            color: #000000;
-            margin: 15px 0 10px 0;
-            padding-bottom: 5px;
-            font-weight: normal;
-          "
-        >
-          Portfolio Section 3
-        </h3>
-        <div style="margin-top: 0">
-          <a
-            href="/html/3Dview.html"
-            style="
-              color: #000000;
-              text-decoration: none;
-              cursor: pointer;
-              padding: 2px 0;
-              display: block;
-            "
-            >→ 모델링</a
-          >
-          <a
-            href="/html/drawing.html"
-            style="
-              color: #000000;
-              text-decoration: none;
-              cursor: pointer;
-              padding: 2px 0;
-              display: block;
-            "
-            >→ 드로잉</a
-          >
+        <div class="home-sketch">
+          <img id="homeSketchImg" alt="스케치 작업" />
         </div>
         <div style="border-top: 1px solid #a8a8a8; margin-top: 30px"></div>
       </section>
@@ -268,17 +411,89 @@
       </footer>
     </div>
 
-    <div id="modal" class="modal">
-      <div class="modal-content">
-        <h2 id="modalTitle" style="color: #0000aa"></h2>
-        <p id="modalDate" style="color: #808080; font-size: 0.9rem"></p>
-        <p id="modalContent"></p>
-        <div id="modalImage"></div>
-        <div style="text-align: center; margin-top: 20px; margin-bottom: 40px">
-          <button id="closeButton">닫기</button>
+    <!-- 포트폴리오 모달 -->
+    <div id="portfolioModal" class="portfolio-modal">
+      <div class="portfolio-modal-content">
+        <button id="portfolioCloseButton" class="portfolio-modal-close">
+          ✕
+        </button>
+        <!-- 실제 내용은 별도 파일(/html/portfolio.html)에서 불러옴 -->
+        <iframe
+          id="portfolioFrame"
+          class="portfolio-modal-frame"
+          title="포트폴리오"
+        ></iframe>
+      </div>
+    </div>
+
+    <!-- 작업일지 모달 (포트폴리오 모달과 동일 사이즈/모션, 내용은 Firebase 게시글) -->
+    <div id="worklogModal" class="portfolio-modal">
+      <div class="portfolio-modal-content worklog-modal-content">
+        <button id="worklogCloseButton" class="portfolio-modal-close">✕</button>
+        <div class="worklog-layout">
+          <nav class="worklog-tabs" id="worklogTabs">
+            <button class="worklog-tab is-active" data-key="3d">3D</button>
+            <button class="worklog-tab" data-key="photo">사진</button>
+            <button class="worklog-tab" data-key="video">영상</button>
+            <button class="worklog-tab" data-key="consulting">컨설팅</button>
+          </nav>
+          <div class="worklog-content" id="worklogContent">로딩 중...</div>
         </div>
       </div>
     </div>
+
+    <!-- 게임 선택 모달 (포트폴리오와 동일 사이즈/모션, 탭으로 게임 선택 → iframe 실행) -->
+    <div id="gameModal" class="portfolio-modal">
+      <div class="portfolio-modal-content">
+        <button id="gameCloseButton" class="portfolio-modal-close">✕</button>
+        <div class="worklog-layout">
+          <nav class="worklog-tabs" id="gameTabsNav">
+            <button
+              class="worklog-tab is-active"
+              data-src="/html/ddolgame.html"
+            >
+              달려라 똘배!
+            </button>
+            <button class="worklog-tab" data-src="/html/slot_index.html">
+              지옥의 슬롯머신
+            </button>
+          </nav>
+          <iframe id="gameFrame" class="game-frame" title="게임"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- 요금표 모달 (포트폴리오와 동일 사이즈/모션, 내용은 별도 파일) -->
+    <div id="priceModal" class="portfolio-modal">
+      <div class="portfolio-modal-content">
+        <button id="priceCloseButton" class="portfolio-modal-close">✕</button>
+        <!-- 실제 내용은 별도 파일(/html/pricing.html)에서 불러옴 -->
+        <iframe
+          id="priceFrame"
+          class="portfolio-modal-frame"
+          title="요금표"
+        ></iframe>
+      </div>
+    </div>
+
+    <!-- 메인 스케치 타일: 스케치 갤러리(/html/portfolio_sketch.html)에서 랜덤 1장 표시 -->
+    <script>
+      (function () {
+        const img = document.getElementById("homeSketchImg");
+        if (!img) return;
+        fetch("/html/portfolio_sketch.html")
+          .then((r) => r.text())
+          .then((html) => {
+            const doc = new DOMParser().parseFromString(html, "text/html");
+            const srcs = Array.from(doc.querySelectorAll("img"))
+              .map((el) => el.getAttribute("src"))
+              .filter(Boolean);
+            if (!srcs.length) return;
+            img.src = srcs[Math.floor(Math.random() * srcs.length)];
+          })
+          .catch(() => {});
+      })();
+    </script>
 
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -296,164 +511,42 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
-      const modal = document.getElementById("modal");
-      const modalTitle = document.getElementById("modalTitle");
-      const modalDate = document.getElementById("modalDate");
-      const modalContent = document.getElementById("modalContent");
-      const modalImage = document.getElementById("modalImage");
-      const closeButton = document.getElementById("closeButton");
+      // 작업일지: Firebase 게시글을 카테고리(탭)별로 매핑
+      const worklogPostIds = {}; // { "3d" | "photo" | "video" | "consulting" -> postId }
+      let worklogReadyResolve;
+      const worklogReady = new Promise((resolve) => (worklogReadyResolve = resolve));
 
-      function closeModal() {
-        modal.style.display = "none";
-        if (window.location.hash === "#modal") {
-          history.back();
-        }
-      }
-
-      closeButton.addEventListener("click", closeModal);
-
-      modal.addEventListener("click", (e) => {
-        if (e.target === modal) {
-          closeModal();
-        }
-      });
-
-      window.addEventListener("popstate", (e) => {
-        if (modal.style.display === "block") {
-          modal.style.display = "none";
-        }
-      });
-
-      // parseMedia 함수는 utils.js에서 import
-
-      async function showPostModal(postId) {
-        try {
-          const docRef = doc(db, "posts", postId);
-          const docSnap = await getDoc(docRef);
-
-          if (docSnap.exists()) {
-            const postData = docSnap.data();
-            let title = postData.title || "제목 없음";
-            title = title.replace(/\[WORKS\]/gi, "").trim();
-            modalTitle.textContent = title;
-            modalDate.textContent = postData.date || "";
-
-            const rawContent = postData.content || "";
-            modalContent.innerHTML = parseMedia(rawContent);
-
-            modalImage.innerHTML = "";
-
-            if (Array.isArray(postData.images) && postData.images.length > 0) {
-              postData.images.forEach((url) => {
-                const img = document.createElement("img");
-                img.src = url;
-                img.loading = "lazy";
-                img.style.maxWidth = "100%";
-                img.style.height = "auto";
-                img.style.display = "block";
-                img.style.margin = "10px auto";
-                modalImage.appendChild(img);
-              });
-            } else if (postData.image) {
-              const img = document.createElement("img");
-              img.src = postData.image;
-              img.loading = "lazy";
-              img.style.maxWidth = "100%";
-              img.style.height = "auto";
-              img.style.display = "block";
-              img.style.margin = "10px auto";
-              modalImage.appendChild(img);
-            }
-
-            modal.style.display = "block";
-            // 모달 내용을 최상단으로 스크롤
-            const modalContentElement =
-              document.querySelector(".modal-content");
-            if (modalContentElement) {
-              modalContentElement.scrollTop = 0;
-            }
-            // 페이지 자체도 최상단으로 스크롤 (모바일 대응)
-            window.scrollTo(0, 0);
-            history.pushState({ modal: true }, "", "#modal");
-          }
-        } catch (e) {
-          console.error("게시글 로드 실패:", e);
-          alert("게시글을 불러오는데 실패했습니다.");
-        }
-      }
-
-      async function renderPosts() {
-        const list = document.getElementById("post-list");
-        list.innerHTML = "";
-
+      async function initWorklog() {
         try {
           const querySnapshot = await getDocs(collection(db, "posts"));
-          if (querySnapshot.empty) {
-            list.innerHTML =
-              '<li style="padding: 8px; color: #000000;">게시글이 없습니다.</li>';
-            return;
-          }
-
-          const posts = [];
-          querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            posts.push({
-              id: doc.id,
-              title: data.title,
-              date: data.date || "",
-              createdAt: data.createdAt?.seconds || 0,
-            });
-          });
-
-          posts.sort((a, b) => b.createdAt - a.createdAt);
-
-          posts.forEach((post) => {
-            const li = document.createElement("li");
-            li.style.cssText = "padding: 2px 0; margin: 0; cursor: pointer;";
-            let cleanTitle = post.title.replace(/\[WORKS\]/gi, "").trim();
-
-            // 현재 언어에 맞는 제목 번역 적용
-            if (
-              postTitleTranslations[currentLang] &&
-              postTitleTranslations[currentLang][cleanTitle]
-            ) {
-              cleanTitle = postTitleTranslations[currentLang][cleanTitle];
+          let threeDFallback = null;
+          querySnapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            const clean = (data.title || "").replace(/\[WORKS\]/gi, "").trim();
+            // ko 짧은 라벨로 카테고리 판별 (언어와 무관하게 항상 ko 기준)
+            const koLabel = postTitleTranslations.ko[clean] || clean;
+            if (koLabel === "3D, VFX") {
+              worklogPostIds["3d"] = docSnap.id;
+            } else if (koLabel.includes("3D") && !threeDFallback) {
+              threeDFallback = docSnap.id; // "3D Modeling" 등 대체 후보
+            } else if (koLabel === "사진") {
+              worklogPostIds["photo"] = docSnap.id;
+            } else if (koLabel === "영상") {
+              worklogPostIds["video"] = docSnap.id;
+            } else if (koLabel === "컨설팅") {
+              worklogPostIds["consulting"] = docSnap.id;
             }
-
-            li.innerHTML = `
-              <a href="#" class="post-link" data-id="${post.id}" style="color: #000000; text-decoration: none; cursor: pointer;">
-                → ${cleanTitle}
-              </a>
-            `;
-            list.appendChild(li);
           });
-
-          document.querySelectorAll(".post-link").forEach((link) => {
-            link.addEventListener("click", (e) => {
-              e.preventDefault();
-              const postId = e.target.getAttribute("data-id");
-              showPostModal(postId);
-            });
-          });
-
-          // 가격표 링크 추가
-          const priceListLi = document.createElement("li");
-          priceListLi.style.cssText = "padding: 2px 0; margin: 0;";
-          const t = translations[currentLang];
-          priceListLi.innerHTML = `
-            <a href="https://spectacled-poppy-df2.notion.site/2c9c1c1feaaa81109ea8f962300745a1" target="_blank" id="priceListLink" style="color: #000000; text-decoration: none; cursor: pointer;">
-              ${t.priceList}
-            </a>
-          `;
-          list.appendChild(priceListLi);
+          if (!worklogPostIds["3d"] && threeDFallback) {
+            worklogPostIds["3d"] = threeDFallback;
+          }
         } catch (e) {
-          console.error("글 불러오기 실패:", e);
-          list.innerHTML =
-            '<li style="padding: 8px; color: #000000;">게시글을 불러오는 중 오류가 발생했습니다.</li>';
+          console.error("작업일지 로드 실패:", e);
         }
+        worklogReadyResolve();
       }
 
-      window.addEventListener("DOMContentLoaded", renderPosts);
+      window.addEventListener("DOMContentLoaded", initWorklog);
 
       // 언어 전환 기능
       let currentLang = localStorage.getItem("lang") || "ko";
@@ -470,22 +563,16 @@
           frameworksDetail: "C++, JavaScript (React, Next) Python, SQL...",
           tools: "Creative Tools",
           toolsDetail:
-            "Adobe Premiere Pro (Pr), DaVinci Resolve (Resolve), Blender 등",
-          resume: "딥한이력서_VER",
-          portfolio1: "Portfolio Section 1",
-          portfolio2: "Portfolio Section 2",
-          portfolio3: "Portfolio Section 3",
-          modeling: "→ 모델링",
-          drawing: "→ 드로잉",
-          horseGame: "→ 경마 시뮬레이터",
-          ddolGame: "→ 달려라 똘배!",
-          slotGame: "→ 지옥의 슬롯머신",
+            "Blender3D, DaVinci Resolve, Adobe Premiere Pro (Pr), Photoshop (Ps), Lightroom (Lr) ...",
+          resume: "이력서",
+          portfolioTab: "포트폴리오",
+          portfolio1: "작업일지",
+          gameBox: "게임",
+          ddolGame: "달려라 똘배!",
+          slotGame: "지옥의 슬롯머신",
           youtube: "유튜브",
           instagram: "인스타그램",
-          loading: "로딩 중...",
-          noPost: "게시글이 없습니다.",
-          closeBtn: "닫기",
-          priceList: "→ 가격표",
+          priceList: "요금표",
         },
         en: {
           title: "BoolBang Interactive",
@@ -497,22 +584,16 @@
           frameworksDetail: "C++, JavaScript (React, Next) Python, SQL...",
           tools: "Creative Tools",
           toolsDetail:
-            "Adobe Premiere Pro (Pr), DaVinci Resolve, Blender, etc.",
-          resume: "Resume_VER",
-          portfolio1: "Portfolio Section 1",
-          portfolio2: "Portfolio Section 2",
-          portfolio3: "Portfolio Section 3",
-          modeling: "→ Modeling",
-          drawing: "→ Drawing",
-          horseGame: "→ Horse Racing Simulator",
-          ddolGame: "→ Run, Ddolbae!",
-          slotGame: "→ Hell Slot Machine",
+            "Blender3D, DaVinci Resolve, Adobe Premiere Pro (Pr), Photoshop (Ps), Lightroom (Lr) ...",
+          resume: "Resume",
+          portfolioTab: "Portfolio",
+          portfolio1: "Worklog",
+          gameBox: "Game",
+          ddolGame: "Run, Ddolbae!",
+          slotGame: "Hell Slot Machine",
           youtube: "YouTube",
           instagram: "Instagram",
-          loading: "Loading...",
-          noPost: "No posts available.",
-          closeBtn: "Close",
-          priceList: "→ Price List",
+          priceList: "Price List",
         },
       };
 
@@ -553,25 +634,14 @@
         document.querySelector('a[href="/html/about.html"]').textContent =
           t.resume;
 
-        const h3Tags = document.querySelectorAll("h3");
-        if (h3Tags[0]) h3Tags[0].textContent = t.portfolio1;
-        if (h3Tags[1]) h3Tags[1].textContent = t.portfolio2;
-        if (h3Tags[2]) h3Tags[2].textContent = t.portfolio3;
+        const portfolioTabEl = document.getElementById("portfolioTab");
+        if (portfolioTabEl) portfolioTabEl.textContent = t.portfolioTab;
 
-        const modelingLink = document.querySelector(
-          'a[href="/html/3Dview.html"]'
-        );
-        if (modelingLink) modelingLink.textContent = t.modeling;
+        const worklogBox = document.getElementById("worklogBox");
+        if (worklogBox) worklogBox.textContent = t.portfolio1;
 
-        const drawingLink = document.querySelector(
-          'a[href="/html/drawing.html"]'
-        );
-        if (drawingLink) drawingLink.textContent = t.drawing;
-
-        const horseGameLink = document.querySelector(
-          'a[href="/html/horsegame.html"]'
-        );
-        if (horseGameLink) horseGameLink.textContent = t.horseGame;
+        const gameBoxEl = document.getElementById("gameBox");
+        if (gameBoxEl) gameBoxEl.textContent = t.gameBox;
 
         const ddolGameLink = document.querySelector(
           'a[href="/html/ddolgame.html"]'
@@ -593,19 +663,15 @@
         );
         if (instagramLink) instagramLink.textContent = t.instagram;
 
-        const closeButton = document.getElementById("closeButton");
-        if (closeButton) closeButton.textContent = t.closeBtn;
-
-        // 가격표 링크 업데이트
-        const priceListLink = document.getElementById("priceListLink");
-        if (priceListLink) priceListLink.textContent = t.priceList;
+        // 요금표 버튼 업데이트
+        const priceBoxEl = document.getElementById("priceBox");
+        if (priceBoxEl) priceBoxEl.textContent = t.priceList;
       }
 
       langToggle.addEventListener("click", () => {
         currentLang = currentLang === "ko" ? "en" : "ko";
         localStorage.setItem("lang", currentLang);
         updateLanguage();
-        renderPosts(); // 게시글 목록 다시 렌더링
       });
 
       langToggle.addEventListener("mouseenter", () => {
@@ -620,6 +686,258 @@
 
       // 초기 언어 설정 - 페이지 로드 시 항상 실행
       updateLanguage();
+
+      // 포트폴리오 모달 제어
+      const portfolioTab = document.getElementById("portfolioTab");
+      const portfolioModal = document.getElementById("portfolioModal");
+      const portfolioCloseButton = document.getElementById(
+        "portfolioCloseButton"
+      );
+      const portfolioFrame = document.getElementById("portfolioFrame");
+
+      function openPortfolioModal() {
+        // 처음 열 때 한 번만 iframe 로드 (페이지 최초 로딩 시엔 불러오지 않음)
+        if (portfolioFrame && !portfolioFrame.src) {
+          portfolioFrame.src = "/html/portfolio.html";
+        }
+        portfolioModal.style.display = "flex";
+        // display 적용 후 다음 프레임에 클래스 추가 -> 진입 모션 재생
+        requestAnimationFrame(() => {
+          portfolioModal.classList.add("is-open");
+        });
+      }
+
+      function closePortfolioModal() {
+        portfolioModal.classList.remove("is-open");
+        // 퇴장 트랜지션이 끝난 뒤 display 제거
+        setTimeout(() => {
+          portfolioModal.style.display = "none";
+        }, 350);
+      }
+
+      if (portfolioTab) {
+        portfolioTab.addEventListener("click", (e) => {
+          e.preventDefault();
+          openPortfolioModal();
+        });
+      }
+
+      if (portfolioCloseButton) {
+        portfolioCloseButton.addEventListener("click", closePortfolioModal);
+      }
+
+      if (portfolioModal) {
+        // 배경(오버레이) 클릭 시 닫기
+        portfolioModal.addEventListener("click", (e) => {
+          if (e.target === portfolioModal) closePortfolioModal();
+        });
+      }
+
+      // ESC 키로 닫기
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && portfolioModal.classList.contains("is-open")) {
+          closePortfolioModal();
+        }
+      });
+
+      // === 작업일지 모달 제어 (탭별로 Firebase 게시글 내용 표시) ===
+      const worklogBoxEl = document.getElementById("worklogBox");
+      const worklogModal = document.getElementById("worklogModal");
+      const worklogCloseButton = document.getElementById("worklogCloseButton");
+      const worklogContent = document.getElementById("worklogContent");
+      const worklogTabButtons = document.querySelectorAll(".worklog-tab");
+      const worklogContentCache = {};
+      let worklogOpenedOnce = false;
+
+      async function renderWorklogPost(key) {
+        await worklogReady;
+        const postId = worklogPostIds[key];
+        if (!postId) {
+          worklogContent.innerHTML =
+            "<p>해당 항목의 게시글을 찾지 못했습니다.</p>";
+          return;
+        }
+        if (worklogContentCache[postId]) {
+          worklogContent.innerHTML = worklogContentCache[postId];
+          worklogContent.scrollTop = 0;
+          return;
+        }
+        worklogContent.innerHTML = "로딩 중...";
+        try {
+          const docSnap = await getDoc(doc(db, "posts", postId));
+          if (!docSnap.exists()) {
+            worklogContent.innerHTML = "<p>내용이 없습니다.</p>";
+            return;
+          }
+          const p = docSnap.data();
+          const title = (p.title || "").replace(/\[WORKS\]/gi, "").trim();
+          let html = `<h2>${title}</h2>`;
+          if (p.date) {
+            html += `<p style="color:#808080;font-size:0.9rem">${p.date}</p>`;
+          }
+          html += `<div>${parseMedia(p.content || "")}</div>`;
+          if (Array.isArray(p.images)) {
+            p.images.forEach((url) => {
+              html += `<img src="${url}" loading="lazy" style="display:block;margin:10px auto" />`;
+            });
+          } else if (p.image) {
+            html += `<img src="${p.image}" loading="lazy" style="display:block;margin:10px auto" />`;
+          }
+          worklogContentCache[postId] = html;
+          worklogContent.innerHTML = html;
+          worklogContent.scrollTop = 0;
+        } catch (e) {
+          console.error("작업일지 게시글 로드 실패:", e);
+          worklogContent.innerHTML = "<p>불러오지 못했습니다.</p>";
+        }
+      }
+
+      function openWorklogModal() {
+        worklogModal.style.display = "flex";
+        requestAnimationFrame(() => worklogModal.classList.add("is-open"));
+        if (!worklogOpenedOnce) {
+          worklogOpenedOnce = true;
+          renderWorklogPost("3d"); // 기본 탭
+        }
+      }
+
+      function closeWorklogModal() {
+        worklogModal.classList.remove("is-open");
+        setTimeout(() => {
+          worklogModal.style.display = "none";
+        }, 350);
+      }
+
+      if (worklogBoxEl) {
+        worklogBoxEl.addEventListener("click", (e) => {
+          e.preventDefault();
+          openWorklogModal();
+        });
+      }
+      if (worklogCloseButton) {
+        worklogCloseButton.addEventListener("click", closeWorklogModal);
+      }
+      if (worklogModal) {
+        worklogModal.addEventListener("click", (e) => {
+          if (e.target === worklogModal) closeWorklogModal();
+        });
+      }
+      worklogTabButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          worklogTabButtons.forEach((b) => b.classList.remove("is-active"));
+          btn.classList.add("is-active");
+          renderWorklogPost(btn.dataset.key);
+        });
+      });
+      document.addEventListener("keydown", (e) => {
+        if (
+          e.key === "Escape" &&
+          worklogModal.classList.contains("is-open")
+        ) {
+          closeWorklogModal();
+        }
+      });
+
+      // === 게임 모달: 클릭 시 선택창(탭) 오픈 → 탭으로 게임을 iframe 실행 ===
+      const gameBox = document.getElementById("gameBox");
+      const gameModal = document.getElementById("gameModal");
+      const gameCloseButton = document.getElementById("gameCloseButton");
+      const gameFrame = document.getElementById("gameFrame");
+      const gameTabButtons = document.querySelectorAll("#gameTabsNav .worklog-tab");
+
+      function loadGame(src) {
+        if (gameFrame.getAttribute("src") !== src) {
+          gameFrame.setAttribute("src", src);
+        }
+      }
+
+      function openGameModal() {
+        gameModal.style.display = "flex";
+        requestAnimationFrame(() => gameModal.classList.add("is-open"));
+        // 처음 열 때 활성 탭(첫 번째) 게임 로드
+        const activeTab =
+          document.querySelector("#gameTabsNav .worklog-tab.is-active") ||
+          gameTabButtons[0];
+        if (activeTab) loadGame(activeTab.dataset.src);
+      }
+
+      function closeGameModal() {
+        gameModal.classList.remove("is-open");
+        setTimeout(() => {
+          gameModal.style.display = "none";
+          // 닫을 때 게임 정지 (iframe 언로드)
+          gameFrame.removeAttribute("src");
+        }, 350);
+      }
+
+      if (gameBox) {
+        gameBox.addEventListener("click", (e) => {
+          e.preventDefault();
+          openGameModal();
+        });
+      }
+      if (gameCloseButton) {
+        gameCloseButton.addEventListener("click", closeGameModal);
+      }
+      if (gameModal) {
+        gameModal.addEventListener("click", (e) => {
+          if (e.target === gameModal) closeGameModal();
+        });
+      }
+      gameTabButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          gameTabButtons.forEach((b) => b.classList.remove("is-active"));
+          btn.classList.add("is-active");
+          loadGame(btn.dataset.src);
+        });
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && gameModal.classList.contains("is-open")) {
+          closeGameModal();
+        }
+      });
+
+      // === 요금표 모달 제어 (포트폴리오와 동일 방식: 별도 파일 iframe 로드) ===
+      const priceBox = document.getElementById("priceBox");
+      const priceModal = document.getElementById("priceModal");
+      const priceCloseButton = document.getElementById("priceCloseButton");
+      const priceFrame = document.getElementById("priceFrame");
+
+      function openPriceModal() {
+        // 처음 열 때 한 번만 iframe 로드
+        if (priceFrame && !priceFrame.src) {
+          priceFrame.src = "/html/pricing.html";
+        }
+        priceModal.style.display = "flex";
+        requestAnimationFrame(() => priceModal.classList.add("is-open"));
+      }
+
+      function closePriceModal() {
+        priceModal.classList.remove("is-open");
+        setTimeout(() => {
+          priceModal.style.display = "none";
+        }, 350);
+      }
+
+      if (priceBox) {
+        priceBox.addEventListener("click", (e) => {
+          e.preventDefault();
+          openPriceModal();
+        });
+      }
+      if (priceCloseButton) {
+        priceCloseButton.addEventListener("click", closePriceModal);
+      }
+      if (priceModal) {
+        priceModal.addEventListener("click", (e) => {
+          if (e.target === priceModal) closePriceModal();
+        });
+      }
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && priceModal.classList.contains("is-open")) {
+          closePriceModal();
+        }
+      });
     </script>
   </body>
 </html>

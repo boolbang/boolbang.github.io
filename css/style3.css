@@ -11,16 +11,6 @@ body {
   font-size: 15.2px;
 }
 
-/* Three.js ASCII Effect 박스 제거 */
-#three-container,
-#three-container *,
-#three-container pre,
-#three-container div {
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
-}
-
 .main-container {
   width: 600px;
   min-height: 100vh;
@@ -67,206 +57,31 @@ body {
   margin: 30px 0;
 }
 
-.nav-section h2 {
-  font-size: 1.3rem;
-  color: #0000aa;
-  margin: 0 0 15px 0;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #a8a8a8;
-  font-weight: 700;
-}
-
-.nav-links {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.nav-link {
-  display: block;
-  padding: 15px 20px;
-  background-color: #d4d4d4;
-  border: 2px solid #000000;
-  border-left: 5px solid #0000aa;
-  color: #000000;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  font-weight: 400;
-}
-
-.nav-link:hover {
-  background-color: #0000aa;
-  color: #ffffff;
-  transform: translateX(5px);
-  border-left-color: #0000aa;
-}
-
-.nav-link::before {
-  content: "▶ ";
-  margin-right: 8px;
-}
-
-/* 텍스트 링크 스타일 */
-.text-links {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-top: 10px;
-}
-
-.text-link {
-  color: #000000;
-  text-decoration: none;
-  padding: 2px 0;
-  margin: 0;
-  border-bottom: 1px solid transparent;
-  transition: all 0.2s ease;
-  display: inline-block;
-  cursor: pointer;
-}
-
-.text-link:hover {
-  color: #000000;
-  text-decoration: none;
-  padding-left: 10px;
-}
-
-.text-link::before {
-  content: "→ ";
-  margin-right: 8px;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.text-link:hover::before {
-  opacity: 1;
-}
-
-/* =============================
-   게시판 스타일
-   ============================= */
-h2 {
-  font-size: 1.3rem;
-  margin-top: 50px;
-}
-
-table {
-  margin: auto;
-  border-collapse: collapse;
-  width: 100%;
-  background-color: #fff;
-  font-size: 0.9rem;
-}
-
-th,
-td {
-  border: 1px solid #000;
-  padding: 6px 5px;
-}
-
-.modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.644);
-  backdrop-filter: blur(5px) brightness(0.8);
-  z-index: 1000;
-}
-
-.modal-content {
-  color: #000000;
-  background: #d4d4d4;
-  padding: 30px;
-  margin: 5% auto;
-  width: 600px;
-  max-width: 600px;
-  border: none;
-  border-radius: 0;
-  text-align: left;
-  max-height: 80vh;
-  overflow-y: auto;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-}
-
-.modal-content::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
-}
-
-@media (max-width: 1080px) {
-  .modal {
-    padding: 0;
-  }
-
-  .modal-content {
-    width: 100vw !important;
-    height: 100vh !important;
-    max-width: 100vw !important;
-    max-height: 100vh !important;
-    padding: 16px !important;
-    border-radius: 0 !important;
-    margin: 0 !important;
-    box-sizing: border-box;
-  }
-}
-
-#modalImage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+/* 홈 네비 링크(이력서~요금표) 가운데 정렬 (PC·모바일 공통) */
+.home-nav {
   justify-content: center;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-#modalImage img {
-  max-width: 80%;
-  height: auto;
-  display: block;
-  margin: 0 auto;
 }
 
 /* =============================
-   스크롤 배너 텍스트
+   메인 페이지 스케치 랜덤 이미지
+   (가로폭 = 콘텐츠 폭, 세로 = 정비율 정사각형. PC/모바일 공통)
+   접속마다 스케치 갤러리에서 1장을 무작위로 불러와 표시
    ============================= */
-@keyframes scrollText {
-  0% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-#textBanner {
-  background-color: #000;
-  color: #adff6a;
+.home-sketch {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #c4c4c4;
   overflow: hidden;
 }
-
-.text-slide-wrap {
+.home-sketch img {
   width: 100%;
-  white-space: nowrap;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-.text-slide-track {
-  display: inline-block;
-  padding: 7px 0;
-  animation: scrollText 50s linear infinite;
-}
-
-.text-slide-track span {
-  display: inline-block;
-  margin: 0 3rem;
-  font-size: 0.7rem;
-}
-
-/* =============================
-   링크 및 버튼
-   ============================= */
+/* 링크 */
 a {
   color: #000000;
   text-decoration: none;
@@ -277,70 +92,9 @@ a:hover {
   text-decoration: none;
 }
 
-#postPagination button {
-  background-color: #d4d4d4;
-  color: #000000;
-  border: 2px solid #000000;
-  padding: 5px 7px;
-  margin: 0 5px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-#postPagination button:hover {
-  background-color: #0000aa;
-  color: #ffffff;
-}
-
-#closeButton {
-  background-color: #a8a8a8;
-  color: #000000;
-  padding: 8px 10px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  font-weight: normal;
-}
-#closeButton:hover {
-  background-color: #8c8c8c;
-  color: #000000;
-}
-
-/* =============================
-   레트로 박스
-   ============================= */
-.retro-box {
-  max-width: 800px;
-  margin: 3rem auto;
-  padding: 1.8rem;
-  background-color: #313131;
-  border: 2px solid #000;
-  position: relative;
-}
-.retro-box::before {
-  content: ":)";
-  position: absolute;
-  top: -14px;
-  left: 12px;
-  background: #ffffff;
-  font-size: 0.8rem;
-  padding: 0 4px;
-  color: #444;
-  border: 2px solid #000000;
-}
-
-/* =============================
-   페이지네이션
-   ============================= */
-#pagination {
-  margin: 1rem auto;
-}
-#pagination button {
-  margin: 0 5px;
-  padding: 4px 10px;
-}
-
 /* =============================
    YouTube 영상 박스
+   (작업일지 모달의 게시글 본문에 유튜브가 있을 때 parseMedia가 사용)
    ============================= */
 .youtube-wrap {
   position: relative;
@@ -359,40 +113,7 @@ a:hover {
 }
 
 /* =============================
-   고정 홈 버튼
-   ============================= */
-.home-button {
-  position: fixed;
-  top: 15px;
-  left: 15px;
-  background-color: #808080;
-  color: #ffffff;
-  padding: 5px 5px;
-  font-size: 0.5rem;
-  border: 2px solid #ffffff;
-  text-decoration: none;
-  z-index: 10000;
-  box-shadow: 0px 0px 0px #000;
-  transition: background-color 0.2s;
-}
-.home-button:hover {
-  background-color: #ffe600;
-  color: #000;
-  transform: scale(1.05);
-}
-
-/* =============================
-   PC 전용 스타일
-   ============================= */
-@media (min-width: 1080px) {
-  .modal-content {
-    max-width: 900px;
-    max-height: 80vh;
-  }
-}
-
-/* =============================
-   모바일 반응형 스타일
+   모바일 반응형
    ============================= */
 @media (max-width: 768px) {
   body {
@@ -413,55 +134,25 @@ a:hover {
     font-size: 0.8rem;
   }
 
-  .nav-section h2 {
-    font-size: 1.1rem;
-  }
-
-  .nav-link {
-    padding: 12px 15px;
-    font-size: 0.9rem;
-  }
-
   .intro-section {
     font-size: 0.8rem;
     padding: 15px;
+  }
+
+  /* 모바일: 네비 링크(이력서~요금표)를 한 줄 + 가운데 정렬 */
+  .home-nav {
+    gap: 6px !important;
+    font-size: 0.9rem;
+    justify-content: center;
+  }
+  .home-nav a {
+    padding: 4px 6px !important;
   }
 }
 
 @media (max-width: 1079px) {
   body {
     font-size: 15.2px;
-  }
-  h2 {
-    font-size: 1.5rem;
-  }
-  table {
-    font-size: 1rem;
-  }
-  .modal-content {
-    width: 90%;
-    max-width: none;
-    font-size: 1rem;
-    padding: 16px;
-    border-radius: 6px;
-    max-height: 92vh;
-  }
-  #modalTitle {
-    font-size: 1.2rem;
-  }
-  #modalContent {
-    font-size: 0.95rem;
-  }
-  #closeButton {
-    padding: 8px 10px;
-    font-size: 1rem;
-  }
-  .text-slide-track span {
-    font-size: 1rem;
-  }
-  .home-button {
-    font-size: 0.5rem;
-    padding: 3px 5px;
   }
   .youtube-wrap iframe {
     border-radius: 6px;
