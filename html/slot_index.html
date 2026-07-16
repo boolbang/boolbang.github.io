@@ -213,7 +213,49 @@
     font-size: 14px;
     padding: 6px 8px;
   }
+
+  #slot-ranking {
+    width: 90vw;
+  }
 }
+
+  /* 간단 순위표 */
+  #slot-ranking {
+    width: 400px;
+    max-width: 90vw;
+    box-sizing: border-box;
+    margin-top: 14px;
+    color: #ffffff;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+  }
+  #slot-ranking .rank-title {
+    text-align: center;
+    font-size: 13px;
+    margin-bottom: 6px;
+    opacity: 0.85;
+  }
+  #slot-ranking ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  #slot-ranking li {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 2px 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  }
+  #slot-ranking .rk-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  #slot-ranking .rk-score {
+    opacity: 0.9;
+    flex: 0 0 auto;
+  }
 
   </style>
 </head>
@@ -248,6 +290,11 @@
     </div>
   </div>
 
+  <div id="slot-ranking">
+    <div class="rank-title">🏆 최고 기록 (도달 스테이지)</div>
+    <ol id="rank-list"></ol>
+  </div>
+
   <script>
     const clickSound = document.getElementById('click-sound');
     const winSound = document.getElementById('win-sound');
@@ -263,21 +310,30 @@ document.querySelectorAll('button').forEach(btn => {
 
     const symbols = ['★', '♦', '♠', '♣', '♥'];
 
-    // 기본 보상 테이블 (Stage 1 기준)
-    // 각 스테이지마다 2배씩 증가 (지수적 증가)
+    // 심볼 출현 가중치 (★이 가장 희귀 → 대박의 손맛). 가중치 합 = 50
+    const symbolWeights = { '★': 2, '♦': 5, '♠': 9, '♣': 14, '♥': 20 };
+    const weightedPool = [];
+    for (const s in symbolWeights) for (let i = 0; i < symbolWeights[s]; i++) weightedPool.push(s);
+    function weightedSymbol() { return weightedPool[Math.floor(Math.random() * weightedPool.length)]; }
+
+    // 기본 보상 테이블 (Stage 1 기준). 스테이지마다 REWARD_SCALE배씩 증가
     const baseScores = {
-      '★': 500,  // 가장 높은 보상
-      '♦': 70,
-      '♠': 50,
-      '♣': 30,
-      '♥': 20    // 가장 낮은 보상
+      '★': 2500,  // 가장 높은 보상 (희귀)
+      '♦': 320,
+      '♠': 100,
+      '♣': 40,
+      '♥': 15     // 가장 낮은 보상 (흔함)
     };
+    // 보상 성장률(1.86)을 베팅 성장률(2)보다 낮게 → 스테이지가 오를수록
+    // 서서히 불리해지고 결국 파산하는 난이도 벽을 형성 (스테이지 15 부근)
+    const REWARD_SCALE = 1.86;
 
     // 게임 상태 변수
-    // money: 현재 자금, stage: 현재 스테이지, target: 클리어 목표
+    // money: 현재 자금, stage: 현재 스테이지, target: 클리어 목표(빚)
     // spinCount: 총 플레이 횟수, betMultiplier: 베팅 배율 (1, 2, 5배)
-    let money = 100, stage = 1, target = 500, spinCount = 0, betMultiplier = 1;
+    let money = 200, stage = 1, target = 400, spinCount = 0, betMultiplier = 1;
     let bgmStarted = false;
+    let gameEnded = false; // 파산 후 중복 저장 방지
 
     const reelsContainer = document.getElementById('reels');
     const resultDisplay = document.getElementById('result');
@@ -316,11 +372,11 @@ document.querySelectorAll('button').forEach(btn => {
     // Stage 4: 8배 보상 (★=4000)...
     // 이제 무한 스테이지 플레이 가능!
     function getScores() {
-      const stageMultiplier = Math.pow(2, stage - 1);
+      const stageMultiplier = Math.pow(REWARD_SCALE, stage - 1);
 
       const scores = {};
       for (let symbol in baseScores) {
-        scores[symbol] = baseScores[symbol] * stageMultiplier;
+        scores[symbol] = Math.round(baseScores[symbol] * stageMultiplier);
       }
 
       return scores;
@@ -332,8 +388,7 @@ document.querySelectorAll('button').forEach(btn => {
     }
 
     function updateStageInfo() {
-      const stageMultiplier = Math.pow(2, stage - 1);
-      stageInfoDisplay.textContent = `Stage ${stage} | 빚: ${target}만원 | 보상배율: x${stageMultiplier}`;
+      stageInfoDisplay.textContent = `Stage ${stage} | 빚: ${target}만원`;
     }
 
     function updateDisplay() {
@@ -354,7 +409,7 @@ document.querySelectorAll('button').forEach(btn => {
         for (let i = 0; i < spinSymbolsCount; i++) {
           const symbol = document.createElement('div');
           symbol.className = 'symbol';
-          symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+          symbol.textContent = weightedSymbol();
           strip.appendChild(symbol);
         }
         reel.appendChild(strip);
@@ -364,14 +419,23 @@ document.querySelectorAll('button').forEach(btn => {
     }
 
     function gameOver() {
+      if (gameEnded) return; // 중복 호출/저장 방지
+      gameEnded = true;
       resultDisplay.textContent = '파산! 사채업자 등장.';
       spinButton.disabled = true;
       restartButton.style.display = 'inline-block';
+
+      // 랭킹 저장: 도달 스테이지가 점수
+      const reached = stage;
+      const name = prompt(`파산! 도달 스테이지: ${reached}\n랭킹에 남길 닉네임을 입력하세요:`);
+      if (name && window.saveSlotScore) {
+        window.saveSlotScore(name.trim().slice(0, 20), reached);
+      }
     }
 
     function nextStage() {
       stage++;
-      target *= 2;
+      target = Math.round(target * 1.8); // 빚 성장률(1.8) < 이전 2배 → 완만
       resultDisplay.textContent = `✔️ 빚 갚음! 다음 빚: ${target}만원`;
 
       const machine = document.getElementById('slot-machine');
@@ -411,6 +475,10 @@ function spin() {
   strips.forEach((strip, col) => {
     const maxIndex = spinSymbolsCount - rowCount - 1;
     const targetIndex = Math.floor(Math.random() * maxIndex) + 1;
+    // 착지할 3칸을 가중 확률로 새로 뽑아 결과 확률을 보장 (매 스핀 i.i.d.)
+    for (let row = 0; row < rowCount; row++) {
+      strip.children[targetIndex + row].textContent = weightedSymbol();
+    }
     const topOffset = -(targetIndex * 60);
     strip.style.transition = 'top 0.9s ease-out';
     strip.style.top = `${topOffset}px`;
@@ -501,10 +569,11 @@ if (totalWin > 0) {
     });
 
     restartButton.addEventListener('click', () => {
-      money = 100;
+      money = 200;
       stage = 1;
-      target = 500;
+      target = 400;
       spinCount = 0;
+      gameEnded = false;
       resultDisplay.textContent = '';
       spinButton.disabled = false;
       restartButton.style.display = 'none';
@@ -514,6 +583,67 @@ if (totalWin > 0) {
 
     initReels();
     updateDisplay();
+  </script>
+
+  <!-- 랭킹 저장 (Firebase Firestore: slot_scores 컬렉션). 화면 요소는 추가하지 않음 -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { firebaseConfig } from "/js/firebase-config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 상위 기록을 불러와 화면 순위표에 표시
+    async function loadSlotRanking() {
+      const list = document.getElementById("rank-list");
+      if (!list) return;
+      try {
+        const q = query(collection(db, "slot_scores"), orderBy("score", "desc"), limit(5));
+        const snap = await getDocs(q);
+        list.innerHTML = "";
+        if (!snap.docs.length) {
+          const li = document.createElement("li");
+          const nm = document.createElement("span");
+          nm.className = "rk-name";
+          nm.textContent = "아직 기록이 없습니다";
+          li.appendChild(nm);
+          list.appendChild(li);
+          return;
+        }
+        snap.docs.forEach((d, i) => {
+          const x = d.data();
+          const li = document.createElement("li");
+          const nm = document.createElement("span");
+          nm.className = "rk-name";
+          nm.textContent = `${i + 1}. ${x.name || "익명"}`;
+          const sc = document.createElement("span");
+          sc.className = "rk-score";
+          sc.textContent = `${x.score} 스테이지`;
+          li.append(nm, sc);
+          list.appendChild(li);
+        });
+      } catch (e) {
+        console.error("슬롯 랭킹 로드 실패:", e);
+      }
+    }
+
+    // 파산 시 gameOver()에서 호출: 도달 스테이지를 랭킹에 저장
+    window.saveSlotScore = async function (name, score) {
+      try {
+        await addDoc(collection(db, "slot_scores"), {
+          name,
+          score,
+          timestamp: new Date()
+        });
+        alert("랭킹에 저장되었습니다!");
+        loadSlotRanking(); // 저장 후 순위표 갱신
+      } catch (e) {
+        console.error("슬롯 랭킹 저장 실패:", e);
+      }
+    };
+
+    window.addEventListener("DOMContentLoaded", loadSlotRanking);
   </script>
 </body>
 </html>
