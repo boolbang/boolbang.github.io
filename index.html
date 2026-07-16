@@ -516,7 +516,7 @@
         worklogReadyResolve();
       }
 
-      window.addEventListener("DOMContentLoaded", initWorklog);
+      // initWorklog는 페이지 로드가 아니라 작업일지를 처음 열 때 호출됨(지연 로딩)
 
       // 언어 전환 기능
       let currentLang = localStorage.getItem("lang") || "ko";
@@ -683,11 +683,19 @@
       );
       const portfolioFrame = document.getElementById("portfolioFrame");
 
-      function openPortfolioModal() {
+      function openPortfolioModal(tabKey) {
         lockBodyScroll();
-        // 처음 열 때 한 번만 iframe 로드 (페이지 최초 로딩 시엔 불러오지 않음)
+        // 처음 열 때 한 번만 iframe 로드. 딥링크면 해시(#video 등)를 붙여
+        // 넘겨서 iframe이 스스로 해당 탭을 표시하게 한다.
         if (portfolioFrame && !portfolioFrame.src) {
-          portfolioFrame.src = "/html/portfolio.html";
+          portfolioFrame.src =
+            "/html/portfolio.html" + (tabKey ? "#" + tabKey : "");
+        } else if (tabKey && portfolioFrame && portfolioFrame.contentWindow) {
+          // 이미 로드된 경우엔 메시지로 탭 선택 요청
+          portfolioFrame.contentWindow.postMessage(
+            { source: "boolbang-open-tab", key: tabKey },
+            location.origin
+          );
         }
         portfolioModal.style.display = "flex";
         // display 적용 후 다음 프레임에 클래스 추가 -> 진입 모션 재생
@@ -695,10 +703,12 @@
           portfolioModal.classList.add("is-open");
         });
         pushModalHistory(closePortfolioModal);
+        if (tabKey) setPortfolioHash(tabKey);
       }
 
       function closePortfolioModal() {
         unlockBodyScroll();
+        clearPortfolioHash(); // 닫으면 URL 해시(#video 등) 제거
         portfolioModal.classList.remove("is-open");
         // 퇴장 트랜지션이 끝난 뒤 display 제거
         setTimeout(() => {
@@ -730,6 +740,33 @@
           requestCloseModal();
         }
       });
+
+      // === 포트폴리오 탭 딥링크 (URL 해시: #video, #photo, #3d, #sketch, #etc) ===
+      const PORTFOLIO_TAB_KEYS = ["video", "photo", "3d", "sketch", "etc"];
+      function setPortfolioHash(key) {
+        // replaceState로 히스토리 항목을 늘리지 않고 주소만 갱신 (뒤로가기=모달닫기 유지)
+        history.replaceState(history.state, "", "#" + key);
+      }
+      function clearPortfolioHash() {
+        if (location.hash) {
+          history.replaceState(
+            history.state,
+            "",
+            location.pathname + location.search
+          );
+        }
+      }
+      // iframe(portfolio.html)에서 탭이 바뀌면 알림 받아 URL 해시 갱신
+      window.addEventListener("message", (e) => {
+        if (e.origin !== location.origin) return;
+        const d = e.data || {};
+        if (d.source === "boolbang-portfolio" && d.key) setPortfolioHash(d.key);
+      });
+      // 최초 로드 시 해시가 유효한 탭이면 포트폴리오를 그 탭으로 바로 연다 (공유 링크)
+      (function openPortfolioFromHash() {
+        const key = (location.hash || "").replace(/^#/, "");
+        if (PORTFOLIO_TAB_KEYS.includes(key)) openPortfolioModal(key);
+      })();
 
       // === 작업일지 모달 제어 (탭별로 Firebase 게시글 내용 표시) ===
       const worklogBoxEl = document.getElementById("worklogBox");
@@ -789,7 +826,8 @@
         requestAnimationFrame(() => worklogModal.classList.add("is-open"));
         if (!worklogOpenedOnce) {
           worklogOpenedOnce = true;
-          renderWorklogPost("3d"); // 기본 탭
+          initWorklog(); // 첫 오픈 시에만 posts 불러오기 (지연 로딩)
+          renderWorklogPost("3d"); // worklogReady를 await하므로 로딩 후 렌더
         }
         pushModalHistory(closeWorklogModal);
       }

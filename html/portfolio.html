@@ -238,10 +238,26 @@
         display: block;
       }
 
+      /* 심심풀이 아스키 아트 — 데스크톱은 숨김, 모바일 비디오 탭 하단 여백에만 표시 */
+      .video-ascii {
+        display: none;
+        margin: 30px auto 4px;
+        width: fit-content;
+        max-width: 100%;
+        overflow-x: auto;
+        font-family: "D2Coding", monospace;
+        font-size: 10px;
+        line-height: 1.25;
+        color: #666;
+      }
+
       /* 모바일: 무대를 넓게 (세로·가로 모두 인라인 재생 가능) */
       @media (max-width: 900px) {
         .video-stage {
           max-width: 100%;
+        }
+        .video-ascii {
+          display: block;
         }
       }
 
@@ -310,19 +326,19 @@
   <body>
     <div class="portfolio-layout">
       <nav class="portfolio-tabs" id="portfolioTabs">
-        <button class="portfolio-tab" data-src="/html/portfolio_video.html">
+        <button class="portfolio-tab" data-key="video" data-src="/html/portfolio_video.html">
           비디오
         </button>
-        <button class="portfolio-tab" data-src="/html/portfolio_photo.html">
+        <button class="portfolio-tab" data-key="photo" data-src="/html/portfolio_photo.html">
           사진
         </button>
-        <button class="portfolio-tab" data-src="/html/portfolio_vfx.html">
+        <button class="portfolio-tab" data-key="3d" data-src="/html/portfolio_vfx.html">
           3D, VFX
         </button>
-        <button class="portfolio-tab" data-src="/html/portfolio_sketch.html">
+        <button class="portfolio-tab" data-key="sketch" data-src="/html/portfolio_sketch.html">
           컨셉스케치
         </button>
-        <button class="portfolio-tab" data-src="/html/portfolio_etc.html">
+        <button class="portfolio-tab" data-key="etc" data-src="/html/portfolio_etc.html">
           잡다
         </button>
       </nav>
@@ -451,16 +467,48 @@
         show(0);
       }
 
+      // 부모(index.html)에 현재 탭 key를 알려 URL 해시(#video 등)를 갱신하게 함
+      function notifyParentTab(key) {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage(
+            { source: "boolbang-portfolio", key },
+            location.origin
+          );
+        }
+      }
+
+      // key로 탭 선택 (딥링크/부모 요청 시). 없으면 false
+      function selectTabByKey(key) {
+        const tab = Array.from(tabs).find((t) => t.dataset.key === key);
+        if (!tab) return false;
+        tabs.forEach((t) => t.classList.remove("is-active"));
+        tab.classList.add("is-active");
+        loadCategory(tab.dataset.src);
+        return true;
+      }
+
       tabs.forEach((tab) => {
         tab.addEventListener("click", () => {
           tabs.forEach((t) => t.classList.remove("is-active"));
           tab.classList.add("is-active");
           loadCategory(tab.dataset.src);
+          notifyParentTab(tab.dataset.key); // URL 해시 갱신 요청
         });
       });
 
-      // 초기에는 탭을 선택하지 않고 안내(중간 페이지)를 보여줌.
-      // 사용자가 상단 카테고리를 클릭하면 그때 해당 조각을 로드한다.
+      // 부모가 특정 탭 열기를 요청(세션 중 해시 변경 등)
+      window.addEventListener("message", (e) => {
+        if (e.origin !== location.origin) return;
+        const d = e.data || {};
+        if (d.source === "boolbang-open-tab" && d.key) selectTabByKey(d.key);
+      });
+
+      // 초기 로드: iframe URL 해시(#video 등)가 있으면 그 탭을 바로 표시.
+      // 없으면 탭 미선택 상태로 안내(중간 페이지)를 보여줌.
+      (function initFromHash() {
+        const key = (location.hash || "").replace(/^#/, "");
+        if (key) selectTabByKey(key);
+      })();
 
       // 갤러리 이미지 클릭 시 확대 (이벤트 위임 → 나중에 삽입된 이미지도 동작)
       const lightbox = document.getElementById("lightbox");
