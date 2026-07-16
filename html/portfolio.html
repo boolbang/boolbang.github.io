@@ -412,18 +412,42 @@
         if (!items.length) return;
         let current = -1;
 
+        // 같은 iframe의 src를 비웠다 다시 채우면 그때마다 브라우저 뒤로가기 스택에
+        // 항목이 쌓여 모달 닫기(history.back 기반)가 망가진다. 그래서 원본 iframe은
+        // 주소만 보관한 뒤 제거하고, 볼 때마다 새 iframe을 만들어 끼운다.
+        // (새로 만든 iframe의 첫 이동은 히스토리를 쌓지 않는다)
+        const frames = items.map((item) => {
+          const frame = item.querySelector(".video-frame");
+          const iframe = frame ? frame.querySelector("iframe") : null;
+          const src = iframe ? iframe.dataset.src || "" : "";
+          if (iframe) iframe.remove();
+          return { frame, src };
+        });
+
+        function createIframe(src) {
+          const el = document.createElement("iframe");
+          el.setAttribute("loading", "lazy");
+          el.setAttribute(
+            "allow",
+            "accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+          );
+          el.setAttribute("allowfullscreen", "true");
+          el.src = src;
+          return el;
+        }
+
         function show(idx) {
           if (idx < 0 || idx >= items.length || idx === current) return;
           items.forEach((item, i) => {
-            const iframe = item.querySelector("iframe");
+            const { frame, src } = frames[i];
+            const iframe = frame ? frame.querySelector("iframe") : null;
             if (i === idx) {
               item.classList.add("is-active");
-              // 선택된 영상만 로드 (data-src → src)
-              if (iframe && iframe.dataset.src) iframe.src = iframe.dataset.src;
+              if (frame && src && !iframe) frame.appendChild(createIframe(src));
             } else {
               item.classList.remove("is-active");
-              // 다른 영상은 src를 비워 재생/소리를 멈춤
-              if (iframe && iframe.src) iframe.removeAttribute("src");
+              // 노드째 제거 → 재생/소리가 확실히 멈춘다
+              if (iframe) iframe.remove();
             }
           });
           Array.from(nav.children).forEach((btn, i) =>

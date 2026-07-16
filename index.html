@@ -659,20 +659,34 @@
       // 모달을 열 때 history 항목을 하나 쌓고, popstate(뒤로가기)가 오면
       // 사이트를 나가는 대신 해당 모달을 닫는다. (X 버튼/오버레이/ESC도 이 경로로 통일)
       let activeModalClose = null;
+      let closeFallbackTimer = null;
       function pushModalHistory(realCloseFn) {
         activeModalClose = realCloseFn;
         history.pushState({ boolbangModal: true }, "");
       }
+      function runModalClose() {
+        if (!activeModalClose) return;
+        const fn = activeModalClose;
+        activeModalClose = null;
+        fn(); // 실제 DOM 닫기 + 스크롤 해제
+      }
       // 사용자 닫기 요청(X/오버레이/ESC): 뒤로가기를 발생시켜 popstate가 실제 닫기를 수행
       function requestCloseModal() {
-        if (activeModalClose) history.back();
+        if (!activeModalClose || closeFallbackTimer) return; // 연타 방지
+        history.back();
+        // 히스토리 스택에 다른 항목(iframe 이동 등)이 끼어 popstate가 오지 않는
+        // 경우를 대비한 안전장치 — X 버튼은 어떤 경우에도 동작해야 한다
+        closeFallbackTimer = setTimeout(() => {
+          closeFallbackTimer = null;
+          runModalClose();
+        }, 300);
       }
       window.addEventListener("popstate", () => {
-        if (activeModalClose) {
-          const fn = activeModalClose;
-          activeModalClose = null;
-          fn(); // 실제 DOM 닫기 + 스크롤 해제
+        if (closeFallbackTimer) {
+          clearTimeout(closeFallbackTimer);
+          closeFallbackTimer = null;
         }
+        runModalClose();
       });
 
       // 포트폴리오 모달 제어
