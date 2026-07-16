@@ -118,6 +118,15 @@
         background-color: #444444;
       }
 
+      /* 작업일지 모달은 배경이 검정이라 닫기 버튼을 흰 원 + 검정 X로 반전 (가시성 확보) */
+      #worklogCloseButton {
+        background-color: #ffffff;
+        color: #000000;
+      }
+      #worklogCloseButton:hover {
+        background-color: #cccccc;
+      }
+
       @media (max-width: 768px) {
         /* 모바일: 모달을 화면에 꽉 차게 (풀스크린) */
         .portfolio-modal-content {
@@ -376,24 +385,6 @@
         <div class="home-sketch">
           <img id="homeSketchImg" alt="스케치 작업" />
         </div>
-        <div style="border-top: 1px solid #a8a8a8; margin-top: 30px"></div>
-      </section>
-
-      <section class="nav-section" style="margin-bottom: 0">
-        <div style="display: flex; gap: 20px; align-items: center">
-          <a
-            href="https://www.youtube.com/@boolbang"
-            target="_blank"
-            style="color: #000000; text-decoration: none"
-            >유튜브</a
-          >
-          <a
-            href="https://www.instagram.com/postboolbang"
-            target="_blank"
-            style="color: #000000; text-decoration: none"
-            >인스타그램</a
-          >
-        </div>
       </section>
 
       <footer
@@ -547,8 +538,6 @@
           portfolioTab: "포트폴리오",
           portfolio1: "작업일지",
           gameBox: "게임",
-          youtube: "유튜브",
-          instagram: "인스타그램",
           priceList: "요금표",
         },
         en: {
@@ -566,8 +555,6 @@
           portfolioTab: "Portfolio",
           portfolio1: "Worklog",
           gameBox: "Game",
-          youtube: "YouTube",
-          instagram: "Instagram",
           priceList: "Price List",
         },
       };
@@ -617,16 +604,6 @@
 
         const gameBoxEl = document.getElementById("gameBox");
         if (gameBoxEl) gameBoxEl.textContent = t.gameBox;
-
-        const youtubeLink = document.querySelector(
-          'a[href="https://www.youtube.com/@boolbang"]'
-        );
-        if (youtubeLink) youtubeLink.textContent = t.youtube;
-
-        const instagramLink = document.querySelector(
-          'a[href="https://www.instagram.com/postboolbang"]'
-        );
-        if (instagramLink) instagramLink.textContent = t.instagram;
 
         // 요금표 버튼 업데이트
         const priceBoxEl = document.getElementById("priceBox");
@@ -678,6 +655,26 @@
         window.scrollTo(0, __scrollLockY); // 원래 스크롤 위치 복원
       }
 
+      // === 모바일 뒤로가기(스와이프/뒤로가기 버튼) 시 사이트 이탈 대신 모달 닫기 ===
+      // 모달을 열 때 history 항목을 하나 쌓고, popstate(뒤로가기)가 오면
+      // 사이트를 나가는 대신 해당 모달을 닫는다. (X 버튼/오버레이/ESC도 이 경로로 통일)
+      let activeModalClose = null;
+      function pushModalHistory(realCloseFn) {
+        activeModalClose = realCloseFn;
+        history.pushState({ boolbangModal: true }, "");
+      }
+      // 사용자 닫기 요청(X/오버레이/ESC): 뒤로가기를 발생시켜 popstate가 실제 닫기를 수행
+      function requestCloseModal() {
+        if (activeModalClose) history.back();
+      }
+      window.addEventListener("popstate", () => {
+        if (activeModalClose) {
+          const fn = activeModalClose;
+          activeModalClose = null;
+          fn(); // 실제 DOM 닫기 + 스크롤 해제
+        }
+      });
+
       // 포트폴리오 모달 제어
       const portfolioTab = document.getElementById("portfolioTab");
       const portfolioModal = document.getElementById("portfolioModal");
@@ -697,6 +694,7 @@
         requestAnimationFrame(() => {
           portfolioModal.classList.add("is-open");
         });
+        pushModalHistory(closePortfolioModal);
       }
 
       function closePortfolioModal() {
@@ -716,20 +714,20 @@
       }
 
       if (portfolioCloseButton) {
-        portfolioCloseButton.addEventListener("click", closePortfolioModal);
+        portfolioCloseButton.addEventListener("click", requestCloseModal);
       }
 
       if (portfolioModal) {
         // 배경(오버레이) 클릭 시 닫기
         portfolioModal.addEventListener("click", (e) => {
-          if (e.target === portfolioModal) closePortfolioModal();
+          if (e.target === portfolioModal) requestCloseModal();
         });
       }
 
       // ESC 키로 닫기
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && portfolioModal.classList.contains("is-open")) {
-          closePortfolioModal();
+          requestCloseModal();
         }
       });
 
@@ -793,6 +791,7 @@
           worklogOpenedOnce = true;
           renderWorklogPost("3d"); // 기본 탭
         }
+        pushModalHistory(closeWorklogModal);
       }
 
       function closeWorklogModal() {
@@ -810,11 +809,11 @@
         });
       }
       if (worklogCloseButton) {
-        worklogCloseButton.addEventListener("click", closeWorklogModal);
+        worklogCloseButton.addEventListener("click", requestCloseModal);
       }
       if (worklogModal) {
         worklogModal.addEventListener("click", (e) => {
-          if (e.target === worklogModal) closeWorklogModal();
+          if (e.target === worklogModal) requestCloseModal();
         });
       }
       worklogTabButtons.forEach((btn) => {
@@ -829,7 +828,7 @@
           e.key === "Escape" &&
           worklogModal.classList.contains("is-open")
         ) {
-          closeWorklogModal();
+          requestCloseModal();
         }
       });
 
@@ -849,6 +848,7 @@
         }
         priceModal.style.display = "flex";
         requestAnimationFrame(() => priceModal.classList.add("is-open"));
+        pushModalHistory(closePriceModal);
       }
 
       function closePriceModal() {
@@ -866,16 +866,16 @@
         });
       }
       if (priceCloseButton) {
-        priceCloseButton.addEventListener("click", closePriceModal);
+        priceCloseButton.addEventListener("click", requestCloseModal);
       }
       if (priceModal) {
         priceModal.addEventListener("click", (e) => {
-          if (e.target === priceModal) closePriceModal();
+          if (e.target === priceModal) requestCloseModal();
         });
       }
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && priceModal.classList.contains("is-open")) {
-          closePriceModal();
+          requestCloseModal();
         }
       });
     </script>
