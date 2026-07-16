@@ -58,6 +58,8 @@
         transition: opacity 0.35s ease;
         align-items: center;
         justify-content: center;
+        /* 모달 내부 스크롤이 뒷 배경으로 이어지지 않게 (오버스크롤 체이닝 차단) */
+        overscroll-behavior: contain;
       }
 
       .portfolio-modal.is-open {
@@ -127,22 +129,14 @@
         }
       }
 
-      /* 게임 모달 내부 iframe (탭 아래 남는 영역을 채움) */
-      .game-frame {
-        flex: 1 1 auto;
-        min-height: 0;
-        width: 100%;
-        border: none;
-        display: block;
-        background-color: #ffffff;
-      }
-
       /* 작업일지 모달은 원래 게시글 모달처럼 작은 크기로 유지 (읽기 좋은 폭) */
       .worklog-modal-content {
         width: 600px;
         max-width: 92vw;
         height: 80vh;
         max-height: 80vh;
+        /* 집중도를 위해 검정 배경 */
+        background-color: #000000;
       }
 
       /* 작업일지 모달 내부: 상단 탭 고정 + 아래 스크롤 콘텐츠 */
@@ -178,7 +172,8 @@
       }
 
       .worklog-tab.is-active {
-        background-color: #000000;
+        /* 검정 배경에서 안 보이지 않도록 활성 탭은 강조색(주황)으로 */
+        background-color: #f18d24;
       }
 
       .worklog-content {
@@ -187,11 +182,11 @@
         overflow-y: auto;
         padding: 32px 40px 48px 40px;
         line-height: 1.8;
-        color: #333333;
+        color: #ffffff;
       }
 
       .worklog-content h2 {
-        color: #0000aa;
+        color: #f18d24;
         margin-top: 0;
         font-size: 1.3rem;
       }
@@ -199,6 +194,11 @@
       .worklog-content img {
         max-width: 100%;
         height: auto;
+      }
+
+      /* 검정 배경에서 링크 가독성 확보 (강조색) */
+      .worklog-content a {
+        color: #f18d24;
       }
 
       @media (max-width: 768px) {
@@ -345,7 +345,7 @@
           >
           <a
             id="gameBox"
-            href="#"
+            href="/html/slot_index.html"
             style="
               color: #000000;
               background-color: #ffffff;
@@ -438,27 +438,6 @@
             <button class="worklog-tab" data-key="consulting">컨설팅</button>
           </nav>
           <div class="worklog-content" id="worklogContent">로딩 중...</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 게임 선택 모달 (포트폴리오와 동일 사이즈/모션, 탭으로 게임 선택 → iframe 실행) -->
-    <div id="gameModal" class="portfolio-modal">
-      <div class="portfolio-modal-content">
-        <button id="gameCloseButton" class="portfolio-modal-close">✕</button>
-        <div class="worklog-layout">
-          <nav class="worklog-tabs" id="gameTabsNav">
-            <button
-              class="worklog-tab is-active"
-              data-src="/html/ddolgame.html"
-            >
-              달려라 똘배!
-            </button>
-            <button class="worklog-tab" data-src="/html/slot_index.html">
-              지옥의 슬롯머신
-            </button>
-          </nav>
-          <iframe id="gameFrame" class="game-frame" title="게임"></iframe>
         </div>
       </div>
     </div>
@@ -687,6 +666,32 @@
       // 초기 언어 설정 - 페이지 로드 시 항상 실행
       updateLanguage();
 
+      // === 모달 열림 중 배경(메인 페이지) 스크롤 잠금 ===
+      // position:fixed 방식으로 모바일 오버스크롤(뒷 화면 비침)까지 방지
+      let __scrollLockY = 0;
+      let __scrollLockCount = 0;
+      function lockBodyScroll() {
+        if (__scrollLockCount++ > 0) return; // 이미 잠겨 있으면 중복 방지
+        __scrollLockY = window.scrollY || window.pageYOffset || 0;
+        document.body.style.position = "fixed";
+        document.body.style.top = `-${__scrollLockY}px`;
+        document.body.style.left = "0";
+        document.body.style.right = "0";
+        document.body.style.width = "100%";
+        document.body.style.overflow = "hidden";
+      }
+      function unlockBodyScroll() {
+        if (__scrollLockCount > 0) __scrollLockCount--;
+        if (__scrollLockCount > 0) return; // 다른 모달이 아직 열려 있으면 유지
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.left = "";
+        document.body.style.right = "";
+        document.body.style.width = "";
+        document.body.style.overflow = "";
+        window.scrollTo(0, __scrollLockY); // 원래 스크롤 위치 복원
+      }
+
       // 포트폴리오 모달 제어
       const portfolioTab = document.getElementById("portfolioTab");
       const portfolioModal = document.getElementById("portfolioModal");
@@ -696,6 +701,7 @@
       const portfolioFrame = document.getElementById("portfolioFrame");
 
       function openPortfolioModal() {
+        lockBodyScroll();
         // 처음 열 때 한 번만 iframe 로드 (페이지 최초 로딩 시엔 불러오지 않음)
         if (portfolioFrame && !portfolioFrame.src) {
           portfolioFrame.src = "/html/portfolio.html";
@@ -708,6 +714,7 @@
       }
 
       function closePortfolioModal() {
+        unlockBodyScroll();
         portfolioModal.classList.remove("is-open");
         // 퇴장 트랜지션이 끝난 뒤 display 제거
         setTimeout(() => {
@@ -793,6 +800,7 @@
       }
 
       function openWorklogModal() {
+        lockBodyScroll();
         worklogModal.style.display = "flex";
         requestAnimationFrame(() => worklogModal.classList.add("is-open"));
         if (!worklogOpenedOnce) {
@@ -802,6 +810,7 @@
       }
 
       function closeWorklogModal() {
+        unlockBodyScroll();
         worklogModal.classList.remove("is-open");
         setTimeout(() => {
           worklogModal.style.display = "none";
@@ -838,64 +847,7 @@
         }
       });
 
-      // === 게임 모달: 클릭 시 선택창(탭) 오픈 → 탭으로 게임을 iframe 실행 ===
-      const gameBox = document.getElementById("gameBox");
-      const gameModal = document.getElementById("gameModal");
-      const gameCloseButton = document.getElementById("gameCloseButton");
-      const gameFrame = document.getElementById("gameFrame");
-      const gameTabButtons = document.querySelectorAll("#gameTabsNav .worklog-tab");
-
-      function loadGame(src) {
-        if (gameFrame.getAttribute("src") !== src) {
-          gameFrame.setAttribute("src", src);
-        }
-      }
-
-      function openGameModal() {
-        gameModal.style.display = "flex";
-        requestAnimationFrame(() => gameModal.classList.add("is-open"));
-        // 처음 열 때 활성 탭(첫 번째) 게임 로드
-        const activeTab =
-          document.querySelector("#gameTabsNav .worklog-tab.is-active") ||
-          gameTabButtons[0];
-        if (activeTab) loadGame(activeTab.dataset.src);
-      }
-
-      function closeGameModal() {
-        gameModal.classList.remove("is-open");
-        setTimeout(() => {
-          gameModal.style.display = "none";
-          // 닫을 때 게임 정지 (iframe 언로드)
-          gameFrame.removeAttribute("src");
-        }, 350);
-      }
-
-      if (gameBox) {
-        gameBox.addEventListener("click", (e) => {
-          e.preventDefault();
-          openGameModal();
-        });
-      }
-      if (gameCloseButton) {
-        gameCloseButton.addEventListener("click", closeGameModal);
-      }
-      if (gameModal) {
-        gameModal.addEventListener("click", (e) => {
-          if (e.target === gameModal) closeGameModal();
-        });
-      }
-      gameTabButtons.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          gameTabButtons.forEach((b) => b.classList.remove("is-active"));
-          btn.classList.add("is-active");
-          loadGame(btn.dataset.src);
-        });
-      });
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && gameModal.classList.contains("is-open")) {
-          closeGameModal();
-        }
-      });
+      // 게임: 모달 없이 게임 페이지로 바로 이동 (index의 href="/html/slot_index.html")
 
       // === 요금표 모달 제어 (포트폴리오와 동일 방식: 별도 파일 iframe 로드) ===
       const priceBox = document.getElementById("priceBox");
@@ -904,6 +856,7 @@
       const priceFrame = document.getElementById("priceFrame");
 
       function openPriceModal() {
+        lockBodyScroll();
         // 처음 열 때 한 번만 iframe 로드
         if (priceFrame && !priceFrame.src) {
           priceFrame.src = "/html/pricing.html";
@@ -913,6 +866,7 @@
       }
 
       function closePriceModal() {
+        unlockBodyScroll();
         priceModal.classList.remove("is-open");
         setTimeout(() => {
           priceModal.style.display = "none";
