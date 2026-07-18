@@ -418,7 +418,7 @@ document.querySelectorAll('button').forEach(btn => {
       }
     }
 
-    function gameOver() {
+    async function gameOver() {
       if (gameEnded) return; // 중복 호출/저장 방지
       gameEnded = true;
       resultDisplay.textContent = '파산! 사채업자 등장.';
@@ -427,6 +427,14 @@ document.querySelectorAll('button').forEach(btn => {
 
       // 랭킹 저장: 도달 스테이지가 점수
       const reached = stage;
+
+      // 상위 5위 안에 드는 점수일 때만 닉네임 등록, 아니면 패스
+      let canRegister = true;
+      if (window.qualifiesForSlotRanking) {
+        canRegister = await window.qualifiesForSlotRanking(reached);
+      }
+      if (!canRegister) return;
+
       const name = prompt(`파산! 도달 스테이지: ${reached}\n랭킹에 남길 닉네임을 입력하세요:`);
       if (name && window.saveSlotScore) {
         window.saveSlotScore(name.trim().slice(0, 20), reached);
@@ -627,6 +635,20 @@ if (totalWin > 0) {
         console.error("슬롯 랭킹 로드 실패:", e);
       }
     }
+
+    // 파산 시 gameOver()에서 호출: 점수가 상위 5위 안에 드는지 확인
+    window.qualifiesForSlotRanking = async function (score) {
+      try {
+        const q = query(collection(db, "slot_scores"), orderBy("score", "desc"), limit(5));
+        const snap = await getDocs(q);
+        if (snap.docs.length < 5) return true; // 아직 5자리가 안 참 → 등록 가능
+        const lowest = snap.docs[snap.docs.length - 1].data().score || 0;
+        return score > lowest; // 5위 점수보다 높아야 등록
+      } catch (e) {
+        console.error("슬롯 랭킹 자격 확인 실패:", e);
+        return true; // 확인 실패 시 기존처럼 등록 허용
+      }
+    };
 
     // 파산 시 gameOver()에서 호출: 도달 스테이지를 랭킹에 저장
     window.saveSlotScore = async function (name, score) {

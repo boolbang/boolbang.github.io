@@ -269,17 +269,29 @@
         <h1 style="font-size: 1.5rem; color: #000000; font-weight: normal">
           불방 인터랙티브
         </h1>
-        <p style="color: #000000; font-size: 15.2px">"영상과 코딩 하는 듀오"</p>
+        <p style="color: #000000; font-size: 15.2px">
+          미술과 기술 사이에서 새로운 이미지를 만듭니다
+        </p>
       </header>
 
       <section
         class="intro-section"
         style="border-left: none; margin-bottom: 0"
       >
-        <p style="color: #000000; font-size: 15.2px">
-          const office = { "kr-seoul": "서울시 영등포구 국제금융로",
-          "kr-gyeonggi-do": "경기도 성남시 분당구 판교역로" };
-        </p>
+        <pre
+          class="office-code"
+          style="
+            color: #000000;
+            font-size: 15.2px;
+            margin: 0;
+            font-family: inherit;
+            white-space: pre-wrap;
+            word-break: break-word;
+          "
+        >const char* office[][2] = {
+    {"kr-seoul",       "서울시 영등포구 국제금융로"},
+    {"kr-gyeonggi-do", "경기도 성남시 분당구 판교역로"},
+}; //mail : fromboolbang@gmail.com</pre>
       </section>
 
       <section class="nav-section" style="margin: 30px 0">
@@ -292,8 +304,9 @@
             line-height: 1.8;
           "
         >
-          Languages & Frameworks<br />
-          C++, JavaScript (React, Next) Python, SQL...
+          Creative<br />
+          Video Direction, Cinematography, Photography, Color Grading, 3D
+          Modeling, Digital Art
         </p>
         <p
           style="
@@ -304,9 +317,9 @@
             line-height: 1.8;
           "
         >
-          Creative Tools<br />
-          Blender3D, DaVinci Resolve, Adobe Premiere Pro (Pr),
-          Photoshop (Ps), Lightroom (Lr) ...
+          Technology<br />
+          C++, JavaScript (React / Next.js), WebGL, Python, Blender, DaVinci
+          Resolve, Adobe Creative Cloud
         </p>
         <div style="border-top: 1px solid #a8a8a8; margin-top: 30px"></div>
         <div
@@ -397,8 +410,7 @@
           color: #808080;
         "
       >
-        © 2016–2025 BoolBang Interactive. Site launched in 2025. All rights
-        reserved.
+        © BoolBang Interactive, est. 2016 · Site launched 2025
       </footer>
     </div>
 
@@ -525,15 +537,18 @@
       const translations = {
         ko: {
           title: "불방 인터랙티브",
-          subtitle: "영상과 코딩 하는 듀오",
-          office:
-            'const office = { "kr-seoul": "서울시 영등포구 국제금융로", "kr-gyeonggi-do": "경기도 성남시 분당구 판교역로" };',
+          subtitle: "미술과 기술 사이에서 새로운 이미지를 만듭니다",
+          office: `const char* office[][2] = {
+    {"kr-seoul",       "서울시 영등포구 국제금융로"},
+    {"kr-gyeonggi-do", "경기도 성남시 분당구 판교역로"},
+}; //mail : fromboolbang@gmail.com`,
           langBtn: "ENG",
-          frameworks: "Languages & Frameworks",
-          frameworksDetail: "C++, JavaScript (React, Next) Python, SQL...",
-          tools: "Creative Tools",
+          frameworks: "Creative",
+          frameworksDetail:
+            "Video Direction, Cinematography, Photography, Color Grading, 3D Modeling, Digital Art",
+          tools: "Technology",
           toolsDetail:
-            "Blender3D, DaVinci Resolve, Adobe Premiere Pro (Pr), Photoshop (Ps), Lightroom (Lr) ...",
+            "C++, JavaScript (React / Next.js), WebGL, Python, Blender, DaVinci Resolve, Adobe Creative Cloud",
           resume: "이력서",
           portfolioTab: "포트폴리오",
           portfolio1: "작업일지",
@@ -542,15 +557,18 @@
         },
         en: {
           title: "BoolBang Interactive",
-          subtitle: "A duo working on video and coding",
-          office:
-            'const office = { "kr-seoul": "Yeouido, Seoul", "kr-gyeonggi-do": "Pangyo, Gyeonggi-do" };',
+          subtitle: "Creating new images between art and technology",
+          office: `const char* office[][2] = {
+    {"kr-seoul",       "Yeouido, Seoul"},
+    {"kr-gyeonggi-do", "Pangyo, Gyeonggi-do"},
+}; //mail : fromboolbang@gmail.com`,
           langBtn: "KOR",
-          frameworks: "Languages & Frameworks",
-          frameworksDetail: "C++, JavaScript (React, Next) Python, SQL...",
-          tools: "Creative Tools",
+          frameworks: "Creative",
+          frameworksDetail:
+            "Video Direction, Cinematography, Photography, Color Grading, 3D Modeling, Digital Art",
+          tools: "Technology",
           toolsDetail:
-            "Blender3D, DaVinci Resolve, Adobe Premiere Pro (Pr), Photoshop (Ps), Lightroom (Lr) ...",
+            "C++, JavaScript (React / Next.js), WebGL, Python, Blender, DaVinci Resolve, Adobe Creative Cloud",
           resume: "Resume",
           portfolioTab: "Portfolio",
           portfolio1: "Worklog",
@@ -582,7 +600,7 @@
         const t = translations[currentLang];
         document.querySelector("h1").textContent = t.title;
         document.querySelector("header p").textContent = t.subtitle;
-        document.querySelector(".intro-section p").textContent = t.office;
+        document.querySelector(".office-code").textContent = t.office;
         langToggle.textContent = t.langBtn;
 
         const paragraphs = document.querySelectorAll(".nav-section > p");
