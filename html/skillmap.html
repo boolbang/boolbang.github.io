@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>기술 맵 - 불방 인터렉티브</title>
+    <meta name="description" content="불방 인터렉티브 - 보유 기술 마인드맵" />
+    <!-- 준비 중인 페이지. 공개 시 아래 robots 태그를 제거할 것 -->
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    <link rel="icon" href="../images/pavicon.png" type="image/png" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #ffffff;
+        color: #000;
+        font-family: "D2Coding", monospace;
+      }
+
+      #stage {
+        position: fixed;
+        inset: 0;
+        display: block;
+        cursor: grab;
+        touch-action: none;
+      }
+
+      #stage.dragging {
+        cursor: grabbing;
+      }
+
+      .back-link {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        color: #555555;
+        text-decoration: none;
+        font-size: 0.9rem;
+        z-index: 10;
+      }
+
+      .back-link:hover {
+        text-decoration: underline;
+        color: #333333;
+      }
+
+      .map-title {
+        position: fixed;
+        top: 52px;
+        left: 20px;
+        z-index: 10;
+        pointer-events: none;
+      }
+
+      .map-title h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        color: #0000aa;
+        font-weight: normal;
+      }
+
+      .map-title p {
+        margin: 6px 0 0;
+        font-size: 0.75rem;
+        color: #808080;
+        line-height: 1.6;
+      }
+
+      /* 범례 */
+      .legend {
+        position: fixed;
+        left: 20px;
+        bottom: 20px;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .legend button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: transparent;
+        border: none;
+        padding: 2px 4px;
+        font-family: inherit;
+        font-size: 0.75rem;
+        color: #000;
+        cursor: pointer;
+        opacity: 0.35;
+        transition: opacity 0.15s ease;
+      }
+
+      .legend button.on {
+        opacity: 1;
+      }
+
+      .legend .swatch {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex: none;
+      }
+
+      /* 상세 패널 */
+      .detail {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 320px;
+        max-width: 84vw;
+        height: 100%;
+        box-sizing: border-box;
+        padding: 32px 28px;
+        background: #ffffff;
+        border-left: 1px solid #a8a8a8;
+        overflow-y: auto;
+        transform: translateX(100%);
+        transition: transform 0.25s ease;
+        z-index: 20;
+      }
+
+      .detail.open {
+        transform: translateX(0);
+      }
+
+      .detail .close {
+        position: absolute;
+        top: 16px;
+        right: 18px;
+        background: none;
+        border: none;
+        font-family: inherit;
+        font-size: 1rem;
+        color: #808080;
+        cursor: pointer;
+      }
+
+      .detail .close:hover {
+        color: #000;
+      }
+
+      .detail .kicker {
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        margin: 0 0 10px;
+      }
+
+      .detail h2 {
+        margin: 0 0 4px;
+        font-size: 1.3rem;
+        color: #000;
+        font-weight: normal;
+      }
+
+      .detail .en {
+        margin: 0 0 20px;
+        font-size: 0.78rem;
+        color: #808080;
+      }
+
+      .detail .body {
+        font-size: 0.85rem;
+        line-height: 1.9;
+        color: #333;
+        text-align: justify;
+        word-break: keep-all;
+      }
+
+      .detail .rel-title {
+        margin: 26px 0 8px;
+        font-size: 0.72rem;
+        color: #808080;
+      }
+
+      .detail .rel {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .detail .rel button {
+        font-family: inherit;
+        font-size: 0.75rem;
+        background: #f0f0f0;
+        border: none;
+        padding: 4px 8px;
+        color: #000;
+        cursor: pointer;
+      }
+
+      .detail .rel button:hover {
+        background: #0000aa;
+        color: #fff;
+      }
+
+      .hint {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        font-size: 0.7rem;
+        color: #b0b0b0;
+        z-index: 10;
+        pointer-events: none;
+      }
+
+      @media (max-width: 600px) {
+        .map-title h1 {
+          font-size: 1.2rem;
+        }
+        .map-title p {
+          display: none;
+        }
+        .hint {
+          display: none;
+        }
+        .legend {
+          flex-direction: row;
+          flex-wrap: wrap;
+          max-width: calc(100vw - 40px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="stage"></canvas>
+
+    <a href="/" class="back-link">← 메인으로 돌아가기</a>
+    <div class="map-title">
+      <h1>기술 맵</h1>
+      <p>노드를 클릭하면 설명이 열립니다. 드래그로 이동, 휠로 확대.</p>
+    </div>
+
+    <div class="legend" id="legend"></div>
+
+    <aside class="detail" id="detail">
+      <button class="close" id="detailClose" aria-label="닫기">✕</button>
+      <p class="kicker" id="detailKicker"></p>
+      <h2 id="detailName"></h2>
+      <p class="en" id="detailEn"></p>
+      <div class="body" id="detailBody"></div>
+      <p class="rel-title">연결된 항목</p>
+      <div class="rel" id="detailRel"></div>
+    </aside>
+
+    <p class="hint">드래그: 이동 &nbsp;/&nbsp; 휠: 확대 &nbsp;/&nbsp; 노드 드래그: 이동</p>
+
+    <script>
+      "use strict";
+
+      // ── 데이터 ──────────────────────────────────────────────
+      // group: 색상/범례 분류, r: 반지름(중요도), to: 연결된 노드 id
+      const GROUPS = {
+        core: { label: "불방", color: "#0000aa" },
+        video: { label: "영상", color: "#c2185b" },
+        three: { label: "3D · VFX", color: "#e07b00" },
+        web: { label: "웹 · 코드", color: "#00796b" },
+        game: { label: "게임 · 인터랙션", color: "#5e35b1" },
+        art: { label: "예술 · 이론", color: "#546e7a" },
+      };
+
+      const NODES = [
+        {
+          id: "boolbang",
+          name: "불방인터렉티브",
+          en: "Boolbang Interactive",
+          group: "core",
+          r: 34,
+          desc: "영상 · 3D · 웹을 관통해 다루는 2인 창작 듀오입니다. 미술 작가와 다큐멘터리 감독으로 6~7년, 이후 상업 영상과 개발로 이어진 이력이 그대로 기술 스택이 되었습니다.",
+          to: ["video", "three", "web", "game", "art"],
+        },
+
+        // 영상
+        {
+          id: "video",
+          name: "영상",
+          en: "Video Production",
+          group: "video",
+          r: 24,
+          desc: "기획부터 촬영, 편집, 색보정, 납품까지 전 공정을 직접 처리합니다. 영화관(블랙박스)과 미술관(화이트큐브) 양쪽 규격을 모두 경험했습니다.",
+          to: ["directing", "cinematography", "grading", "editing", "photo"],
+        },
+        {
+          id: "directing",
+          name: "연출",
+          en: "Direction",
+          group: "video",
+          r: 15,
+          desc: "단편영화와 다큐멘터리 연출 경력이 있습니다. 다큐멘터리 「원수를 경마장에 데려가라」는 인디포럼·서울아트시네마에서 상영되었고 한국영상자료원에 소장되어 있습니다.",
+          to: ["film", "editing"],
+        },
+        {
+          id: "cinematography",
+          name: "촬영",
+          en: "Cinematography",
+          group: "video",
+          r: 15,
+          desc: "다큐멘터리부터 상업 촬영까지. 조명 설계와 카메라 세팅, 로그 촬영 기반의 후반 작업을 전제로 한 현장 운용에 익숙합니다.",
+          to: ["grading", "photo", "studio"],
+        },
+        {
+          id: "grading",
+          name: "색보정",
+          en: "Color Grading",
+          group: "video",
+          r: 19,
+          desc: "REC.709와 DCI-P3 기준 색보정을 모두 다룹니다. 극장 상영용 DCP 규격과 전시용 다채널 출력에서 요구되는 색 파이프라인이 서로 다르다는 점을 실무로 익혔습니다. 동료 작가와 업계 종사자들에게 제공해 온 주력 서비스입니다.",
+          to: ["resolve", "film"],
+        },
+        {
+          id: "editing",
+          name: "편집",
+          en: "Editing",
+          group: "video",
+          r: 15,
+          desc: "내러티브 편집과 리듬 설계. 실험적 영상 작업에서 출발했기 때문에 구조 자체를 다시 짜는 편집을 선호합니다.",
+          to: ["adobe", "resolve"],
+        },
+        {
+          id: "photo",
+          name: "사진",
+          en: "Photography",
+          group: "video",
+          r: 13,
+          desc: "제품, 공간, 인물 촬영. 영상 색보정 경험이 그대로 스틸 보정 워크플로로 이어집니다.",
+          to: ["adobe"],
+        },
+        {
+          id: "studio",
+          name: "라이브 스튜디오",
+          en: "Live Studio",
+          group: "video",
+          r: 13,
+          desc: "라이브 방송 스튜디오 구축 컨설팅. 장비 선정, 신호 흐름, 운영 동선까지 포함한 세팅을 설계합니다.",
+          to: [],
+        },
+
+        // 3D / VFX
+        {
+          id: "three",
+          name: "3D · VFX",
+          en: "3D & VFX",
+          group: "three",
+          r: 24,
+          desc: "3D 프로그램을 활용한 모델링과 VFX. 영상 작업의 확장으로 시작해 다수의 상업 프로젝트를 진행했습니다.",
+          to: ["modeling", "vfx", "blender", "render"],
+        },
+        {
+          id: "modeling",
+          name: "모델링",
+          en: "Modeling",
+          group: "three",
+          r: 17,
+          desc: "제품, 건축, 캐릭터 모델링. FBX · OBJ · GLTF 등 용도에 맞는 포맷으로 납품하며, 웹 실시간 렌더링을 염두에 둔 로우폴리 최적화도 함께 다룹니다.",
+          to: ["blender", "webgl", "render"],
+        },
+        {
+          id: "vfx",
+          name: "VFX · 합성",
+          en: "VFX & Compositing",
+          group: "three",
+          r: 15,
+          desc: "실사 촬영본과 3D의 합성, 트래킹, 시뮬레이션. 촬영 단계에서 후반을 역산해 설계하는 방식으로 작업합니다.",
+          to: ["blender", "adobe"],
+        },
+        {
+          id: "render",
+          name: "렌더링 · 룩뎁",
+          en: "Rendering",
+          group: "three",
+          r: 13,
+          desc: "PBR 기반 머티리얼 설계와 라이팅. 색보정 경험 덕분에 렌더 결과를 최종 색 파이프라인 기준으로 판단합니다.",
+          to: ["grading"],
+        },
+
+        // 웹 / 코드
+        {
+          id: "web",
+          name: "웹 · 코드",
+          en: "Web & Code",
+          group: "web",
+          r: 24,
+          desc: "웹은 풀스택으로 다룹니다. 자체 사업에 주로 활용하고 있으며 외주 웹사이트 작업도 다수 진행했습니다.",
+          to: ["js", "react", "backend", "cpp", "python", "webgl"],
+        },
+        {
+          id: "js",
+          name: "JavaScript",
+          en: "JavaScript",
+          group: "web",
+          r: 19,
+          desc: "프론트엔드 전반. 프레임워크 없이 바닐라로 인터랙션을 직접 구현하는 것을 선호하며, 지금 보고 있는 이 마인드맵도 외부 라이브러리 없이 Canvas 2D로 작성했습니다.",
+          to: ["react", "webgl", "canvas"],
+        },
+        {
+          id: "react",
+          name: "React · Next.js",
+          en: "React / Next.js",
+          group: "web",
+          r: 16,
+          desc: "컴포넌트 기반 UI와 SSR. 규모가 필요한 프로젝트에서 사용합니다.",
+          to: ["backend"],
+        },
+        {
+          id: "backend",
+          name: "백엔드 · 배포",
+          en: "Backend & Deploy",
+          group: "web",
+          r: 15,
+          desc: "Firebase(Firestore · Auth) 기반 서비스 구성, 정적 호스팅과 CDN 배포. 이 사이트 역시 GitHub Pages와 Cloudflare CDN 조합으로 운용됩니다.",
+          to: [],
+        },
+        {
+          id: "cpp",
+          name: "C++",
+          en: "C++",
+          group: "web",
+          r: 15,
+          desc: "성능 최적화와 그래픽스 기초를 위해 꾸준히 공부하고 있는 언어입니다. 메모리와 연산 비용을 의식하는 습관이 웹 인터랙션 설계에도 그대로 적용됩니다.",
+          to: ["math", "webgpu"],
+        },
+        {
+          id: "python",
+          name: "Python",
+          en: "Python",
+          group: "web",
+          r: 13,
+          desc: "자동화 스크립트, 데이터 처리, Blender 스크립팅.",
+          to: ["blender"],
+        },
+
+        // 게임 / 인터랙션
+        {
+          id: "game",
+          name: "게임 · 인터랙션",
+          en: "Game & Interaction",
+          group: "game",
+          r: 24,
+          desc: "'기승전게임'. 게임 제작을 위해 살아왔다고 생각합니다. 프로그래밍과 아트워크를 모두 소화할 수 있다는 점이 이 방향의 근거입니다. 웹 개발 역시 게임의 관점에서 바라봅니다.",
+          to: ["webgl", "webgpu", "canvas", "gamedesign", "math"],
+        },
+        {
+          id: "webgl",
+          name: "WebGL",
+          en: "WebGL",
+          group: "game",
+          r: 19,
+          desc: "브라우저에서 동작하는 실시간 3D. VR 쇼룸과 인터랙티브 아카이브 작업에 사용했습니다. 셰이더를 직접 작성해 룩을 제어합니다.",
+          to: ["webgpu", "modeling", "math"],
+        },
+        {
+          id: "webgpu",
+          name: "WebGPU",
+          en: "WebGPU",
+          group: "game",
+          r: 14,
+          desc: "차세대 웹 그래픽 API. 컴퓨트 셰이더를 포함한 파이프라인으로 브라우저에서 어디까지 가능한지 계속 실험하고 있습니다.",
+          to: [],
+        },
+        {
+          id: "canvas",
+          name: "Canvas 2D",
+          en: "Canvas 2D",
+          group: "game",
+          r: 13,
+          desc: "가벼운 인터랙션과 2D 게임. 무거운 라이브러리 없이 필요한 만큼만 직접 구현하는 접근을 좋아합니다.",
+          to: [],
+        },
+        {
+          id: "gamedesign",
+          name: "게임 디자인",
+          en: "Game Design",
+          group: "game",
+          r: 14,
+          desc: "규칙과 피드백 루프 설계. 오랜 플레이 경험이 기반입니다. 40대에 시작한 오버워치로 다이아를 찍었고, 중학생 때는 동네에서 버추어 파이터 2를 제일 잘했습니다.",
+          to: [],
+        },
+        {
+          id: "math",
+          name: "수학 · 최적화",
+          en: "Math & Optimization",
+          group: "game",
+          r: 14,
+          desc: "선형대수와 기하를 그래픽스 목적으로 공부하고 있습니다. 최적화는 취향이 아니라 웹에서 실시간 그래픽을 돌리기 위한 전제 조건입니다.",
+          to: [],
+        },
+
+        // 예술 / 이론
+        {
+          id: "art",
+          name: "예술 · 이론",
+          en: "Art & Theory",
+          group: "art",
+          r: 22,
+          desc: "한국예술종합학교 미술원 조형예술과(영상) 학사. 2013년부터 2019년까지 미술 작가로 활동했으며 현재 순수 예술 활동은 하지 않습니다. 다만 작업을 판단하는 기준은 여기서 만들어졌습니다.",
+          to: ["mediaart", "film", "critique", "exhibition"],
+        },
+        {
+          id: "mediaart",
+          name: "미디어 아트",
+          en: "Media Art",
+          group: "art",
+          r: 15,
+          desc: "영상을 활용한 미디어 아트가 주 작업이었습니다. 전시 공간에 맞춘 다채널 영상 설치 솔루션을 다룹니다.",
+          to: ["exhibition"],
+        },
+        {
+          id: "film",
+          name: "영화",
+          en: "Film",
+          group: "art",
+          r: 14,
+          desc: "단편영화와 다큐멘터리. DCP 시설을 갖춘 영화제에서 상영된 경력이 있습니다.",
+          to: [],
+        },
+        {
+          id: "exhibition",
+          name: "전시",
+          en: "Exhibition",
+          group: "art",
+          r: 14,
+          desc: "아르코미술관, 하이트콜렉션, 트라이보울 등에서 전시했고, 프로젝트 사루비아 스페이스와 트라이보울에서 개인전을 열었습니다. 인천아트플랫폼 레지던시 6기 입주 작가였습니다.",
+          to: [],
+        },
+        {
+          id: "critique",
+          name: "비평 · 출간",
+          en: "Critique & Publication",
+          group: "art",
+          r: 13,
+          desc: "작업이 여러 비평서에 다루어졌습니다. 『암점』(박준상, 문학과지성사, 2017), 『오큘로 5호』(미디어버스, 2017), 『지연의 윤리학』(김홍기, 워크룸프레스, 2022) 등.",
+          to: [],
+        },
+
+        // 도구
+        {
+          id: "blender",
+          name: "Blender",
+          en: "Blender",
+          group: "three",
+          r: 14,
+          desc: "주력 3D 도구. 모델링, 시뮬레이션, 렌더링에 사용하며 Python 스크립팅으로 반복 작업을 자동화합니다.",
+          to: [],
+        },
+        {
+          id: "resolve",
+          name: "DaVinci Resolve",
+          en: "DaVinci Resolve",
+          group: "video",
+          r: 14,
+          desc: "색보정과 편집의 주력 도구. 노드 기반 그레이딩과 컬러 매니지먼트 설정을 다룹니다.",
+          to: [],
+        },
+        {
+          id: "adobe",
+          name: "Adobe CC",
+          en: "Adobe Creative Cloud",
+          group: "video",
+          r: 13,
+          desc: "After Effects, Premiere, Photoshop, Illustrator. 합성과 그래픽 작업에 사용합니다.",
+          to: [],
+        },
+      ];
+
+      // ── 그래프 구성 ─────────────────────────────────────────
+      const byId = new Map(NODES.map((n) => [n.id, n]));
+      const links = [];
+      const seenLink = new Set();
+
+      for (const n of NODES) {
+        for (const targetId of n.to || []) {
+          if (!byId.has(targetId)) continue;
+          const key = [n.id, targetId].sort().join("|");
+          if (seenLink.has(key)) continue;
+          seenLink.add(key);
+          links.push({ a: n, b: byId.get(targetId) });
+        }
+      }
+
+      // 각 노드가 어떤 노드들과 이어져 있는지 (양방향)
+      const neighbors = new Map(NODES.map((n) => [n.id, new Set()]));
+      for (const l of links) {
+        neighbors.get(l.a.id).add(l.b.id);
+        neighbors.get(l.b.id).add(l.a.id);
+      }
+
+      // 초기 배치: 중심 노드를 원점에, 나머지는 그룹별 링 위에 흩뿌림
+      const groupOrder = Object.keys(GROUPS);
+      NODES.forEach((n, i) => {
+        if (n.id === "boolbang") {
+          n.x = 0;
+          n.y = 0;
+        } else {
+          const gi = groupOrder.indexOf(n.group);
+          const base = (gi / groupOrder.length) * Math.PI * 2;
+          const angle = base + (i % 7) * 0.22 - 0.6;
+          const dist = 190 + (i % 5) * 55;
+          n.x = Math.cos(angle) * dist;
+          n.y = Math.sin(angle) * dist;
+        }
+        n.vx = 0;
+        n.vy = 0;
+      });
+
+      // ── 상태 ────────────────────────────────────────────────
+      const canvas = document.getElementById("stage");
+      const ctx = canvas.getContext("2d");
+
+      const view = { x: 0, y: 0, scale: 1 };
+      let width = 0;
+      let height = 0;
+      let dpr = 1;
+
+      let hoverNode = null;
+      let selectedNode = null;
+      let draggingNode = null;
+      let panning = false;
+      let pointerMoved = false;
+      let lastPointer = { x: 0, y: 0 };
+      let alpha = 1; // 시뮬레이션 온도. 0에 가까워지면 정지
+      const activeGroups = new Set(groupOrder);
+
+      function resize() {
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = Math.round(width * dpr);
+        canvas.height = Math.round(height * dpr);
+        canvas.style.width = width + "px";
+        canvas.style.height = height + "px";
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      window.addEventListener("resize", () => {
+        resize();
+        alpha = Math.max(alpha, 0.3);
+      });
+      resize();
+
+      // 화면 우측 패널을 피해 그래프를 왼쪽으로 살짝 밀어 둔다
+      function centerX() {
+        return width / 2 - (selectedNode && width > 700 ? 150 : 0);
+      }
+
+      // ── 시뮬레이션 ──────────────────────────────────────────
+      const REPULSION = 9000; // 노드끼리 밀어내는 힘
+      const LINK_DIST = 118; // 연결선의 목표 길이
+      const LINK_STRENGTH = 0.035;
+      const CENTER_PULL = 0.0016;
+      const DAMPING = 0.82;
+
+      function visible(n) {
+        return activeGroups.has(n.group);
+      }
+
+      function step() {
+        if (alpha < 0.002) return;
+
+        // 반발력: 노드 수가 적어 O(n²)로 충분하다
+        for (let i = 0; i < NODES.length; i++) {
+          const a = NODES[i];
+          if (!visible(a)) continue;
+          for (let j = i + 1; j < NODES.length; j++) {
+            const b = NODES[j];
+            if (!visible(b)) continue;
+            let dx = b.x - a.x;
+            let dy = b.y - a.y;
+            let d2 = dx * dx + dy * dy;
+            if (d2 < 1) {
+              // 완전히 겹친 경우 임의 방향으로 떼어놓는다
+              dx = Math.random() - 0.5;
+              dy = Math.random() - 0.5;
+              d2 = 1;
+            }
+            const d = Math.sqrt(d2);
+            const minGap = a.r + b.r + 24;
+            // 가까울수록 급격히 세지되, 최소 간격 안쪽에서는 추가로 밀어낸다
+            let force = REPULSION / d2;
+            if (d < minGap) force += (minGap - d) * 0.6;
+            const fx = (dx / d) * force;
+            const fy = (dy / d) * force;
+            a.vx -= fx;
+            a.vy -= fy;
+            b.vx += fx;
+            b.vy += fy;
+          }
+        }
+
+        // 연결선: 스프링
+        for (const l of links) {
+          if (!visible(l.a) || !visible(l.b)) continue;
+          const dx = l.b.x - l.a.x;
+          const dy = l.b.y - l.a.y;
+          const d = Math.hypot(dx, dy) || 1;
+          const target = LINK_DIST + l.a.r + l.b.r;
+          const force = (d - target) * LINK_STRENGTH;
+          const fx = (dx / d) * force;
+          const fy = (dy / d) * force;
+          l.a.vx += fx;
+          l.a.vy += fy;
+          l.b.vx -= fx;
+          l.b.vy -= fy;
+        }
+
+        // 중심으로 약하게 수렴 + 속도 적용
+        for (const n of NODES) {
+          if (n === draggingNode) {
+            n.vx = 0;
+            n.vy = 0;
+            continue;
+          }
+          n.vx -= n.x * CENTER_PULL;
+          n.vy -= n.y * CENTER_PULL;
+          n.vx *= DAMPING;
+          n.vy *= DAMPING;
+          n.x += n.vx * alpha;
+          n.y += n.vy * alpha;
+        }
+
+        // 중심 노드는 원점에 고정
+        const core = byId.get("boolbang");
+        if (core !== draggingNode) {
+          core.x += (0 - core.x) * 0.1;
+          core.y += (0 - core.y) * 0.1;
+        }
+
+        alpha *= 0.994;
+      }
+
+      // ── 좌표 변환 ───────────────────────────────────────────
+      function toScreen(n) {
+        return {
+          x: n.x * view.scale + view.x + centerX(),
+          y: n.y * view.scale + view.y + height / 2,
+        };
+      }
+
+      function toWorld(sx, sy) {
+        return {
+          x: (sx - view.x - centerX()) / view.scale,
+          y: (sy - view.y - height / 2) / view.scale,
+        };
+      }
+
+      function nodeAt(sx, sy) {
+        const w = toWorld(sx, sy);
+        // 위에 그려진 노드가 먼저 잡히도록 역순 탐색
+        for (let i = NODES.length - 1; i >= 0; i--) {
+          const n = NODES[i];
+          if (!visible(n)) continue;
+          if (Math.hypot(w.x - n.x, w.y - n.y) <= n.r + 4) return n;
+        }
+        return null;
+      }
+
+      // ── 렌더 ────────────────────────────────────────────────
+      function isDimmed(n) {
+        const focus = selectedNode || hoverNode;
+        if (!focus) return false;
+        if (n === focus) return false;
+        return !neighbors.get(focus.id).has(n.id);
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, width, height);
+
+        const focus = selectedNode || hoverNode;
+
+        // 연결선
+        for (const l of links) {
+          if (!visible(l.a) || !visible(l.b)) continue;
+          const p = toScreen(l.a);
+          const q = toScreen(l.b);
+          const touched = focus && (l.a === focus || l.b === focus);
+
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(q.x, q.y);
+          if (touched) {
+            ctx.strokeStyle = GROUPS[focus.group].color;
+            ctx.globalAlpha = 0.55;
+            ctx.lineWidth = 1.6;
+          } else {
+            ctx.strokeStyle = "#000000";
+            ctx.globalAlpha = focus ? 0.05 : 0.13;
+            ctx.lineWidth = 1;
+          }
+          ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+
+        // 노드
+        for (const n of NODES) {
+          if (!visible(n)) continue;
+          const p = toScreen(n);
+          const r = n.r * view.scale;
+          const dim = isDimmed(n);
+          const color = GROUPS[n.group].color;
+          const isFocus = n === focus;
+
+          ctx.globalAlpha = dim ? 0.16 : 1;
+
+          // 선택/호버 시 바깥 링
+          if (isFocus) {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, r + 7, 0, Math.PI * 2);
+            ctx.strokeStyle = color;
+            ctx.globalAlpha = 0.3;
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+          }
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+          ctx.fillStyle = isFocus ? color : "#ffffff";
+          ctx.fill();
+          ctx.strokeStyle = color;
+          ctx.lineWidth = n.r >= 20 ? 2 : 1.4;
+          ctx.stroke();
+
+          // 라벨
+          const fontSize = Math.max(10, Math.min(15, n.r * 0.55)) * Math.min(view.scale, 1.4);
+          ctx.font = fontSize + 'px "D2Coding", monospace';
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          // 라벨은 크기에 상관없이 항상 원 아래에 둔다
+          ctx.fillStyle = isFocus ? color : "#000000";
+          ctx.fillText(n.name, p.x, p.y + r + fontSize * 0.95);
+        }
+        ctx.globalAlpha = 1;
+      }
+
+      function loop() {
+        step();
+        draw();
+        requestAnimationFrame(loop);
+      }
+      loop();
+
+      // ── 상세 패널 ───────────────────────────────────────────
+      const detail = document.getElementById("detail");
+      const detailKicker = document.getElementById("detailKicker");
+      const detailName = document.getElementById("detailName");
+      const detailEn = document.getElementById("detailEn");
+      const detailBody = document.getElementById("detailBody");
+      const detailRel = document.getElementById("detailRel");
+
+      function select(node) {
+        selectedNode = node;
+        if (!node) {
+          detail.classList.remove("open");
+          return;
+        }
+        const g = GROUPS[node.group];
+        detailKicker.textContent = g.label.toUpperCase();
+        detailKicker.style.color = g.color;
+        detailName.textContent = node.name;
+        detailEn.textContent = node.en;
+        detailBody.textContent = node.desc;
+
+        detailRel.textContent = "";
+        for (const id of neighbors.get(node.id)) {
+          const other = byId.get(id);
+          if (!visible(other)) continue;
+          const btn = document.createElement("button");
+          btn.textContent = other.name;
+          btn.addEventListener("click", () => select(other));
+          detailRel.appendChild(btn);
+        }
+        detail.classList.add("open");
+        alpha = Math.max(alpha, 0.12);
+      }
+
+      document.getElementById("detailClose").addEventListener("click", () => select(null));
+
+      // ── 포인터 조작 ─────────────────────────────────────────
+      canvas.addEventListener("pointerdown", (e) => {
+        canvas.setPointerCapture(e.pointerId);
+        pointerMoved = false;
+        lastPointer = { x: e.clientX, y: e.clientY };
+        const hit = nodeAt(e.clientX, e.clientY);
+        if (hit) {
+          draggingNode = hit;
+        } else {
+          panning = true;
+          canvas.classList.add("dragging");
+        }
+      });
+
+      canvas.addEventListener("pointermove", (e) => {
+        const dx = e.clientX - lastPointer.x;
+        const dy = e.clientY - lastPointer.y;
+        if (Math.abs(dx) > 2 || Math.abs(dy) > 2) pointerMoved = true;
+
+        if (draggingNode) {
+          const w = toWorld(e.clientX, e.clientY);
+          draggingNode.x = w.x;
+          draggingNode.y = w.y;
+          alpha = Math.max(alpha, 0.25);
+        } else if (panning) {
+          view.x += dx;
+          view.y += dy;
+        } else {
+          const hit = nodeAt(e.clientX, e.clientY);
+          if (hit !== hoverNode) {
+            hoverNode = hit;
+            canvas.style.cursor = hit ? "pointer" : "grab";
+          }
+        }
+        lastPointer = { x: e.clientX, y: e.clientY };
+      });
+
+      function endPointer(e) {
+        if (!pointerMoved) {
+          const hit = nodeAt(e.clientX, e.clientY);
+          select(hit && hit === selectedNode ? null : hit);
+        }
+        draggingNode = null;
+        panning = false;
+        canvas.classList.remove("dragging");
+      }
+
+      canvas.addEventListener("pointerup", endPointer);
+      canvas.addEventListener("pointercancel", () => {
+        draggingNode = null;
+        panning = false;
+        canvas.classList.remove("dragging");
+      });
+
+      canvas.addEventListener(
+        "wheel",
+        (e) => {
+          e.preventDefault();
+          // 커서 아래 지점이 고정되도록 확대 중심을 보정한다
+          const before = toWorld(e.clientX, e.clientY);
+          const factor = Math.exp(-e.deltaY * 0.0012);
+          view.scale = Math.min(2.4, Math.max(0.35, view.scale * factor));
+          const after = toWorld(e.clientX, e.clientY);
+          view.x += (after.x - before.x) * view.scale;
+          view.y += (after.y - before.y) * view.scale;
+        },
+        { passive: false }
+      );
+
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") select(null);
+      });
+
+      // ── 범례(그룹 필터) ─────────────────────────────────────
+      const legend = document.getElementById("legend");
+      for (const key of groupOrder) {
+        const g = GROUPS[key];
+        const btn = document.createElement("button");
+        btn.className = "on";
+        btn.innerHTML =
+          '<span class="swatch" style="background:' + g.color + '"></span>' + g.label;
+        btn.addEventListener("click", () => {
+          if (activeGroups.has(key)) {
+            activeGroups.delete(key);
+            btn.classList.remove("on");
+          } else {
+            activeGroups.add(key);
+            btn.classList.add("on");
+          }
+          if (selectedNode && !visible(selectedNode)) select(null);
+          if (hoverNode && !visible(hoverNode)) hoverNode = null;
+          alpha = Math.max(alpha, 0.5);
+        });
+        legend.appendChild(btn);
+      }
+    </script>
+  </body>
+</html>

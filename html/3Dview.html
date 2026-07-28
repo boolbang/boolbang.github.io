@@ -375,17 +375,9 @@
         controls.autoRotate = true;
       }
 
+      // 모델을 늘리려면 여기에 항목을 추가하고, 아래 Controls 패널에
+       // 모델 선택(select) 행을 되살려 change 이벤트로 loadModel(key)를 호출하면 된다
       const modelConfigs = {
-        dino: {
-          url: '../models/dino.glb',
-          poiPrefix: 'info_',
-          poiData: {
-            'hand': { type: 'desc', content: '한대 맞으면 바로 천국' },
-            'tail': { type: 'desc', content: '꼬리 고기 맛이 참 좋죠.' }
-          },
-          captionTitle: '공룡 3D 뷰어',
-          captionBody: '화면을 클릭하면 각 부위 설명을 확인할 수 있습니다.<br />마우스 좌측 버튼 회전, 우측 버튼 이동, 휠로 줌하며 감상하세요.'
-        },
         boolbang: {
           url: '../models/boolbang_POI.glb',
           poiPrefix: 'POI_',
@@ -635,25 +627,13 @@
         panel.classList.toggle('open');
       });
 
-      // model select
-      const modelSelect = document.getElementById('model-select');
-      modelSelect.addEventListener('change', () => {
-        loadModel(modelSelect.value);
-      });
+      // 모델이 하나뿐이라 선택 UI 없음 (loadModel('boolbang')으로 바로 로드)
     </script>
 
     <!-- Lighting Control Panel -->
     <div id="lighting-panel">
       <div id="panel-header">Controls <span class="panel-arrow">▼</span></div>
       <div id="panel-body">
-        <div class="ctrl-row">
-          <label>모델</label>
-          <select id="model-select">
-            <option value="dino">공룡</option>
-            <option value="boolbang" selected>불방 POI</option>
-          </select>
-        </div>
-
         <div class="ctrl-row">
           <label>toneMapping</label>
           <select id="tm-select">
