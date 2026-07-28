@@ -400,20 +400,46 @@
         pointer-events: none;
       }
 
+      /* 스와이프 안내 — 모바일에서 방문 중 처음 한 장을 열었을 때만
+         잠깐 떴다가 스스로 사라진다. 데스크톱은 좌우 버튼이 있으니 표시하지 않는다 */
+      .lightbox-hint {
+        display: none;
+        position: absolute;
+        bottom: 44px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 7px 14px;
+        background: rgba(0, 0, 0, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #ffffff;
+        font-size: 0.78rem;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+      }
+
+      .lightbox-hint.is-visible {
+        opacity: 1;
+      }
+
+      /* 한 장뿐이면 넘길 것도 없으니 안내도 띄우지 않는다 */
+      .lightbox.is-single .lightbox-hint {
+        display: none;
+      }
+
       @media (max-width: 768px) {
         .lightbox-stage {
           inset: 60px 12px 60px;
         }
+        /* 모바일은 손으로 좌우로 밀어 넘긴다 — 사진을 가리는 ‹ › 버튼은 감추고,
+           대신 처음 열 때 .lightbox-hint가 한 번 안내한다 */
         .lightbox-nav {
-          width: 38px;
-          height: 54px;
-          font-size: 1.25rem;
+          display: none;
         }
-        .lightbox-prev {
-          left: 6px;
-        }
-        .lightbox-next {
-          right: 6px;
+        .lightbox-hint {
+          display: block;
         }
       }
 
@@ -496,6 +522,10 @@
         ›
       </button>
       <div class="lightbox-count" id="lightboxCount"></div>
+      <!-- 모바일 전용 안내 (CSS가 768px 이하에서만 노출) -->
+      <div class="lightbox-hint" id="lightboxHint" aria-hidden="true">
+        ← 좌우로 넘겨보세요 →
+      </div>
     </div>
 
     <script>
@@ -693,12 +723,16 @@
       const lightboxPrev = document.getElementById("lightboxPrev");
       const lightboxNext = document.getElementById("lightboxNext");
       const lightboxCount = document.getElementById("lightboxCount");
+      const lightboxHint = document.getElementById("lightboxHint");
 
       let lbItems = []; // 현재 그리드의 이미지 [{src, alt}, ...]
       let lbEls = []; // 위 항목에 대응하는 그리드 DOM (닫을 때 그 위치로 되돌리기 위함)
       let lbIndex = 0;
       let lbHistoryPushed = false; // 뒤로가기용 히스토리 항목을 쌓아둔 상태인지
       let lbCloseFallback = null;
+      let lbClosingIntent = false; // 이번 뒤로가기가 X 버튼이 일으킨 것인지
+      let lbHintShown = false; // 스와이프 안내는 방문 중 딱 한 번만
+      let lbHintTimer = null;
 
       function isLightboxOpen() {
         return lightbox.classList.contains("is-open");
@@ -723,6 +757,25 @@
         if (next < 0 || next >= lbItems.length) return;
         lbIndex = next;
         renderLightbox();
+        hideSwipeHint(); // 한 번 넘겨봤으면 안내는 볼 일이 끝났다
+      }
+
+      // 모바일에선 좌우 버튼을 없앤 대신, 처음 사진을 연 그 순간에만
+      // "좌우로 넘겨보세요"를 띄우고 잠시 뒤 스스로 사라지게 한다.
+      function maybeShowSwipeHint() {
+        if (lbHintShown || lbItems.length < 2) return;
+        if (!isMobileView()) return;
+        lbHintShown = true;
+        lightboxHint.classList.add("is-visible");
+        lbHintTimer = setTimeout(hideSwipeHint, 2400);
+      }
+
+      function hideSwipeHint() {
+        if (lbHintTimer) {
+          clearTimeout(lbHintTimer);
+          lbHintTimer = null;
+        }
+        lightboxHint.classList.remove("is-visible");
       }
 
       function openLightbox(img) {
@@ -740,6 +793,7 @@
         contentEl.style.overflow = "hidden";
         pushLightboxHistory();
         lightbox.focus(); // 키보드(←/→/ESC)가 바로 먹히도록
+        maybeShowSwipeHint();
         notifyParentLightbox(true);
       }
 
@@ -747,6 +801,8 @@
       // 마지막으로 본 사진이 화면에 오도록 목록 스크롤을 맞춰준다.
       function closeLightbox() {
         const lastEl = lbEls[lbIndex];
+        hideSwipeHint();
+        lbClosingIntent = false;
         lightbox.classList.remove("is-open");
         lightboxImg.src = "";
         lbItems = [];
@@ -770,8 +826,17 @@
 
       // === 뒤로가기(모바일 스와이프/뒤로가기 버튼) 처리 ===
       // 확대 보기를 열 때 히스토리를 하나 쌓아둔다. 그래야 뒤로가기가 포트폴리오
-      // 모달 전체가 아니라 확대 보기만 닫고 목록으로 돌아온다.
+      // 모달 전체까지 뚫고 나가지 않고 확대 보기 선에서 걸린다.
       // (쌓은 항목은 닫을 때 back으로 반드시 다시 빼서 스택이 늘어나지 않게 한다)
+      //
+      // 단, 모바일에선 화면 가장자리를 옆으로 미는 동작이 곧 브라우저 뒤로가기라
+      // 사진을 넘기려던 손짓이 확대 보기를 닫아버린다. 그래서 모바일에서는 뒤로가기가
+      // 와도 닫지 않고 빠져나간 히스토리 항목만 도로 채워 넣는다.
+      // → 모바일에서 확대 보기를 닫는 길은 상단 X 하나뿐.
+      function isMobileView() {
+        return window.matchMedia("(max-width: 768px)").matches;
+      }
+
       function pushLightboxHistory() {
         if (lbHistoryPushed) return;
         history.pushState({ boolbangLightbox: true }, "");
@@ -784,12 +849,14 @@
           return;
         }
         if (lbCloseFallback) return; // 연타 방지
+        lbClosingIntent = true; // 이 뒤로가기는 X가 일으킨 것 → 무시하지 않는다
         history.back(); // popstate에서 실제 닫기 수행
         // popstate가 오지 않는 예외 상황 대비 — X 버튼은 항상 동작해야 한다
         lbCloseFallback = setTimeout(() => {
           lbCloseFallback = null;
           if (isLightboxOpen()) {
             lbHistoryPushed = false;
+            lbClosingIntent = false;
             closeLightbox();
           }
         }, 300);
@@ -801,6 +868,15 @@
           lbCloseFallback = null;
         }
         if (!lbHistoryPushed) return;
+
+        // 모바일에서 X를 거치지 않고 들어온 뒤로가기(가장자리 스와이프 / 뒤로가기
+        // 버튼)는 확대 보기를 건드리지 않고, 빠져나간 항목만 도로 밀어 넣는다
+        if (!lbClosingIntent && isLightboxOpen() && isMobileView()) {
+          history.pushState({ boolbangLightbox: true }, "");
+          return;
+        }
+
+        lbClosingIntent = false;
         lbHistoryPushed = false;
         if (isLightboxOpen()) closeLightbox();
       });
@@ -824,11 +900,15 @@
         else if (e.key === "ArrowRight") moveLightbox(1);
       });
 
-      // 모바일 스와이프로 이전·다음 이동
+      // 모바일 스와이프로 이전·다음 이동 (모바일에선 이게 유일한 이동 수단)
       let lbTouchX = null;
+      let lbTouchY = null;
       lightbox.addEventListener(
         "touchstart",
-        (e) => (lbTouchX = e.changedTouches[0].clientX),
+        (e) => {
+          lbTouchX = e.changedTouches[0].clientX;
+          lbTouchY = e.changedTouches[0].clientY;
+        },
         { passive: true }
       );
       lightbox.addEventListener(
@@ -836,8 +916,14 @@
         (e) => {
           if (lbTouchX === null) return;
           const dx = e.changedTouches[0].clientX - lbTouchX;
-          if (Math.abs(dx) > 50) moveLightbox(dx < 0 ? 1 : -1);
+          const dy = e.changedTouches[0].clientY - lbTouchY;
+          // 세로로 쓸어내리다 손가락이 옆으로 흐른 것까지 넘김으로 치지 않게
+          // 가로 이동이 세로보다 확실히 클 때만 인정한다
+          if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+            moveLightbox(dx < 0 ? 1 : -1);
+          }
           lbTouchX = null;
+          lbTouchY = null;
         },
         { passive: true }
       );

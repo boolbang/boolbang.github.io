@@ -21,6 +21,10 @@ body {
 }
 
 /* 헤더 */
+/* 아래 구분선이 위아래 여백 한가운데 오도록,
+   선 위쪽(padding-bottom)과 선 아래쪽(margin-bottom)을 같은 20px로 맞춘다.
+   아래쪽은 .intro-section의 margin-top과 상쇄(margin collapse)되므로
+   그쪽 값도 20px로 함께 맞춰뒀다 — 한쪽만 고치면 다시 어긋난다 */
 .main-header {
   text-align: center;
   margin-bottom: 20px;
@@ -41,15 +45,32 @@ body {
   margin: 5px 0;
 }
 
+/* 마지막 문단("미술과 기술 사이…")의 아래 여백이 헤더 padding에 더해지면
+   선 위쪽만 5px 더 벌어진다 → 마지막 줄만 여백을 지운다 */
+.main-header p:last-child {
+  margin-bottom: 0;
+}
+
 /* 소개 섹션 */
 .intro-section {
-  margin: 10px 0 30px 0;
+  /* margin-top은 위 .main-header의 margin-bottom과 짝 — 구분선 아래 여백을 정한다 */
+  margin: 20px 0 30px 0;
   padding: 20px;
   background-color: #a8a8a8;
   border-left: 4px solid #0000aa;
   font-size: 0.85rem;
   line-height: 1.8;
   color: #000000;
+}
+
+/* 사무실 주소·메일을 C 배열 모양으로 보여주는 블록 (index.html의 intro-section 안) */
+.office-code {
+  margin: 0;
+  color: #000000;
+  font-family: inherit;
+  font-size: 15.2px;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 /* 네비게이션 섹션 */
@@ -137,6 +158,14 @@ a:hover {
   .intro-section {
     font-size: 0.8rem;
     padding: 15px;
+  }
+
+  /* 모바일: 주소 줄이 화면 폭을 넘겨 접히면 4줄짜리 코드가 7~8줄로 흩어진다.
+     화면 폭에 맞춰 글자를 줄여 한 줄에 한 줄씩 들어가게 한다.
+     (pre-wrap은 그대로 둬서 폭 계산이 어긋나도 가로로 넘치지는 않는다) */
+  .office-code {
+    font-size: clamp(9.5px, 2.8vw, 12px);
+    line-height: 1.6;
   }
 
   /* 모바일: 네비 링크(이력서~요금표)를 한 줄 + 가운데 정렬 */
