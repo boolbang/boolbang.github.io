@@ -606,7 +606,7 @@
                 <div class="gb-photo" id="gbPhoto" hidden>
                   <label class="gb-photo-btn" id="gbPhotoBtn">
                     사진 첨부
-                    <input type="file" id="gbFile" accept="image/*" hidden />
+                    <input type="file" id="gbFile" accept="image/*,.heic,.heif" hidden />
                   </label>
                   <div class="gb-preview" id="gbPreview" hidden>
                     <img id="gbPreviewImg" alt="첨부한 사진 미리보기" />
@@ -1189,27 +1189,82 @@
         if (gbTurnstileId !== null && window.turnstile) window.turnstile.reset(gbTurnstileId);
       }
 
+      let gbPhotoSeq = 0; // 사진을 연달아 바꿀 때 늦게 끝난 옛 변환 결과를 버리기 위한 번호
+
       function gbClearPhoto() {
+        gbPhotoSeq++;
         if (gbPreviewImg.src) URL.revokeObjectURL(gbPreviewImg.src);
         gbPreviewImg.removeAttribute("src");
         gbPreview.hidden = true;
         gbFile.value = "";
         gbPhotoFile = null;
+        gbSubmit.disabled = false;
       }
 
-      gbFile.addEventListener("change", () => {
+      // 갤럭시 '고효율 사진'·아이폰 원본 등 HEIC/HEIF 사진. 크롬 등 대부분의 브라우저가
+      // 직접 열지 못해서, 이 형식을 골랐을 때만 변환 라이브러리를 불러와 JPEG로 바꾼다
+      function gbIsHeic(file) {
+        return /image\/hei[cf]/i.test(file.type) || /\.(heic|heif)$/i.test(file.name);
+      }
+      let gbHeicLoading = null;
+      function gbLoadHeic2any() {
+        if (gbHeicLoading) return gbHeicLoading;
+        gbHeicLoading = new Promise((resolve, reject) => {
+          const sc = document.createElement("script");
+          sc.src = "https://cdnjs.cloudflare.com/ajax/libs/heic2any/0.0.4/heic2any.min.js";
+          sc.async = true;
+          sc.onload = () => resolve(window.heic2any);
+          sc.onerror = () => {
+            gbHeicLoading = null;
+            reject(new Error("heic2any"));
+          };
+          document.head.appendChild(sc);
+        });
+        return gbHeicLoading;
+      }
+      async function gbHeicToJpeg(file) {
+        const heic2any = await gbLoadHeic2any();
+        const out = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.9 });
+        return Array.isArray(out) ? out[0] : out; // 여러 장이 든 파일이면 첫 장만
+      }
+
+      function gbShowPhoto(blob) {
+        if (gbPreviewImg.src) URL.revokeObjectURL(gbPreviewImg.src);
+        gbPhotoFile = blob;
+        gbPreviewImg.src = URL.createObjectURL(blob);
+        gbPreview.hidden = false;
+      }
+
+      gbFile.addEventListener("change", async () => {
         const file = gbFile.files && gbFile.files[0];
         if (!file) return;
-        if (!file.type.startsWith("image/")) {
+        const heic = gbIsHeic(file);
+        if (!heic && !file.type.startsWith("image/")) {
           gbClearPhoto();
           return gbSetStatus("사진 파일만 첨부할 수 있어요.", true);
         }
-        if (gbPreviewImg.src) URL.revokeObjectURL(gbPreviewImg.src);
-        gbPhotoFile = file;
-        gbPreviewImg.src = URL.createObjectURL(file);
-        gbPreview.hidden = false;
-        gbSetStatus("");
         gbLoadTurnstile().catch(() => {}); // 미리 확인 시작
+        if (!heic) {
+          gbPhotoSeq++;
+          gbSubmit.disabled = false;
+          gbShowPhoto(file);
+          return gbSetStatus("");
+        }
+        const seq = ++gbPhotoSeq;
+        gbSubmit.disabled = true; // 변환이 끝나기 전에 남기지 않게
+        gbSetStatus("사진 변환 중...");
+        try {
+          const jpeg = await gbHeicToJpeg(file);
+          if (seq !== gbPhotoSeq) return; // 그 사이 다른 사진을 골랐거나 뺐음
+          gbShowPhoto(jpeg);
+          gbSetStatus("");
+        } catch (e) {
+          if (seq !== gbPhotoSeq) return;
+          console.error("HEIC 변환 실패:", e);
+          gbClearPhoto();
+          gbSetStatus("이 사진은 변환하지 못했어요. 다른 사진을 골라주세요.", true);
+        }
+        gbSubmit.disabled = false;
       });
       gbPreviewRemove.addEventListener("click", gbClearPhoto);
 
