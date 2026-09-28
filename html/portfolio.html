@@ -140,41 +140,26 @@
         }
       }
 
-      /* 그리드 중간에 전체 폭으로 배치되는 3D 모델 뷰어 밴드 (위아래로 드로잉이 흐름) */
-      .gallery-grid .model-viewer {
+      /* 그리드 상단에 전체 폭으로 배치되는 Sketchfab 3D 모델 임베드 */
+      .gallery-grid .sketchfab-embed-wrapper {
         column-span: all;
         width: 100%;
-        height: 600px;
-        margin: 8px 0 16px;
-        background: #000a17;
-        overflow: hidden;
-        position: relative;
+        margin: 0 0 16px;
       }
-
-      @media (max-width: 768px) {
-        .gallery-grid .model-viewer {
-          height: 400px;
-        }
-      }
-
-      .gallery-grid .model-viewer iframe {
+      .gallery-grid .sketchfab-embed-wrapper iframe {
         width: 100%;
-        height: 100%;
+        height: 600px;
         border: none;
         display: block;
       }
-
-      /* 3D 타일 좌상단 라벨 */
-      .gallery-grid .model-viewer::after {
-        content: "3D";
-        position: absolute;
-        top: 6px;
-        left: 6px;
-        font-size: 0.65rem;
-        color: #00ffcc;
-        background: rgba(0, 0, 0, 0.55);
-        padding: 2px 6px;
-        pointer-events: none;
+      /* 모바일: 고정 높이 대신 화면 폭에 맞춘 정사각형 비율로 —
+         단, 뷰어가 화면을 다 덮으면 터치 스크롤이 뷰어에 갇히므로 높이는 화면의 65%까지 */
+      @media (max-width: 768px) {
+        .gallery-grid .sketchfab-embed-wrapper iframe {
+          height: auto;
+          aspect-ratio: 1 / 1;
+          max-height: 65vh;
+        }
       }
 
       /* 비디오 갤러리 (Cloudflare Stream) — 한 번에 한 영상 + 상단 번호 버튼 */
@@ -248,6 +233,122 @@
         display: block;
       }
 
+      /* 모자이크 영상 목록(10번 잡다영상) — 앨범처럼 "줄마다 높이를 맞추는" 배치.
+         타일 폭을 영상 비율(--ar = 가로/세로, JS가 썸네일에서 읽어 넣음)에 비례시켜
+         한 줄의 타일이 같은 높이로 폭을 꽉 채운다. 가로 영상이 위에 먼저 깔리고,
+         세로 영상(.is-portrait)은 아래 별도 줄에 더 크게 모아 가운데 정렬한다.
+         클릭하면 그 자리에 플레이어가 열린다 */
+      .video-mosaic {
+        --row-h: 260px; /* 가로 영상 줄 높이 기준값 (실제 높이는 폭을 채우느라 조금 커짐) */
+        --portrait-h: 500px; /* 세로 영상 높이 — 키우면 세로 영상이 커진다 */
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+      }
+      /* 마지막 가로 줄이 몇 개 안 될 때 억지로 늘어나지 않게 남는 공간을 채우는 투명 막대 */
+      .video-mosaic::after {
+        content: "";
+        flex-grow: 999999;
+      }
+      /* 가로 영상 줄과 세로 영상 줄 사이의 줄바꿈 (order로 세로 영상 바로 앞에 옴) */
+      .video-mosaic::before {
+        content: "";
+        order: 1;
+        flex-basis: 100%;
+        height: 0;
+      }
+      .video-tile.is-portrait {
+        order: 2;
+        flex: 0 1 calc(var(--ar) * var(--portrait-h));
+      }
+      .video-tile {
+        --ar: 1.7778; /* 썸네일 로드 전 기본값 16:9 */
+        flex: var(--ar) 1 calc(var(--ar) * var(--row-h));
+        min-width: 0;
+        position: relative;
+        display: block;
+        background: #000;
+        overflow: hidden;
+        cursor: pointer;
+      }
+      .video-tile img {
+        width: 100%;
+        height: auto;
+        display: block;
+        transition: opacity 0.2s ease;
+      }
+      .video-tile:hover img,
+      .video-poster:hover img {
+        opacity: 0.85;
+      }
+      /* 1-9번 재생 전 화면: 16:9 프레임을 꽉 채우는 중간 지점 썸네일 */
+      .video-poster {
+        position: absolute;
+        inset: 0;
+        background: #000;
+        cursor: pointer;
+      }
+      .video-poster img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: opacity 0.2s ease;
+      }
+      /* 가운데 재생 버튼 (플레이어 강조색과 같은 이탈리안 레드) — 1-9번·10번 공용 */
+      .video-tile::after,
+      .video-poster::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 52px;
+        height: 52px;
+        margin: -26px 0 0 -26px;
+        border-radius: 50%;
+        background: rgba(206, 43, 55, 0.9)
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 7v10l8-5z' fill='%23fff'/%3E%3C/svg%3E")
+          center / 60% no-repeat;
+        pointer-events: none;
+      }
+      /* 재생 중: 썸네일은 자리(비율)만 잡아두고 숨김, 플레이어를 위에 덮는다 */
+      .video-tile.is-playing {
+        cursor: default;
+      }
+      .video-tile.is-playing img {
+        visibility: hidden;
+      }
+      .video-tile.is-playing::after {
+        display: none;
+      }
+      .video-tile iframe {
+        position: absolute;
+        top: 0;
+        left: -2px;
+        width: calc(100% + 4px);
+        height: 100%;
+        border: none;
+        display: block;
+      }
+      @media (max-width: 768px) {
+        .video-mosaic {
+          --row-h: 200px;
+          --portrait-h: 360px;
+          gap: 8px;
+        }
+        /* 모바일은 가로 영상이 거의 한 줄에 하나라, 마지막 영상만 작아지지 않게 채움 막대 끔 */
+        .video-mosaic::after {
+          display: none;
+        }
+        .video-tile::after,
+        .video-poster::after {
+          width: 44px;
+          height: 44px;
+          margin: -22px 0 0 -22px;
+        }
+      }
+
       /* 심심풀이 아스키 아트 — 데스크톱은 숨김, 모바일 비디오 탭 하단 여백에만 표시 */
       .video-ascii {
         display: none;
@@ -271,6 +372,15 @@
         }
       }
 
+      /* 갤러리 상단 안내 문구 (예: 컨셉스케치 설명) — 비디오 안내 문구와 같은 톤 */
+      .portfolio-content .gallery-note {
+        margin: 0 0 24px;
+        text-align: center;
+        color: #8c8c8c;
+        font-size: 0.85rem;
+        line-height: 1.7;
+      }
+
       /* 작업 이미지 그리드 (masonry 형태) — 모든 카테고리 공용 */
       .gallery-grid {
         columns: 3 220px;
@@ -285,6 +395,17 @@
         break-inside: avoid;
         cursor: zoom-in;
         background: #f5f5f5;
+      }
+
+      /* GIF처럼 도는 영상 — 이미지 타일과 똑같이 보이게, 조작 UI·클릭 반응 없음 */
+      .gallery-grid .gallery-loop {
+        width: 100%;
+        height: auto;
+        margin: 0 0 12px;
+        display: block;
+        break-inside: avoid;
+        background: #f5f5f5;
+        pointer-events: none;
       }
 
       /* 클릭 시 확대 라이트박스 — 검은 배경 + 좌우 이동 + 상단 X로만 닫힘 */
@@ -445,7 +566,8 @@
 
       @media (max-width: 768px) {
         .portfolio-tabs {
-          padding: 16px 20px 12px 20px;
+          /* 오른쪽에 닫기 버튼(index.html의 #portfolioCloseButton) 공간 확보 — 방명록 상단 바와 동일 */
+          padding: 14px 52px 12px 20px;
         }
         .portfolio-content {
           padding: 24px 20px 32px 20px;
@@ -454,6 +576,10 @@
         .video-nav-note {
           margin-bottom: 24px;
           font-size: 0.7rem;
+        }
+        .portfolio-content .gallery-note {
+          margin-bottom: 20px;
+          font-size: 0.78rem;
         }
         .portfolio-tab {
           padding: 6px 12px;
@@ -537,11 +663,15 @@
       const introHTML = contentEl.innerHTML;
 
       // 지금 화면에 그려져 있는 조각. 같은 탭을 다시 눌렀을 때 재렌더를 막는다
-      // (재렌더하면 영상 iframe과 3D 뷰어가 통째로 새로 로드돼 트래픽만 낭비됨)
+      // (재렌더하면 영상·Sketchfab 뷰어가 통째로 새로 로드돼 트래픽만 낭비됨)
       let currentSrc = null;
+      // 마지막으로 요청한 조각. 불러오는 사이 다른 탭을 누르거나 모달이 닫히면
+      // 늦게 도착한 옛 조각이 화면을 덮어쓰지 않게 이 값과 비교한다
+      let requestedSrc = null;
 
       async function loadCategory(src) {
         if (src === currentSrc) return;
+        requestedSrc = src;
         if (cache[src]) {
           currentSrc = src;
           contentEl.innerHTML = cache[src];
@@ -554,11 +684,13 @@
           if (!res.ok) throw new Error(res.status);
           const html = await res.text();
           cache[src] = html;
+          if (requestedSrc !== src) return; // 그 사이 다른 탭 선택/모달 닫힘 → 캐시만 해둠
           currentSrc = src;
           contentEl.innerHTML = html;
           contentEl.scrollTop = 0;
           afterRender(src);
         } catch (err) {
+          if (requestedSrc !== src) return;
           currentSrc = null; // 실패한 탭은 다시 누르면 재시도되게
           contentEl.innerHTML = "<p>내용을 불러오지 못했습니다.</p>";
         }
@@ -567,7 +699,18 @@
       // 조각 삽입 후 처리 (innerHTML은 <script>를 실행하지 않으므로 여기서 초기화)
       function afterRender(src) {
         if (src.includes("portfolio_video")) initVideoGallery();
+        // innerHTML로 넣은 영상은 브라우저에 따라 autoplay가 안 걸릴 수 있어 직접 재생
+        contentEl.querySelectorAll("video.gallery-loop").forEach((v) => {
+          v.muted = true;
+          v.play().catch(() => {});
+        });
       }
+
+      // 비디오 탭의 모든 재생을 멈추는 함수 (initVideoGallery가 채움). 리스너는 한 번만 등록
+      let stopVideoPlayback = null;
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden && stopVideoPlayback) stopVideoPlayback();
+      });
 
       // 비디오 갤러리: 한 번에 한 영상 표시 + 번호 버튼/스와이프 이동
       function initVideoGallery() {
@@ -586,8 +729,9 @@
           const frame = item.querySelector(".video-frame");
           const iframe = frame ? frame.querySelector("iframe") : null;
           const src = iframe ? iframe.dataset.src || "" : "";
+          const thumb = iframe ? iframe.dataset.thumb || "" : "";
           if (iframe) iframe.remove();
-          return { frame, src };
+          return { frame, src, thumb };
         });
 
         function createIframe(src) {
@@ -602,18 +746,98 @@
           return el;
         }
 
+        // 1-9번 재생 전 화면: 영상 중간 지점 썸네일(data-thumb) + 재생 버튼.
+        // 클릭하면 그 자리에 플레이어를 넣고 바로 재생. 썸네일이 없으면 플레이어를 바로 넣는다
+        function resetFrame(fr) {
+          if (!fr || !fr.frame || !fr.src) return;
+          if (!fr.thumb) {
+            fr.frame.replaceChildren(createIframe(fr.src));
+            return;
+          }
+          const poster = document.createElement("div");
+          poster.className = "video-poster";
+          poster.setAttribute("role", "button");
+          poster.setAttribute("tabindex", "0");
+          poster.setAttribute("aria-label", "영상 재생");
+          const img = document.createElement("img");
+          img.src = fr.thumb;
+          img.alt = "";
+          poster.appendChild(img);
+          const play = () =>
+            fr.frame.replaceChildren(createIframe(fr.src + "&autoplay=true"));
+          poster.addEventListener("click", play);
+          poster.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              play();
+            }
+          });
+          fr.frame.replaceChildren(poster);
+        }
+
+        // 모자이크 타일(10번 잡다영상): 클릭한 타일 자리에 플레이어를 열고,
+        // 한 번에 하나만 재생되게 나머지는 iframe을 떼어내 썸네일로 되돌린다
+        const tiles = Array.from(gallery.querySelectorAll(".video-tile"));
+        function stopTiles(except) {
+          tiles.forEach((tile) => {
+            if (tile === except) return;
+            const f = tile.querySelector("iframe");
+            if (f) f.remove();
+            tile.classList.remove("is-playing");
+            tile.setAttribute("tabindex", "0");
+          });
+        }
+        function playTile(tile) {
+          if (tile.classList.contains("is-playing") || !tile.dataset.src) return;
+          stopTiles(tile);
+          // 이미 한 번 클릭했으니 플레이어가 뜨자마자 바로 재생
+          tile.appendChild(createIframe(tile.dataset.src + "&autoplay=true"));
+          tile.classList.add("is-playing");
+          tile.removeAttribute("tabindex");
+        }
+        tiles.forEach((tile) => {
+          // 썸네일 실제 비율을 --ar로 넘겨 줄 배치에 쓰게 함 (영상마다 비율 지정 불필요)
+          const img = tile.querySelector("img");
+          const setAr = () => {
+            if (img.naturalWidth && img.naturalHeight) {
+              const ar = img.naturalWidth / img.naturalHeight;
+              tile.style.setProperty("--ar", ar);
+              tile.classList.toggle("is-portrait", ar < 1);
+            }
+          };
+          if (img) {
+            if (img.complete) setAr();
+            else img.addEventListener("load", setAr, { once: true });
+          }
+          tile.addEventListener("click", () => playTile(tile));
+          tile.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              playTile(tile);
+            }
+          });
+        });
+
+        // 페이지가 백그라운드로 갈 때(다른 탭/앱 전환, 화면 꺼짐) 호출 — 요금 방지용 정지.
+        // 1-9번은 보던 플레이어를 떼어내고 썸네일(재생 전) 화면으로 되돌린다
+        stopVideoPlayback = () => {
+          stopTiles(null);
+          const cur = frames[current];
+          if (cur && cur.frame && cur.frame.querySelector("iframe")) resetFrame(cur);
+        };
+
         function show(idx) {
           if (idx < 0 || idx >= items.length || idx === current) return;
+          stopTiles(null); // 다른 번호로 넘어가면 모자이크에서 재생 중이던 영상도 정지
           items.forEach((item, i) => {
-            const { frame, src } = frames[i];
-            const iframe = frame ? frame.querySelector("iframe") : null;
+            const fr = frames[i];
             if (i === idx) {
               item.classList.add("is-active");
-              if (frame && src && !iframe) frame.appendChild(createIframe(src));
+              resetFrame(fr); // 썸네일(재생 전) 화면부터
             } else {
               item.classList.remove("is-active");
-              // 노드째 제거 → 재생/소리가 확실히 멈춘다
-              if (iframe) iframe.remove();
+              // 노드째 비움 → 재생/소리가 확실히 멈춘다
+              if (fr.frame) fr.frame.replaceChildren();
             }
           });
           Array.from(nav.children).forEach((btn, i) =>
@@ -695,6 +919,8 @@
         // innerHTML 교체로 영상 iframe도 제거돼 재생/소리가 확실히 멈춘다.
         contentEl.innerHTML = introHTML;
         contentEl.scrollTop = 0;
+        stopVideoPlayback = null; // 영상 노드가 모두 사라졌으니 정지할 대상도 없음
+        requestedSrc = null; // 불러오던 조각이 늦게 도착해도 그리지 않음
         currentSrc = null; // 안내 화면으로 돌아갔으니 어떤 탭이든 다시 누르면 로드
       }
 

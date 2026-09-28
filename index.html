@@ -118,15 +118,6 @@
         background-color: #444444;
       }
 
-      /* 작업일지 모달은 배경이 검정이라 닫기 버튼을 흰 원 + 검정 X로 반전 (가시성 확보) */
-      #worklogCloseButton {
-        background-color: #ffffff;
-        color: #000000;
-      }
-      #worklogCloseButton:hover {
-        background-color: #cccccc;
-      }
-
       /* 포트폴리오 안에서 사진 확대 보기가 열린 동안(iframe 배경이 검정) 같은 이유로 반전 */
       .portfolio-modal.has-dark-frame .portfolio-modal-close {
         background-color: #ffffff;
@@ -147,24 +138,17 @@
         }
       }
 
-      /* 작업일지 모달은 원래 게시글 모달처럼 작은 크기로 유지 (읽기 좋은 폭) */
-      .worklog-modal-content {
-        width: 600px;
-        max-width: 92vw;
-        height: 80vh;
-        max-height: 80vh;
-        /* 집중도를 위해 검정 배경 */
-        background-color: #000000;
-      }
-
-      /* 작업일지 모달 내부: 상단 탭 고정 + 아래 스크롤 콘텐츠 */
-      .worklog-layout {
+      /* 방명록 모달: 크기·배경은 포트폴리오 모달(.portfolio-modal-content) 그대로,
+         상단 바/본문 디자인도 portfolio.html과 동일하게 맞춤 */
+      .guestbook-layout {
         display: flex;
         flex-direction: column;
         height: 100%;
+        font-family: "D2Coding", monospace;
+        color: #000;
       }
 
-      .worklog-tabs {
+      .guestbook-tabs {
         flex: 0 0 auto;
         display: flex;
         gap: 8px;
@@ -173,79 +157,236 @@
         flex-wrap: wrap;
       }
 
-      .worklog-tab {
-        appearance: none;
-        border: none;
-        background-color: #a8a8a8;
+      /* 상단 제목 — 포트폴리오의 선택된 탭과 같은 모양 */
+      .guestbook-tab {
+        background-color: #000000;
         color: #ffffff;
-        font-family: inherit;
         font-size: 0.95rem;
         padding: 8px 16px;
-        cursor: pointer;
-        transition: background-color 0.2s ease;
       }
 
-      .worklog-tab:hover {
-        background-color: #8c8c8c;
-      }
-
-      .worklog-tab.is-active {
-        /* 검정 배경에서 안 보이지 않도록 활성 탭은 강조색(주황)으로 */
-        background-color: #f18d24;
-      }
-
-      .worklog-content {
+      .guestbook-content {
         flex: 1 1 auto;
         min-height: 0; /* flex 내부 스크롤 정상 동작 */
         overflow-y: auto;
         padding: 32px 40px 48px 40px;
         line-height: 1.8;
-        color: #ffffff;
+        color: #333;
       }
 
-      .worklog-content h2 {
-        color: #f18d24;
-        margin-top: 0;
-        font-size: 1.3rem;
+      /* 모달이 넓은 만큼 글이 한 줄로 너무 길어지지 않게 본문 폭 제한 + 가운데 정렬 */
+      .guestbook-content > * {
+        max-width: 760px;
+        margin-left: auto;
+        margin-right: auto;
       }
 
-      .worklog-content img {
-        max-width: 100%;
+      /* === 방명록 === */
+      .gb-intro {
+        margin: 0 0 20px;
+        text-align: center;
+        color: #8c8c8c;
+        font-size: 0.85rem;
+      }
+      .gb-form {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding-bottom: 28px;
+        margin-bottom: 8px;
+        border-bottom: 1px solid #a8a8a8;
+      }
+      .gb-form input,
+      .gb-form textarea {
+        font-family: inherit;
+        font-size: 16px; /* 16px 미만이면 아이폰이 입력할 때 화면을 확대함 */
+        color: #000;
+        background: #fff;
+        border: 1px solid #a8a8a8;
+        border-radius: 0;
+        padding: 8px 10px;
+        box-sizing: border-box;
+        width: 100%;
+      }
+      .gb-form input:focus,
+      .gb-form textarea:focus {
+        outline: none;
+        border-color: #000;
+      }
+      .gb-form .gb-name {
+        max-width: 240px;
+      }
+      .gb-form textarea {
+        resize: vertical;
+        min-height: 96px;
+        line-height: 1.6;
+      }
+      /* 스팸봇만 채우는 숨은 칸 (사람 눈에는 안 보임) */
+      .gb-form .gb-hp {
+        position: absolute;
+        left: -9999px;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+      }
+      .gb-form-foot {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.8rem;
+        color: #8c8c8c;
+      }
+      .gb-status {
+        flex: 1;
+      }
+      .gb-status.is-error {
+        color: #ce2b37;
+      }
+      .gb-btn {
+        appearance: none;
+        border: none;
+        background: #000;
+        color: #fff;
+        font-family: inherit;
+        font-size: 0.9rem;
+        padding: 8px 20px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+      .gb-btn:hover {
+        background: #444;
+      }
+      .gb-btn:disabled {
+        background: #a8a8a8;
+        cursor: default;
+      }
+      .gb-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .gb-item {
+        padding: 18px 0;
+        border-bottom: 1px solid #e0e0e0;
+      }
+      .gb-meta {
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+        margin-bottom: 4px;
+      }
+      .gb-author {
+        color: #0000aa;
+        font-weight: 700;
+      }
+      .gb-date {
+        color: #a8a8a8;
+        font-size: 0.8rem;
+      }
+      .gb-text {
+        margin: 0;
+        white-space: pre-wrap; /* 줄바꿈 그대로 */
+        word-break: break-word;
+      }
+      /* 사진 첨부 (최대 1장) */
+      .gb-photo {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .gb-photo-btn {
+        display: inline-block;
+        border: 1px solid #a8a8a8;
+        background: #fff;
+        color: #555;
+        font-size: 0.85rem;
+        padding: 6px 14px;
+        cursor: pointer;
+      }
+      .gb-photo-btn:hover {
+        background: #ececec;
+      }
+      .gb-preview {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        background: #f5f5f5;
+      }
+      .gb-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .gb-preview button {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 24px;
+        height: 24px;
+        border: none;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        font-size: 0.7rem;
+        cursor: pointer;
+      }
+      /* 글에 붙은 사진 — 클릭하면 새 탭에서 원본 크기로 */
+      .gb-img-link {
+        display: inline-block;
+        margin-top: 10px;
+      }
+      .gb-img {
+        display: block;
+        max-width: min(100%, 480px);
+        max-height: 480px;
+        width: auto;
         height: auto;
+        background: #f5f5f5;
       }
-
-      /* 검정 배경에서 링크 가독성 확보 (강조색) */
-      .worklog-content a {
-        color: #f18d24;
+      .gb-empty {
+        padding: 40px 0;
+        text-align: center;
+        color: #8c8c8c;
+      }
+      .gb-btn.gb-more {
+        display: block;
+        margin: 24px auto 0;
+        background: #fff;
+        color: #555;
+        border: 1px solid #a8a8a8;
+      }
+      .gb-btn.gb-more:hover {
+        background: #ececec;
       }
 
       @media (max-width: 768px) {
-        /* 모바일: 작업일지 모달도 화면에 꽉 차게 */
-        .worklog-modal-content {
-          width: 100vw;
-          max-width: none;
-          height: 100vh;
-          height: 100dvh;
-          max-height: none;
-        }
-        /* 모바일: 닫기 버튼을 작게·위로 올려 탭 밑줄과 겹치지 않게 */
-        #worklogCloseButton {
+        /* 모바일: 닫기 버튼을 작게·위로 올려 탭과 겹치지 않게 (포트폴리오·방명록 공통) */
+        #portfolioCloseButton,
+        #guestbookCloseButton {
           width: 32px;
           height: 32px;
           top: 10px;
           right: 12px;
           font-size: 0.85rem;
         }
-        .worklog-tabs {
+        .guestbook-tabs {
           /* 오른쪽에 닫기 버튼 공간 확보 */
           padding: 14px 52px 12px 20px;
         }
-        .worklog-content {
+        .guestbook-content {
           padding: 24px 20px 32px 20px;
         }
-        .worklog-tab {
+        .guestbook-tab {
           padding: 6px 12px;
           font-size: 0.85rem;
+        }
+        .gb-form .gb-name {
+          max-width: none;
+        }
+        .gb-item {
+          padding: 14px 0;
         }
       }
     </style>
@@ -370,18 +511,6 @@
             >포트폴리오</a
           >
           <a
-            id="worklogBox"
-            href="#"
-            style="
-              color: #000000;
-              background-color: #ffffff;
-              text-decoration: none;
-              padding: 4px 8px;
-              cursor: pointer;
-            "
-            >작업일지</a
-          >
-          <a
             id="gameBox"
             href="/html/slot_index.html"
             style="
@@ -404,6 +533,19 @@
               cursor: pointer;
             "
             >요금표</a
+          >
+          <!-- 방명록: 메뉴 맨 오른쪽, 노란 배경으로 강조 (모양은 다른 버튼과 동일) -->
+          <a
+            id="guestbookBox"
+            href="#"
+            style="
+              color: #000000;
+              background-color: #ffe14a;
+              text-decoration: none;
+              padding: 4px 8px;
+              cursor: pointer;
+            "
+            >방명록</a
           >
         </div>
         <!-- 위 선과 짝 — 메뉴를 위아래 16px로 균일하게 감싼다 -->
@@ -446,18 +588,44 @@
       </div>
     </div>
 
-    <!-- 작업일지 모달 (포트폴리오 모달과 동일 사이즈/모션, 내용은 Firebase 게시글) -->
-    <div id="worklogModal" class="portfolio-modal">
-      <div class="portfolio-modal-content worklog-modal-content">
-        <button id="worklogCloseButton" class="portfolio-modal-close">✕</button>
-        <div class="worklog-layout">
-          <nav class="worklog-tabs" id="worklogTabs">
-            <button class="worklog-tab is-active" data-key="3d">3D</button>
-            <button class="worklog-tab" data-key="photo">사진</button>
-            <button class="worklog-tab" data-key="video">영상</button>
-            <button class="worklog-tab" data-key="consulting">컨설팅</button>
-          </nav>
-          <div class="worklog-content" id="worklogContent">로딩 중...</div>
+    <!-- 방명록 모달 (포트폴리오 모달과 동일 사이즈/모션, 글은 Firestore "guestbook" 컬렉션) -->
+    <div id="guestbookModal" class="portfolio-modal">
+      <div class="portfolio-modal-content">
+        <button id="guestbookCloseButton" class="portfolio-modal-close">✕</button>
+        <div class="guestbook-layout">
+          <div class="guestbook-tabs">
+            <span class="guestbook-tab">방명록</span>
+          </div>
+          <div class="guestbook-content">
+            <div class="gb">
+              <p class="gb-intro">로그인 없이 누구나 자유롭게 남길 수 있어요.</p>
+              <form class="gb-form" id="gbForm" autocomplete="off" novalidate>
+                <input class="gb-name" id="gbName" maxlength="20" placeholder="닉네임" aria-label="닉네임" />
+                <textarea id="gbMsg" maxlength="500" placeholder="남길 말 (최대 500자)" aria-label="내용"></textarea>
+                <!-- 사진 첨부 (최대 1장) — 업로드 주소/Turnstile 키가 설정돼 있을 때만 보임 -->
+                <div class="gb-photo" id="gbPhoto" hidden>
+                  <label class="gb-photo-btn" id="gbPhotoBtn">
+                    사진 첨부
+                    <input type="file" id="gbFile" accept="image/*" hidden />
+                  </label>
+                  <div class="gb-preview" id="gbPreview" hidden>
+                    <img id="gbPreviewImg" alt="첨부한 사진 미리보기" />
+                    <button type="button" id="gbPreviewRemove" aria-label="사진 빼기">✕</button>
+                  </div>
+                  <!-- 봇 확인(Cloudflare Turnstile) — 보통은 안 보이고, 필요할 때만 체크박스가 뜸 -->
+                  <div id="gbTurnstile"></div>
+                </div>
+                <input class="gb-hp" id="gbHp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+                <div class="gb-form-foot">
+                  <span id="gbCount">0 / 500</span>
+                  <span class="gb-status" id="gbStatus" role="status"></span>
+                  <button type="submit" class="gb-btn" id="gbSubmit">남기기</button>
+                </div>
+              </form>
+              <ul class="gb-list" id="gbList"></ul>
+              <button type="button" class="gb-btn gb-more" id="gbMore" hidden>더 보기</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -495,60 +663,15 @@
     </script>
 
     <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-      import {
-        getFirestore,
-        collection,
-        getDocs,
-        doc,
-        getDoc,
-      } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-      import { firebaseConfig } from "/js/firebase-config.js";
-      import { parseMedia } from "/js/utils.js";
-
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-
-      // 작업일지: Firebase 게시글을 카테고리(탭)별로 매핑
-      const worklogPostIds = {}; // { "3d" | "photo" | "video" | "consulting" -> postId }
-      let worklogReadyResolve;
-      const worklogReady = new Promise((resolve) => (worklogReadyResolve = resolve));
-
-      async function initWorklog() {
-        try {
-          const querySnapshot = await getDocs(collection(db, "posts"));
-          let threeDFallback = null;
-          querySnapshot.forEach((docSnap) => {
-            const data = docSnap.data();
-            const clean = (data.title || "").replace(/\[WORKS\]/gi, "").trim();
-            // ko 짧은 라벨로 카테고리 판별 (언어와 무관하게 항상 ko 기준)
-            const koLabel = postTitleTranslations.ko[clean] || clean;
-            if (koLabel === "3D, VFX") {
-              worklogPostIds["3d"] = docSnap.id;
-            } else if (koLabel.includes("3D") && !threeDFallback) {
-              threeDFallback = docSnap.id; // "3D Modeling" 등 대체 후보
-            } else if (koLabel === "사진") {
-              worklogPostIds["photo"] = docSnap.id;
-            } else if (koLabel === "영상") {
-              worklogPostIds["video"] = docSnap.id;
-            } else if (koLabel === "컨설팅") {
-              worklogPostIds["consulting"] = docSnap.id;
-            }
-          });
-          if (!worklogPostIds["3d"] && threeDFallback) {
-            worklogPostIds["3d"] = threeDFallback;
-          }
-        } catch (e) {
-          console.error("작업일지 로드 실패:", e);
-        }
-        worklogReadyResolve();
-      }
-
-      // initWorklog는 페이지 로드가 아니라 작업일지를 처음 열 때 호출됨(지연 로딩)
+      // Firebase는 방명록을 처음 열 때만 불러온다(gbFirestore).
+      // 여기서 미리 import하면 Firebase 서버가 막혔을 때 이 스크립트 전체가 멈춰
+      // 포트폴리오·요금표·언어 전환 버튼까지 먹통이 되기 때문.
 
       // 언어 전환 기능
-      let currentLang = localStorage.getItem("lang") || "ko";
+      let currentLang = "ko";
+      try {
+        currentLang = localStorage.getItem("lang") || "ko";
+      } catch (e) {} // 사생활 보호 모드 등에서 저장소가 막혀도 페이지는 동작하게
       const langToggle = document.getElementById("langToggle");
 
       const translations = {
@@ -569,7 +692,7 @@
           resume: "이력서",
           skillMap: "기술맵",
           portfolioTab: "포트폴리오",
-          portfolio1: "작업일지",
+          guestbook: "방명록",
           gameBox: "게임",
           priceList: "요금표",
         },
@@ -590,28 +713,9 @@
           resume: "Resume",
           skillMap: "Skill Map",
           portfolioTab: "Portfolio",
-          portfolio1: "Worklog",
+          guestbook: "Guestbook",
           gameBox: "Game",
           priceList: "Price List",
-        },
-      };
-
-      // 게시글 제목 번역 매핑
-      const postTitleTranslations = {
-        ko: {
-          "3D VFX 외 작업물": "3D, VFX",
-          "사진 작업들": "사진",
-          "불방의 영상들": "영상",
-          "불방 LIVE 송출 스튜디오: 3년간의 운영 이야기 (2022–2025)": "컨설팅",
-          "3D Modeling": "3D Modeling",
-        },
-        en: {
-          "3D VFX 외 작업물": "3D, VFX",
-          "사진 작업들": "Photography",
-          "불방의 영상들": "Videos",
-          "불방 LIVE 송출 스튜디오: 3년간의 운영 이야기 (2022–2025)":
-            "Consulting",
-          "3D Modeling": "3D Modeling",
         },
       };
 
@@ -639,8 +743,8 @@
         const portfolioTabEl = document.getElementById("portfolioTab");
         if (portfolioTabEl) portfolioTabEl.textContent = t.portfolioTab;
 
-        const worklogBox = document.getElementById("worklogBox");
-        if (worklogBox) worklogBox.textContent = t.portfolio1;
+        const guestbookBox = document.getElementById("guestbookBox");
+        if (guestbookBox) guestbookBox.textContent = t.guestbook;
 
         const gameBoxEl = document.getElementById("gameBox");
         if (gameBoxEl) gameBoxEl.textContent = t.gameBox;
@@ -652,7 +756,9 @@
 
       langToggle.addEventListener("click", () => {
         currentLang = currentLang === "ko" ? "en" : "ko";
-        localStorage.setItem("lang", currentLang);
+        try {
+          localStorage.setItem("lang", currentLang);
+        } catch (e) {}
         updateLanguage();
       });
 
@@ -872,103 +978,382 @@
         if (PORTFOLIO_TAB_KEYS.includes(key)) openPortfolioModal(key);
       })();
 
-      // === 작업일지 모달 제어 (탭별로 Firebase 게시글 내용 표시) ===
-      const worklogBoxEl = document.getElementById("worklogBox");
-      const worklogModal = document.getElementById("worklogModal");
-      const worklogCloseButton = document.getElementById("worklogCloseButton");
-      const worklogContent = document.getElementById("worklogContent");
-      const worklogTabButtons = document.querySelectorAll(".worklog-tab");
-      const worklogContentCache = {};
-      let worklogOpenedOnce = false;
+      // === 방명록 (비로그인, Firestore "guestbook" 컬렉션) ===
+      // 문서 필드: name(닉네임, 1-20자), message(1-500자), createdAt(서버 시각).
+      // 방문자는 쓰기·읽기만 가능(수정/삭제 불가). 글 삭제는 Firebase 콘솔에서 직접 한다.
+      const guestbookBoxEl = document.getElementById("guestbookBox");
+      const guestbookModal = document.getElementById("guestbookModal");
+      const guestbookCloseButton = document.getElementById("guestbookCloseButton");
+      let guestbookOpenedOnce = false;
 
-      async function renderWorklogPost(key) {
-        await worklogReady;
-        const postId = worklogPostIds[key];
-        if (!postId) {
-          worklogContent.innerHTML =
-            "<p>해당 항목의 게시글을 찾지 못했습니다.</p>";
-          return;
-        }
-        if (worklogContentCache[postId]) {
-          worklogContent.innerHTML = worklogContentCache[postId];
-          worklogContent.scrollTop = 0;
-          return;
-        }
-        worklogContent.innerHTML = "로딩 중...";
-        try {
-          const docSnap = await getDoc(doc(db, "posts", postId));
-          if (!docSnap.exists()) {
-            worklogContent.innerHTML = "<p>내용이 없습니다.</p>";
-            return;
-          }
-          const p = docSnap.data();
-          const title = (p.title || "").replace(/\[WORKS\]/gi, "").trim();
-          let html = `<h2>${title}</h2>`;
-          if (p.date) {
-            html += `<p style="color:#808080;font-size:0.9rem">${p.date}</p>`;
-          }
-          html += `<div>${parseMedia(p.content || "")}</div>`;
-          if (Array.isArray(p.images)) {
-            p.images.forEach((url) => {
-              html += `<img src="${url}" loading="lazy" style="display:block;margin:10px auto" />`;
+      // 사진 업로드 설정 — 둘 다 채워져야 "사진 첨부" 버튼이 나타난다
+      const GB_UPLOAD_URL = "https://boolbang-guestbook.fromboolbang.workers.dev"; // Cloudflare Worker 주소
+      const GB_TURNSTILE_SITEKEY = "0x4AAAAAAFF5qQQmSZxGpo1O"; // Turnstile 사이트 키 (공개용, 페이지에 있어도 됨)
+      // 방명록 사진으로 인정하는 주소 (Worker가 R2에 저장한 사진만 표시)
+      const GB_IMAGE_PREFIX =
+        "https://pub-60b7f1bf1596496f8212ba01605e4e74.r2.dev/guestbook/";
+      const GB_PHOTO_MAX_SIDE = 1600; // 올리기 전 긴 변을 이 크기 이하로 줄임
+
+      const GB_PAGE = 20; // 한 번에 불러오는 글 수
+      const GB_COOLDOWN = 30 * 1000; // 같은 브라우저에서 연속 등록 간격(도배 방지)
+      const gbForm = document.getElementById("gbForm");
+      const gbName = document.getElementById("gbName");
+      const gbMsg = document.getElementById("gbMsg");
+      const gbHp = document.getElementById("gbHp");
+      const gbCount = document.getElementById("gbCount");
+      const gbStatus = document.getElementById("gbStatus");
+      const gbSubmit = document.getElementById("gbSubmit");
+      const gbList = document.getElementById("gbList");
+      const gbMore = document.getElementById("gbMore");
+      let gbLastDoc = null; // 다음 페이지 시작점
+      let gbLoading = false;
+
+      // Firebase(Firestore) 지연 로딩 — 방명록을 처음 열 때 한 번만 불러온다.
+      // 실패하면 다음에 다시 시도할 수 있게 비워둔다
+      let gbFsPromise = null;
+      function gbFirestore() {
+        if (!gbFsPromise) {
+          gbFsPromise = Promise.all([
+            import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"),
+            import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"),
+            import("/js/firebase-config.js"),
+          ])
+            .then(([appMod, fs, cfg]) => {
+              const app = appMod.initializeApp(cfg.firebaseConfig);
+              return { ...fs, db: fs.getFirestore(app) };
+            })
+            .catch((e) => {
+              gbFsPromise = null;
+              throw e;
             });
-          } else if (p.image) {
-            html += `<img src="${p.image}" loading="lazy" style="display:block;margin:10px auto" />`;
-          }
-          worklogContentCache[postId] = html;
-          worklogContent.innerHTML = html;
-          worklogContent.scrollTop = 0;
+        }
+        return gbFsPromise;
+      }
+
+      // localStorage는 사생활 보호 모드 등에서 막힐 수 있어 감싸서 쓴다
+      function gbGet(key) {
+        try {
+          return localStorage.getItem(key);
         } catch (e) {
-          console.error("작업일지 게시글 로드 실패:", e);
-          worklogContent.innerHTML = "<p>불러오지 못했습니다.</p>";
+          return null;
         }
       }
+      function gbSet(key, value) {
+        try {
+          localStorage.setItem(key, value);
+        } catch (e) {}
+      }
 
-      function openWorklogModal() {
+      function gbFormatDate(d) {
+        const p = (n) => String(n).padStart(2, "0");
+        return `${d.getFullYear()}.${p(d.getMonth() + 1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+      }
+
+      // 방문자가 쓴 글이므로 innerHTML 대신 textContent로만 넣는다 (스크립트 삽입 방지)
+      // 같은 글이 두 번 그려지지 않게 문서 ID로 확인 (등록 직후 목록 로딩과 겹칠 때 대비)
+      function gbHas(id) {
+        return !!gbList.querySelector(`[data-id="${id}"]`);
+      }
+
+      function gbCreateItem(data, id) {
+        const li = document.createElement("li");
+        li.className = "gb-item";
+        li.dataset.id = id;
+        const meta = document.createElement("div");
+        meta.className = "gb-meta";
+        const author = document.createElement("span");
+        author.className = "gb-author";
+        author.textContent = data.name || "익명";
+        const date = document.createElement("span");
+        date.className = "gb-date";
+        const d =
+          data.createdAt && data.createdAt.toDate ? data.createdAt.toDate() : new Date();
+        date.textContent = gbFormatDate(d);
+        meta.append(author, date);
+        const text = document.createElement("p");
+        text.className = "gb-text";
+        text.textContent = data.message || "";
+        li.append(meta, text);
+        if (typeof data.image === "string" && data.image.startsWith(GB_IMAGE_PREFIX)) {
+          const link = document.createElement("a");
+          link.className = "gb-img-link";
+          link.href = data.image;
+          link.target = "_blank";
+          link.rel = "noopener";
+          const img = document.createElement("img");
+          img.className = "gb-img";
+          img.src = data.image;
+          img.alt = "첨부 사진";
+          img.loading = "lazy";
+          link.appendChild(img);
+          li.appendChild(link);
+        }
+        return li;
+      }
+
+      function gbNotice(msg) {
+        const li = document.createElement("li");
+        li.className = "gb-empty";
+        li.textContent = msg;
+        gbList.appendChild(li);
+      }
+
+      async function gbLoad() {
+        if (gbLoading) return;
+        gbLoading = true;
+        gbMore.disabled = true;
+        try {
+          const { db, collection, query, orderBy, startAfter, limit, getDocs } =
+            await gbFirestore();
+          const parts = [collection(db, "guestbook"), orderBy("createdAt", "desc")];
+          if (gbLastDoc) parts.push(startAfter(gbLastDoc));
+          parts.push(limit(GB_PAGE));
+          const snap = await getDocs(query(...parts));
+          snap.docs.forEach((docSnap) => {
+            if (!gbHas(docSnap.id))
+              gbList.appendChild(gbCreateItem(docSnap.data(), docSnap.id));
+          });
+          if (snap.docs.length) gbLastDoc = snap.docs[snap.docs.length - 1];
+          gbMore.hidden = snap.docs.length < GB_PAGE;
+          if (!gbList.children.length) gbNotice("아직 남겨진 글이 없어요. 첫 글을 남겨주세요.");
+        } catch (e) {
+          console.error("방명록 불러오기 실패:", e);
+          if (!gbList.children.length) gbNotice("글을 불러오지 못했습니다.");
+        }
+        gbLoading = false;
+        gbMore.disabled = false;
+      }
+
+      function gbSetStatus(msg, isError) {
+        gbStatus.textContent = msg;
+        gbStatus.classList.toggle("is-error", !!isError);
+      }
+
+      gbName.value = gbGet("gbName") || ""; // 한 번 쓴 닉네임은 기억
+      gbMsg.addEventListener("input", () => {
+        gbCount.textContent = `${gbMsg.value.length} / 500`;
+      });
+      gbMore.addEventListener("click", gbLoad);
+
+      // === 사진 첨부 (최대 1장) ===
+      const gbPhoto = document.getElementById("gbPhoto");
+      const gbFile = document.getElementById("gbFile");
+      const gbPreview = document.getElementById("gbPreview");
+      const gbPreviewImg = document.getElementById("gbPreviewImg");
+      const gbPreviewRemove = document.getElementById("gbPreviewRemove");
+      const gbPhotoEnabled = !!(GB_UPLOAD_URL && GB_TURNSTILE_SITEKEY);
+      let gbPhotoFile = null;
+      let gbTurnstileId = null;
+      let gbTurnstileToken = "";
+      let gbTurnstileLoading = null;
+
+      gbPhoto.hidden = !gbPhotoEnabled;
+
+      // Turnstile 스크립트는 사진을 처음 고를 때만 불러온다 (글만 쓰는 사람은 로딩 없음)
+      function gbLoadTurnstile() {
+        if (gbTurnstileLoading) return gbTurnstileLoading;
+        gbTurnstileLoading = new Promise((resolve, reject) => {
+          const sc = document.createElement("script");
+          sc.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+          sc.async = true;
+          sc.onload = () => {
+            gbTurnstileId = window.turnstile.render("#gbTurnstile", {
+              sitekey: GB_TURNSTILE_SITEKEY,
+              appearance: "interaction-only", // 사람으로 확인되면 아무것도 안 보임
+              callback: (t) => (gbTurnstileToken = t),
+              "expired-callback": () => (gbTurnstileToken = ""),
+              "error-callback": () => (gbTurnstileToken = ""),
+            });
+            resolve();
+          };
+          sc.onerror = () => {
+            gbTurnstileLoading = null;
+            reject(new Error("turnstile"));
+          };
+          document.head.appendChild(sc);
+        });
+        return gbTurnstileLoading;
+      }
+
+      // 확인 토큰이 나올 때까지 최대 15초 기다림
+      async function gbWaitToken() {
+        await gbLoadTurnstile();
+        for (let i = 0; i < 60 && !gbTurnstileToken; i++) {
+          await new Promise((r) => setTimeout(r, 250));
+        }
+        return gbTurnstileToken;
+      }
+
+      function gbResetTurnstile() {
+        gbTurnstileToken = "";
+        if (gbTurnstileId !== null && window.turnstile) window.turnstile.reset(gbTurnstileId);
+      }
+
+      function gbClearPhoto() {
+        if (gbPreviewImg.src) URL.revokeObjectURL(gbPreviewImg.src);
+        gbPreviewImg.removeAttribute("src");
+        gbPreview.hidden = true;
+        gbFile.value = "";
+        gbPhotoFile = null;
+      }
+
+      gbFile.addEventListener("change", () => {
+        const file = gbFile.files && gbFile.files[0];
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+          gbClearPhoto();
+          return gbSetStatus("사진 파일만 첨부할 수 있어요.", true);
+        }
+        if (gbPreviewImg.src) URL.revokeObjectURL(gbPreviewImg.src);
+        gbPhotoFile = file;
+        gbPreviewImg.src = URL.createObjectURL(file);
+        gbPreview.hidden = false;
+        gbSetStatus("");
+        gbLoadTurnstile().catch(() => {}); // 미리 확인 시작
+      });
+      gbPreviewRemove.addEventListener("click", gbClearPhoto);
+
+      function gbToBlob(canvas, type, quality) {
+        return new Promise((resolve) => canvas.toBlob(resolve, type, quality));
+      }
+
+      // 올리기 전에 긴 변 1600px 이하로 줄이고 WebP(안 되면 JPEG)로 변환 → 보통 수백 KB
+      async function gbShrink(file) {
+        const bmp = await createImageBitmap(file);
+        const scale = Math.min(1, GB_PHOTO_MAX_SIDE / Math.max(bmp.width, bmp.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(bmp.width * scale);
+        canvas.height = Math.round(bmp.height * scale);
+        canvas.getContext("2d").drawImage(bmp, 0, 0, canvas.width, canvas.height);
+        if (bmp.close) bmp.close();
+        let blob = await gbToBlob(canvas, "image/webp", 0.82);
+        if (!blob || blob.type !== "image/webp") blob = await gbToBlob(canvas, "image/jpeg", 0.85);
+        if (blob && blob.size > 1.9 * 1024 * 1024) blob = await gbToBlob(canvas, "image/jpeg", 0.7);
+        return blob;
+      }
+
+      const GB_UPLOAD_ERRORS = {
+        captcha: "보안 확인에 실패했어요. 다시 시도해 주세요.",
+        too_large: "사진 용량이 너무 커요.",
+        not_image: "사진 파일만 올릴 수 있어요.",
+      };
+
+      // Worker로 보내 R2에 저장하고 공개 주소를 받는다
+      async function gbUploadPhoto(file) {
+        let blob;
+        try {
+          blob = await gbShrink(file);
+        } catch (e) {
+          throw new Error("이 사진 형식은 열 수 없어요. 다른 사진을 골라주세요.");
+        }
+        const token = await gbWaitToken().catch(() => "");
+        if (!token) throw new Error("보안 확인이 끝나지 않았어요. 잠시 후 다시 눌러주세요.");
+        const fd = new FormData();
+        fd.append("file", blob, "photo");
+        fd.append("token", token);
+        let res, data;
+        try {
+          res = await fetch(GB_UPLOAD_URL.replace(/\/$/, "") + "/upload", {
+            method: "POST",
+            body: fd,
+          });
+          data = await res.json().catch(() => ({}));
+        } finally {
+          gbResetTurnstile(); // 토큰은 1회용
+        }
+        if (!res.ok || !data.url) {
+          throw new Error(GB_UPLOAD_ERRORS[data.error] || "사진을 올리지 못했습니다.");
+        }
+        return data.url;
+      }
+
+      gbForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const name = gbName.value.trim();
+        const message = gbMsg.value.trim();
+        if (!name) return gbSetStatus("닉네임을 입력해 주세요.", true);
+        if (!message) return gbSetStatus("내용을 입력해 주세요.", true);
+        const last = Number(gbGet("gbLastPost")) || 0;
+        const wait = Math.ceil((GB_COOLDOWN - (Date.now() - last)) / 1000);
+        if (wait > 0) return gbSetStatus(`${wait}초 뒤에 다시 남길 수 있어요.`, true);
+
+        // 숨은 칸이 채워져 있으면 스팸봇 — 저장하지 않고 성공한 척만 한다
+        if (gbHp.value) {
+          gbMsg.value = "";
+          return gbSetStatus("등록되었습니다.");
+        }
+
+        gbSubmit.disabled = true;
+        try {
+          const { db, collection, addDoc, serverTimestamp } = await gbFirestore();
+          const entry = { name, message, createdAt: serverTimestamp() };
+          if (gbPhotoEnabled && gbPhotoFile) {
+            gbSetStatus("사진 올리는 중...");
+            try {
+              entry.image = await gbUploadPhoto(gbPhotoFile);
+            } catch (upErr) {
+              gbSetStatus(upErr.message, true);
+              gbSubmit.disabled = false;
+              return;
+            }
+          }
+          gbSetStatus("등록 중...");
+          const ref = await addDoc(collection(db, "guestbook"), entry);
+          gbSet("gbName", name);
+          gbSet("gbLastPost", String(Date.now()));
+          gbList.querySelectorAll(".gb-empty").forEach((el) => el.remove());
+          // 방금 쓴 글을 맨 위에 (목록 로딩이 이미 가져왔으면 건너뜀)
+          if (!gbHas(ref.id)) gbList.prepend(gbCreateItem({ ...entry, createdAt: null }, ref.id));
+          gbMsg.value = "";
+          gbClearPhoto();
+          gbCount.textContent = "0 / 500";
+          gbSetStatus("등록되었습니다.");
+        } catch (err) {
+          console.error("방명록 등록 실패:", err);
+          gbSetStatus("등록하지 못했습니다. 잠시 후 다시 시도해 주세요.", true);
+        }
+        gbSubmit.disabled = false;
+      });
+
+      function openGuestbookModal() {
         lockBodyScroll();
-        worklogModal.style.display = "flex";
-        requestAnimationFrame(() => worklogModal.classList.add("is-open"));
-        if (!worklogOpenedOnce) {
-          worklogOpenedOnce = true;
-          initWorklog(); // 첫 오픈 시에만 posts 불러오기 (지연 로딩)
-          renderWorklogPost("3d"); // worklogReady를 await하므로 로딩 후 렌더
+        guestbookModal.style.display = "flex";
+        requestAnimationFrame(() => guestbookModal.classList.add("is-open"));
+        if (!guestbookOpenedOnce) {
+          guestbookOpenedOnce = true;
+          gbLoad(); // 첫 오픈 시에만 글 불러오기 (지연 로딩)
         }
-        pushModalHistory(closeWorklogModal);
+        pushModalHistory(closeGuestbookModal);
       }
 
-      function closeWorklogModal() {
+      function closeGuestbookModal() {
         unlockBodyScroll();
-        worklogModal.classList.remove("is-open");
+        guestbookModal.classList.remove("is-open");
         setTimeout(() => {
-          worklogModal.style.display = "none";
+          // 닫히는 모션 도중 다시 열렸으면 숨기지 않는다
+          if (guestbookModal.classList.contains("is-open")) return;
+          guestbookModal.style.display = "none";
         }, 350);
       }
 
-      if (worklogBoxEl) {
-        worklogBoxEl.addEventListener("click", (e) => {
+      if (guestbookBoxEl) {
+        guestbookBoxEl.addEventListener("click", (e) => {
           e.preventDefault();
-          openWorklogModal();
+          openGuestbookModal();
         });
       }
-      if (worklogCloseButton) {
-        worklogCloseButton.addEventListener("click", requestCloseModal);
+      if (guestbookCloseButton) {
+        guestbookCloseButton.addEventListener("click", requestCloseModal);
       }
-      if (worklogModal) {
-        worklogModal.addEventListener("click", (e) => {
-          if (e.target === worklogModal) requestCloseModal();
+      if (guestbookModal) {
+        guestbookModal.addEventListener("click", (e) => {
+          if (e.target === guestbookModal) requestCloseModal();
         });
       }
-      worklogTabButtons.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          worklogTabButtons.forEach((b) => b.classList.remove("is-active"));
-          btn.classList.add("is-active");
-          renderWorklogPost(btn.dataset.key);
-        });
-      });
       document.addEventListener("keydown", (e) => {
         if (
           e.key === "Escape" &&
-          worklogModal.classList.contains("is-open")
+          guestbookModal.classList.contains("is-open")
         ) {
           requestCloseModal();
         }
@@ -997,6 +1382,8 @@
         unlockBodyScroll();
         priceModal.classList.remove("is-open");
         setTimeout(() => {
+          // 닫히는 모션 도중 다시 열렸으면 숨기지 않는다
+          if (priceModal.classList.contains("is-open")) return;
           priceModal.style.display = "none";
         }, 350);
       }

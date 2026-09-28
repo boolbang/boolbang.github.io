@@ -3,19 +3,21 @@
 <!--
   영상 추가 방법:
   아래 <div class="video-item"> ... </div> 덩어리를 복사해서 .video-stage 안에 추가하고,
-  iframe의 data-src 값만 새 영상의 iframe 주소로 바꾸면 됩니다.
+  iframe의 data-src 값을 새 영상의 iframe 주소로 바꾸면 됩니다.
   ( ?poster=... 없이 .../iframe 까지만. 상단 번호 버튼(1 2 3…)은 영상 개수에 맞춰 자동 생성됨 )
+  data-thumb는 재생 전 썸네일 — .../thumbnails/thumbnail.jpg?time=<영상 중간 초>s&amp;height=600
 -->
 <div class="video-gallery">
   <!-- 번호 버튼(1 2 3 …)은 portfolio.html의 스크립트가 영상 개수만큼 자동 생성 -->
   <div class="video-nav" id="videoNav" aria-label="영상 선택"></div>
   <!-- 번호별 안내 문구 — 영상을 추가/변경하면 이 문장도 함께 고쳐주세요 -->
-  <p class="video-nav-note">* 1-3 티저, 4-5 인터뷰, 6 다큐멘터리, 7-8 뮤직비디오, 9 쇼릴</p>
+  <p class="video-nav-note">* 1-3 티저, 4-5 인터뷰, 6 다큐멘터리, 7-8 뮤직비디오, 9 쇼릴, 10 잡다영상</p>
 
   <div class="video-stage">
     <div class="video-item">
       <div class="video-frame">
         <iframe
+          data-thumb="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/50881dfc3fc9f264aa1d3cae589663ad/thumbnails/thumbnail.jpg?time=29s&amp;height=600"
           data-src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/50881dfc3fc9f264aa1d3cae589663ad/iframe?primaryColor=%23CE2B37"
           loading="lazy"
           allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
@@ -26,6 +28,7 @@
     <div class="video-item">
       <div class="video-frame">
         <iframe
+          data-thumb="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/f8d8cf249e163be64f5e0fc14a847193/thumbnails/thumbnail.jpg?time=25s&amp;height=600"
           data-src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/f8d8cf249e163be64f5e0fc14a847193/iframe?primaryColor=%23CE2B37"
           loading="lazy"
           allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
@@ -36,6 +39,7 @@
     <div class="video-item">
       <div class="video-frame">
         <iframe
+          data-thumb="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/771ebe7470cef66fe3979a78e6fdb0df/thumbnails/thumbnail.jpg?time=16s&amp;height=600"
           data-src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/771ebe7470cef66fe3979a78e6fdb0df/iframe?primaryColor=%23CE2B37"
           loading="lazy"
           allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
@@ -46,6 +50,7 @@
     <div class="video-item">
       <div class="video-frame">
         <iframe
+          data-thumb="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/3e956bc865bb27911b592eed06fa3936/thumbnails/thumbnail.jpg?time=144s&amp;height=600"
           data-src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/3e956bc865bb27911b592eed06fa3936/iframe?primaryColor=%2300f700"
           loading="lazy"
           allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
@@ -56,6 +61,7 @@
     <div class="video-item">
       <div class="video-frame">
         <iframe
+          data-thumb="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/b18d154fae5316b5356d971910f110e7/thumbnails/thumbnail.jpg?time=145s&amp;height=600"
           data-src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/b18d154fae5316b5356d971910f110e7/iframe?primaryColor=%2300f700"
           loading="lazy"
           allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
@@ -66,7 +72,8 @@
     <div class="video-item">
       <div class="video-frame">
         <iframe
-          data-src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/8c2197029b0e73f9ab6e6dd0c34dcdcb/iframe?primaryColor=%2300f700&poster=https%3A%2F%2Fcustomer-axzwwxc3yts30fgc.cloudflarestream.com%2F8c2197029b0e73f9ab6e6dd0c34dcdcb%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D38s%26height%3D600"
+          data-thumb="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/8c2197029b0e73f9ab6e6dd0c34dcdcb/thumbnails/thumbnail.jpg?time=103s&amp;height=600"
+          data-src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/8c2197029b0e73f9ab6e6dd0c34dcdcb/iframe?primaryColor=%2300f700"
           loading="lazy"
           allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
           allowfullscreen="true"
@@ -76,6 +83,7 @@
     <div class="video-item">
       <div class="video-frame">
         <iframe
+          data-thumb="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/dee1ac4db5f0a88a9745bad121f99b58/thumbnails/thumbnail.jpg?time=163s&amp;height=600"
           data-src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/dee1ac4db5f0a88a9745bad121f99b58/iframe?primaryColor=%23CE2B37"
           loading="lazy"
           allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
@@ -86,6 +94,7 @@
     <div class="video-item">
       <div class="video-frame">
         <iframe
+          data-thumb="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/e3210e9478103804a7cf521691a899c9/thumbnails/thumbnail.jpg?time=164s&amp;height=600"
           data-src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/e3210e9478103804a7cf521691a899c9/iframe?primaryColor=%23CE2B37"
           loading="lazy"
           allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
@@ -96,11 +105,65 @@
     <div class="video-item">
       <div class="video-frame">
         <iframe
+          data-thumb="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/3a796e4751a93800255c1b3f661dbb57/thumbnails/thumbnail.jpg?time=61s&amp;height=600"
           data-src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/3a796e4751a93800255c1b3f661dbb57/iframe?primaryColor=%23CE2B37"
           loading="lazy"
           allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
           allowfullscreen="true"
         ></iframe>
+      </div>
+    </div>
+
+    <!--
+      10번 잡다영상: 여러 영상을 사진처럼 모자이크로 나열.
+      타일 추가 방법: <div class="video-tile"> 덩어리를 복사하고
+        - data-src : .../<영상ID>/iframe?primaryColor=%23CE2B37  (poster 없이)
+        - img src  : .../<영상ID>/thumbnails/thumbnail.jpg?time=<영상 중간 초>s&height=600
+      타일 비율은 썸네일 이미지 비율을 그대로 따라가므로 따로 지정할 필요 없음.
+      클릭하면 그 자리에서 플레이어가 열리고, 다른 타일은 썸네일로 돌아감.
+    -->
+    <div class="video-item">
+      <div class="video-mosaic">
+        <div class="video-tile" role="button" tabindex="0" aria-label="잡다영상 1 재생"
+          data-src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/a593818545aeb8bfc446e9741e58d23a/iframe?primaryColor=%23CE2B37">
+          <img src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/a593818545aeb8bfc446e9741e58d23a/thumbnails/thumbnail.jpg?time=299s&amp;height=600" alt="" loading="lazy" />
+        </div>
+        <div class="video-tile" role="button" tabindex="0" aria-label="잡다영상 2 재생"
+          data-src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/0d0f7eb73f07baba3d68a4e343b33cc3/iframe?primaryColor=%23CE2B37">
+          <img src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/0d0f7eb73f07baba3d68a4e343b33cc3/thumbnails/thumbnail.jpg?time=25s&amp;height=600" alt="" loading="lazy" />
+        </div>
+        <div class="video-tile" role="button" tabindex="0" aria-label="잡다영상 3 재생"
+          data-src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/4200337c9cc49d7d99ad7fa8467b5ec0/iframe?primaryColor=%23CE2B37">
+          <img src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/4200337c9cc49d7d99ad7fa8467b5ec0/thumbnails/thumbnail.jpg?time=97s&amp;height=600" alt="" loading="lazy" />
+        </div>
+        <div class="video-tile" role="button" tabindex="0" aria-label="잡다영상 4 재생"
+          data-src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/7592ca3d4e476cccc5b269e2ffeed4a0/iframe?primaryColor=%23CE2B37">
+          <img src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/7592ca3d4e476cccc5b269e2ffeed4a0/thumbnails/thumbnail.jpg?time=42s&amp;height=600" alt="" loading="lazy" />
+        </div>
+        <div class="video-tile" role="button" tabindex="0" aria-label="잡다영상 5 재생"
+          data-src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/b53398412e9151affef9fe745c77945a/iframe?primaryColor=%23CE2B37">
+          <img src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/b53398412e9151affef9fe745c77945a/thumbnails/thumbnail.jpg?time=13s&amp;height=600" alt="" loading="lazy" />
+        </div>
+        <div class="video-tile" role="button" tabindex="0" aria-label="잡다영상 6 재생"
+          data-src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/c3c0f3260d786c566e32fa80bf1d9947/iframe?primaryColor=%23CE2B37">
+          <img src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/c3c0f3260d786c566e32fa80bf1d9947/thumbnails/thumbnail.jpg?time=2s&amp;height=600" alt="" loading="lazy" />
+        </div>
+        <div class="video-tile" role="button" tabindex="0" aria-label="잡다영상 7 재생"
+          data-src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/6219d337cbffe0885d4808a32d7b0783/iframe?primaryColor=%23CE2B37">
+          <img src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/6219d337cbffe0885d4808a32d7b0783/thumbnails/thumbnail.jpg?time=3s&amp;height=600" alt="" loading="lazy" />
+        </div>
+        <div class="video-tile" role="button" tabindex="0" aria-label="잡다영상 8 재생"
+          data-src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/d95e5e142f46c522da862842d434a510/iframe?primaryColor=%23CE2B37">
+          <img src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/d95e5e142f46c522da862842d434a510/thumbnails/thumbnail.jpg?time=28s&amp;height=600" alt="" loading="lazy" />
+        </div>
+        <div class="video-tile" role="button" tabindex="0" aria-label="잡다영상 9 재생"
+          data-src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/3fd832f0996c64705477976f10b4d722/iframe?primaryColor=%23CE2B37">
+          <img src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/3fd832f0996c64705477976f10b4d722/thumbnails/thumbnail.jpg?time=10s&amp;height=600" alt="" loading="lazy" />
+        </div>
+        <div class="video-tile" role="button" tabindex="0" aria-label="잡다영상 10 재생"
+          data-src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/b524b194c657c485bcabf4c125be3b17/iframe?primaryColor=%23CE2B37">
+          <img src="https://customer-axzwwxc3yts30fgc.cloudflarestream.com/b524b194c657c485bcabf4c125be3b17/thumbnails/thumbnail.jpg?time=48s&amp;height=600" alt="" loading="lazy" />
+        </div>
       </div>
     </div>
   </div>
