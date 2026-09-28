@@ -12,7 +12,12 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      /* height를 고정하면 모바일에서 내용이 화면보다 길 때 위쪽이 잘리고
+         스크롤로도 못 올라간다 → 최소 높이만 정해 넘치면 페이지가 늘어나게 */
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 16px 0;
+      box-sizing: border-box;
       margin: 0;
       text-align: center;
       flex-direction: column;
@@ -257,6 +262,79 @@
     flex: 0 0 auto;
   }
 
+  /* === 모바일 게임 모드 ===
+     첫 "돌려!"에서 켜짐: 번쩍(#gm-flash) + 슬롯머신이 튀어오르며 화면을 꽉 채우도록 확대.
+     크기는 JS가 화면에 맞는 배율(--gm-scale)을 계산해 넣는다 → 릴 크기 등 내부는 그대로.
+     파산하면 꺼지고 원래 화면으로 돌아와 닉네임을 입력한다 */
+  body.game-mode {
+    overflow: hidden;
+  }
+  body.game-mode #slot-ranking {
+    visibility: hidden;
+  }
+  body.game-mode #slot-machine {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin: 0;
+    transform: translate(-50%, -50%) scale(var(--gm-scale, 1));
+    animation: gm-pop 0.5s ease-out both;
+    z-index: 50;
+  }
+  @keyframes gm-pop {
+    0% {
+      transform: translate(-50%, -50%) scale(calc(var(--gm-scale, 1) * 0.8));
+      filter: brightness(2.5);
+    }
+    60% {
+      transform: translate(-50%, -50%) scale(calc(var(--gm-scale, 1) * 1.07));
+      filter: brightness(1.3);
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(var(--gm-scale, 1));
+      filter: none;
+    }
+  }
+  /* 켜질 때 한 번 번쩍 — 색은 현재 베팅 테마 색(currentColor)을 따라감 */
+  #gm-flash {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 60;
+    opacity: 0;
+    background: radial-gradient(circle, currentColor 0%, transparent 70%);
+  }
+  #gm-flash.is-on {
+    animation: gm-flash 0.5s ease-out;
+  }
+  @keyframes gm-flash {
+    0% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    25% {
+      opacity: 0.9;
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.8);
+    }
+  }
+  /* 원래 화면으로 돌아올 때 살짝 떠오르며 나타남 */
+  #slot-machine.gm-return {
+    animation: gm-return 0.35s ease-out;
+  }
+  @keyframes gm-return {
+    from {
+      opacity: 0;
+      transform: scale(0.94);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
   </style>
 </head>
 <body class="theme-x1">
@@ -294,6 +372,9 @@
     <div class="rank-title">🏆 최고 기록 (도달 스테이지)</div>
     <ol id="rank-list"></ol>
   </div>
+
+  <!-- 모바일 게임 모드 진입 순간의 번쩍 효과 -->
+  <div id="gm-flash" aria-hidden="true"></div>
 
   <script>
     const clickSound = document.getElementById('click-sound');
@@ -418,12 +499,82 @@ document.querySelectorAll('button').forEach(btn => {
       }
     }
 
+    // === 모바일 게임 모드 (첫 스핀에 화면 꽉 채우기, 파산하면 원래 화면으로) ===
+    const machine = document.getElementById('slot-machine');
+    const gmFlash = document.getElementById('gm-flash');
+    let gameMode = false;
+
+    function isMobileView() {
+      return matchMedia('(max-width: 600px)').matches || matchMedia('(pointer: coarse)').matches;
+    }
+
+    // 슬롯머신이 화면 안에 통째로 들어가는 최대 배율
+    function fitGameMode() {
+      const w = machine.offsetWidth;
+      const h = machine.offsetHeight;
+      if (!w || !h) return;
+      const s = Math.min((window.innerWidth * 0.98) / w, (window.innerHeight * 0.98) / h);
+      machine.style.setProperty('--gm-scale', s.toFixed(3));
+    }
+
+    function enterGameMode() {
+      if (gameMode || !isMobileView()) return;
+      gameMode = true;
+      // 주소창까지 가리는 전체화면 (안드로이드 크롬 등). 아이폰 사파리는 지원하지 않아
+      // 주소창은 남지만 확대 레이아웃은 똑같이 적용된다
+      const root = document.documentElement;
+      const req = root.requestFullscreen || root.webkitRequestFullscreen;
+      if (req) {
+        try {
+          const p = req.call(root, { navigationUI: 'hide' });
+          if (p && p.catch) p.catch(() => {});
+        } catch (e) {}
+      }
+      window.scrollTo(0, 0);
+      machine.classList.remove('gm-return');
+      fitGameMode();
+      document.body.classList.add('game-mode');
+      gmFlash.classList.remove('is-on');
+      void gmFlash.offsetWidth; // 애니메이션 다시 재생되게 리셋
+      gmFlash.classList.add('is-on');
+    }
+
+    function exitGameMode() {
+      if (!gameMode) return;
+      gameMode = false;
+      document.body.classList.remove('game-mode');
+      machine.style.removeProperty('--gm-scale');
+      const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+      const exit = document.exitFullscreen || document.webkitExitFullscreen;
+      if (fsEl && exit) {
+        try {
+          const p = exit.call(document);
+          if (p && p.catch) p.catch(() => {});
+        } catch (e) {}
+      }
+      machine.classList.add('gm-return');
+    }
+
+    // 전체화면 진입/화면 회전으로 화면 크기가 바뀌면 배율 다시 계산
+    window.addEventListener('resize', () => {
+      if (gameMode) fitGameMode();
+    });
+
+    const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
     async function gameOver() {
       if (gameEnded) return; // 중복 호출/저장 방지
       gameEnded = true;
       resultDisplay.textContent = '파산! 사채업자 등장.';
       spinButton.disabled = true;
       restartButton.style.display = 'inline-block';
+
+      // 게임 모드였다면 '파산' 문구를 잠깐 보여준 뒤 원래 화면으로 돌아와서 기록 입력
+      if (gameMode) {
+        await wait(1200);
+        exitGameMode();
+        await wait(450); // 전체화면 해제·레이아웃이 자리 잡을 시간
+      }
 
       // 랭킹 저장: 도달 스테이지가 점수
       const reached = stage;
@@ -573,6 +724,7 @@ if (totalWin > 0) {
         bgm.play().catch(() => {});
         bgmStarted = true;
       }
+      enterGameMode(); // 모바일: 첫 스핀에 화면 꽉 채우기 (이미 켜져 있으면 무시)
       spin();
     });
 
