@@ -78,7 +78,7 @@ body {
   margin: 30px 0;
 }
 
-/* 홈 네비 링크(이력서~요금표) 가운데 정렬 (PC·모바일 공통) */
+/* 홈 네비 링크(이력서~방명록) 가운데 정렬 (PC·모바일 공통) */
 .home-nav {
   justify-content: center;
 }
@@ -148,7 +148,7 @@ a:hover {
     line-height: 1.6;
   }
 
-  /* 모바일: 네비 링크(이력서~요금표)를 한 줄 + 가운데 정렬 */
+  /* 모바일: 네비 링크(이력서~방명록)를 한 줄 + 가운데 정렬 */
   .home-nav {
     gap: 6px !important;
     font-size: 0.9rem;

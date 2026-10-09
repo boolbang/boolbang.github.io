@@ -522,18 +522,6 @@
             "
             >게임</a
           >
-          <a
-            id="priceBox"
-            href="#"
-            style="
-              color: #000000;
-              background-color: #ffffff;
-              text-decoration: none;
-              padding: 4px 8px;
-              cursor: pointer;
-            "
-            >요금표</a
-          >
           <!-- 방명록: 메뉴 맨 오른쪽, 노란 배경으로 강조 (모양은 다른 버튼과 동일) -->
           <a
             id="guestbookBox"
@@ -630,19 +618,6 @@
       </div>
     </div>
 
-    <!-- 요금표 모달 (포트폴리오와 동일 사이즈/모션, 내용은 별도 파일) -->
-    <div id="priceModal" class="portfolio-modal">
-      <div class="portfolio-modal-content">
-        <button id="priceCloseButton" class="portfolio-modal-close">✕</button>
-        <!-- 실제 내용은 별도 파일(/html/pricing.html)에서 불러옴 -->
-        <iframe
-          id="priceFrame"
-          class="portfolio-modal-frame"
-          title="요금표"
-        ></iframe>
-      </div>
-    </div>
-
     <!-- 메인 스케치 타일: 스케치 갤러리(/html/portfolio_sketch.html)에서 랜덤 1장 표시 -->
     <script>
       (function () {
@@ -665,7 +640,7 @@
     <script type="module">
       // Firebase는 방명록을 처음 열 때만 불러온다(gbFirestore).
       // 여기서 미리 import하면 Firebase 서버가 막혔을 때 이 스크립트 전체가 멈춰
-      // 포트폴리오·요금표·언어 전환 버튼까지 먹통이 되기 때문.
+      // 포트폴리오·언어 전환 버튼까지 먹통이 되기 때문.
 
       // 언어 전환 기능
       let currentLang = "ko";
@@ -694,7 +669,6 @@
           portfolioTab: "포트폴리오",
           guestbook: "방명록",
           gameBox: "게임",
-          priceList: "요금표",
         },
         en: {
           title: "BoolBang Interactive",
@@ -715,7 +689,6 @@
           portfolioTab: "Portfolio",
           guestbook: "Guestbook",
           gameBox: "Game",
-          priceList: "Price List",
         },
       };
 
@@ -748,10 +721,6 @@
 
         const gameBoxEl = document.getElementById("gameBox");
         if (gameBoxEl) gameBoxEl.textContent = t.gameBox;
-
-        // 요금표 버튼 업데이트
-        const priceBoxEl = document.getElementById("priceBox");
-        if (priceBoxEl) priceBoxEl.textContent = t.priceList;
       }
 
       langToggle.addEventListener("click", () => {
@@ -1415,53 +1384,6 @@
       });
 
       // 게임: 모달 없이 게임 페이지로 바로 이동 (index의 href="/html/slot_index.html")
-
-      // === 요금표 모달 제어 (포트폴리오와 동일 방식: 별도 파일 iframe 로드) ===
-      const priceBox = document.getElementById("priceBox");
-      const priceModal = document.getElementById("priceModal");
-      const priceCloseButton = document.getElementById("priceCloseButton");
-      const priceFrame = document.getElementById("priceFrame");
-
-      function openPriceModal() {
-        lockBodyScroll();
-        // 처음 열 때 한 번만 iframe 로드
-        if (priceFrame && !priceFrame.src) {
-          priceFrame.src = "/html/pricing.html";
-        }
-        priceModal.style.display = "flex";
-        requestAnimationFrame(() => priceModal.classList.add("is-open"));
-        pushModalHistory(closePriceModal);
-      }
-
-      function closePriceModal() {
-        unlockBodyScroll();
-        priceModal.classList.remove("is-open");
-        setTimeout(() => {
-          // 닫히는 모션 도중 다시 열렸으면 숨기지 않는다
-          if (priceModal.classList.contains("is-open")) return;
-          priceModal.style.display = "none";
-        }, 350);
-      }
-
-      if (priceBox) {
-        priceBox.addEventListener("click", (e) => {
-          e.preventDefault();
-          openPriceModal();
-        });
-      }
-      if (priceCloseButton) {
-        priceCloseButton.addEventListener("click", requestCloseModal);
-      }
-      if (priceModal) {
-        priceModal.addEventListener("click", (e) => {
-          if (e.target === priceModal) requestCloseModal();
-        });
-      }
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && priceModal.classList.contains("is-open")) {
-          requestCloseModal();
-        }
-      });
     </script>
   </body>
 </html>

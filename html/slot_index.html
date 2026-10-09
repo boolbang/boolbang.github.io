@@ -146,19 +146,43 @@
       background-color: #e100ff;
     }
 
-    /* Theme: x5 (빨간색) */
-    .theme-x5 {
+    /* Theme: 올인 (빨간색) */
+    .theme-allin {
       color: #f00;
     }
-    .theme-x5 #slot-machine {
+    .theme-allin #slot-machine {
       border-color: #f00;
     }
-    .theme-x5 button {
+    .theme-allin button {
       background-color: #f00;
       color: #000;
     }
-    .theme-x5 button:hover {
+    .theme-allin button:hover {
       background-color: #e100ff;
+    }
+
+    /* 버튼 색 고정 (테마와 무관): 올인만 빨간색, 나머지 흰색 */
+    #bet-options button {
+      background-color: #fff;
+      color: #000;
+    }
+    #bet-options #allin-button {
+      background-color: #f00;
+      color: #000;
+    }
+    #spin-button {
+      background-color: #fff;
+      color: #000;
+    }
+    #bet-options button:hover:not(:disabled),
+    #spin-button:hover:not(:disabled) {
+      background-color: #e100ff;
+    }
+
+    /* 올인 조건(빚의 절반) 미달 시 잠금 */
+    #allin-button:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
     }
 
     @keyframes blink {
@@ -167,9 +191,22 @@
 }
 
 .yellow-win {
-  color: rgb(255, 255, 255) !important;
+  color: var(--win-color, #fff) !important;
+  text-shadow: 0 0 8px var(--win-color, #fff);
   font-weight: bold;
   animation: blink 0.5s infinite;
+}
+
+/* 당첨 줄별 금액 (줄 색과 같은 색) */
+#result .win-amt {
+  font-weight: bold;
+  text-shadow: 0 0 6px currentColor;
+  white-space: nowrap;
+}
+#result .win-total {
+  color: #fff;
+  font-weight: bold;
+  white-space: nowrap;
 }
 
 @keyframes title-blink {
@@ -272,6 +309,10 @@
   body.game-mode #slot-ranking {
     visibility: hidden;
   }
+  /* 결과 문구(최대 2~3줄)가 바뀔 때마다 기계 크기가 출렁이지 않게 3줄 높이 확보 */
+  body.game-mode #result {
+    min-height: 3.6em;
+  }
   body.game-mode #slot-machine {
     position: fixed;
     top: 50%;
@@ -355,7 +396,7 @@
       
       <button onclick="setBet(1)">1배</button>
       <button onclick="setBet(2)">2배</button>
-      <button onclick="setBet(5)">5배</button>
+      <button id="allin-button" onclick="setBet('allin')">올인</button>
     </div>
 
     <button id="spin-button">돌려!</button>
@@ -406,15 +447,42 @@ document.querySelectorAll('button').forEach(btn => {
       '♥': 15     // 가장 낮은 보상 (흔함)
     };
     // 보상 성장률(1.86)을 베팅 성장률(2)보다 낮게 → 스테이지가 오를수록
-    // 서서히 불리해지고 결국 파산하는 난이도 벽을 형성 (스테이지 15 부근)
+    // 서서히 불리해지고 결국 파산하는 난이도 벽을 형성 (스테이지 13~16 부근)
     const REWARD_SCALE = 1.86;
+
+    // 배율별 당첨금 배수. 2배는 약간의 기대값 프리미엄
+    const PAYOUT_RATE = { 1: 1, 2: 2.3 };
+
+    // 올인: 자금 전부 베팅. 맞추면 당첨금 2배 + 빚 탕감(무조건 다음 스테이지), 꽝이면 즉시 파산
+    // 푼돈으로 빚 탕감받는 걸 막기 위해 자금이 빚의 절반 이상일 때만 가능
+    const ALLIN_PAYOUT = 2;
+    const ALLIN_MIN_RATIO = 0.5;
+    // 올인 버튼을 누를 때 보여줄 혜택/위험 안내 (두 줄)
+    const ALLIN_WARNING = '⚠️ 올인! 맞추면 당첨금 2배 + 빚 탕감 + 다음 스테이지 직행<br>💀 꽝이면 즉시 파산';
+
+    // 빚 갚기: 목표 도달 시 빚만큼 차감, 남은 돈 + 사채업자의 추가 대출(1배 베팅 20판분)으로 진행
+    // 빚 성장률은 베팅 성장률(2)과 같아야 함. 더 낮으면 추가 대출이 빚보다 커져서 무한 진행됨
+    const START_MONEY = 200;   // 1배 베팅 20판분
+    const START_DEBT = 250;    // 1배 베팅 25판분
+    const DEBT_GROWTH = 2;
+    const STAGE_GRANT_BETS = 20;
+
+    // 한 번에 여러 줄이 터지면 줄마다 다른 색으로 표시 (당첨 순서대로)
+    const WIN_COLORS = ['#ffe600', '#00f0ff', '#ff3df2', '#7dff3a', '#ff8a00', '#ff4d6d', '#b08cff', '#ffffff'];
+
+    // 금액 천 단위 콤마 (100000 → 100,000)
+    const fmt = (n) => Math.round(n).toLocaleString('ko-KR');
 
     // 게임 상태 변수
     // money: 현재 자금, stage: 현재 스테이지, target: 클리어 목표(빚)
-    // spinCount: 총 플레이 횟수, betMultiplier: 베팅 배율 (1, 2, 5배)
-    let money = 200, stage = 1, target = 400, spinCount = 0, betMultiplier = 1;
+    // spinCount: 총 플레이 횟수, betMultiplier: 베팅 배율 (1, 2, 'allin')
+    let money = START_MONEY, stage = 1, target = START_DEBT, spinCount = 0, betMultiplier = 1;
     let bgmStarted = false;
     let gameEnded = false; // 파산 후 중복 저장 방지
+    // 릴이 도는 동안의 베팅 정보 { isAllIn, bet, rate }. 화면을 이 값으로 고정 (도는 중 null 아님)
+    let activeSpin = null;
+    // 릴이 도는 동안 누른 배율. 결과가 나온 뒤 적용
+    let pendingBet = null;
 
     const reelsContainer = document.getElementById('reels');
     const resultDisplay = document.getElementById('result');
@@ -424,6 +492,7 @@ document.querySelectorAll('button').forEach(btn => {
     const stageInfoDisplay = document.getElementById('stage-info');
     const spinCountDisplay = document.getElementById('spin-count');
     const symbolGuide = document.getElementById('symbol-guide');
+    const allinButton = document.getElementById('allin-button');
     const bgm = document.getElementById('bgm');
     bgm.volume = 0.3;
 
@@ -432,26 +501,53 @@ document.querySelectorAll('button').forEach(btn => {
     const spinSymbolsCount = 30;
     let strips = [];
 
+    function applyBetTheme() {
+      document.body.classList.remove('theme-x1', 'theme-x2', 'theme-allin');
+      document.body.classList.add(betMultiplier === 'allin' ? 'theme-allin' : `theme-x${betMultiplier}`);
+    }
+
     function setBet(x) {
+      // 도는 중에는 바로 바꾸지 않고 결과가 나온 뒤 적용 (올인 판 결과 처리와 꼬이지 않게)
+      if (activeSpin) {
+        pendingBet = x;
+        return;
+      }
+      if (x === 'allin' && !canAllIn()) return;
       betMultiplier = x;
-      document.body.classList.remove('theme-x1', 'theme-x2', 'theme-x5');
-      document.body.classList.add(`theme-x${x}`);
+      applyBetTheme();
+      // 올인 경고는 올인 버튼을 누를 때마다 표시
+      if (x === 'allin') {
+        resultDisplay.innerHTML = ALLIN_WARNING;
+      } else if (resultDisplay.innerHTML === ALLIN_WARNING) {
+        resultDisplay.textContent = ''; // 1배·2배로 바꾸면 올인 경고 지움
+      }
       updateDisplay();
     }
 
-    // 현재 베팅금 계산 (지수적 증가)
+    // 1배 기준 베팅금 (지수적 증가)
     // Stage 1: 10만원, Stage 2: 20만원, Stage 3: 40만원, Stage 4: 80만원...
-    // betMultiplier로 1배, 2배, 5배 선택 가능
-    function currentBet() {
-      return (10 * Math.pow(2, stage - 1)) * betMultiplier;
+    function minBetNow() {
+      return 10 * Math.pow(2, stage - 1);
     }
 
-    // 스테이지에 따라 보상을 지수적으로 증가 (베팅 증가와 균형 맞춤)
-    // Stage 1: 기본 보상 (★=500)
-    // Stage 2: 2배 보상 (★=1000)
-    // Stage 3: 4배 보상 (★=2000)
-    // Stage 4: 8배 보상 (★=4000)...
-    // 이제 무한 스테이지 플레이 가능!
+    function canAllIn() {
+      return money >= target * ALLIN_MIN_RATIO && money >= minBetNow();
+    }
+
+    // 현재 베팅금: 1배·2배는 배율만큼, 올인은 자금 전부
+    function currentBet() {
+      return betMultiplier === 'allin' ? money : minBetNow() * betMultiplier;
+    }
+
+    // 1배 점수에 곱할 당첨 배수. 올인은 (올인 금액 ÷ 1배 베팅금) × ALLIN_PAYOUT
+    function currentPayoutRate() {
+      return betMultiplier === 'allin'
+        ? (money / minBetNow()) * ALLIN_PAYOUT
+        : PAYOUT_RATE[betMultiplier];
+    }
+
+    // 스테이지에 따라 보상을 REWARD_SCALE배씩 증가 (1배 기준, 배율은 currentPayoutRate로 따로 적용)
+    // Stage 1: ★=2500, Stage 2: ★=4650, Stage 3: ★=8649...
     function getScores() {
       const stageMultiplier = Math.pow(REWARD_SCALE, stage - 1);
 
@@ -465,16 +561,38 @@ document.querySelectorAll('button').forEach(btn => {
 
     function updateSymbolGuide() {
       const scores = getScores();
-      symbolGuide.textContent = symbols.map(s => `${s}=${scores[s] * betMultiplier}`).join(', ');
+      // 올인이면 "지금 올인하면 받는 금액". 도는 중에는 이번 판 기준
+      const rate = activeSpin ? activeSpin.rate : currentPayoutRate();
+      symbolGuide.textContent = symbols.map(s => `${s}=${fmt(scores[s] * rate)}`).join(', ');
     }
 
     function updateStageInfo() {
-      stageInfoDisplay.textContent = `Stage ${stage} | 빚: ${target}만원`;
+      stageInfoDisplay.textContent = `Stage ${stage} | 빚: ${fmt(target)}만원`;
     }
 
     function updateDisplay() {
-      moneyDisplay.textContent = `자금: ${money}만원`;
-      spinCountDisplay.textContent = `베팅금액: ${currentBet()}만원`;
+      // 올인 조건 미달이면 버튼 잠금, 올인 선택 중이었으면 1배로 복귀
+      // (도는 중에는 베팅금이 이미 빠져 있어 판단하지 않음)
+      if (!activeSpin) {
+        const allinOk = canAllIn();
+        allinButton.disabled = !allinOk;
+        allinButton.title = allinOk ? '맞추면 당첨금 2배 + 빚 탕감, 꽝이면 즉시 파산' : '올인은 빚의 절반 이상 있어야 가능';
+        if (betMultiplier === 'allin' && !allinOk) {
+          betMultiplier = 1;
+          applyBetTheme();
+        }
+      }
+
+      moneyDisplay.textContent = `자금: ${fmt(money)}만원`;
+      if (activeSpin) {
+        spinCountDisplay.textContent = activeSpin.isAllIn
+          ? `베팅금액: 올인 (${fmt(activeSpin.bet)}만원)`
+          : `베팅금액: ${fmt(activeSpin.bet)}만원`;
+      } else {
+        spinCountDisplay.textContent = betMultiplier === 'allin'
+          ? `베팅금액: 올인 (${fmt(money)}만원)`
+          : `베팅금액: ${fmt(currentBet())}만원`;
+      }
       updateStageInfo();
       updateSymbolGuide();
     }
@@ -560,14 +678,23 @@ document.querySelectorAll('button').forEach(btn => {
       if (gameMode) fitGameMode();
     });
 
+    // 결과 문구가 길어져 기계 높이가 바뀌어도 화면 밖으로 잘리지 않게 배율 다시 계산
+    // (transform은 레이아웃 크기에 영향이 없어서 무한 반복되지 않음)
+    if (window.ResizeObserver) {
+      new ResizeObserver(() => {
+        if (gameMode) fitGameMode();
+      }).observe(machine);
+    }
+
     const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-    async function gameOver() {
+    async function gameOver(message = '파산! 사채업자 등장.') {
       if (gameEnded) return; // 중복 호출/저장 방지
       gameEnded = true;
-      resultDisplay.textContent = '파산! 사채업자 등장.';
+      // 랭킹 저장: 도달 스테이지가 점수. 기다리는 동안 값이 바뀌지 않게 먼저 확정
+      const reached = stage;
+      resultDisplay.textContent = message;
       spinButton.disabled = true;
-      restartButton.style.display = 'inline-block';
 
       // 게임 모드였다면 '파산' 문구를 잠깐 보여준 뒤 원래 화면으로 돌아와서 기록 입력
       if (gameMode) {
@@ -575,9 +702,8 @@ document.querySelectorAll('button').forEach(btn => {
         exitGameMode();
         await wait(450); // 전체화면 해제·레이아웃이 자리 잡을 시간
       }
-
-      // 랭킹 저장: 도달 스테이지가 점수
-      const reached = stage;
+      // 화면 전환이 끝난 뒤에 Restart 노출 (전환 중 재시작하면 새 게임이 전체화면에서 튕겨나감)
+      restartButton.style.display = 'inline-block';
 
       // 상위 5위 안에 드는 점수일 때만 닉네임 등록, 아니면 패스
       let canRegister = true;
@@ -593,9 +719,12 @@ document.querySelectorAll('button').forEach(btn => {
     }
 
     function nextStage() {
+      money -= target; // 빚 상환
+      const left = money;
       stage++;
-      target = Math.round(target * 1.8); // 빚 성장률(1.8) < 이전 2배 → 완만
-      resultDisplay.textContent = `✔️ 빚 갚음! 다음 빚: ${target}만원`;
+      target = Math.round(target * DEBT_GROWTH);
+      const grant = STAGE_GRANT_BETS * 10 * Math.pow(2, stage - 1); // 다음 스테이지 밑천
+      money += grant;
 
       const machine = document.getElementById('slot-machine');
       machine.classList.add('stage-transition');
@@ -605,14 +734,22 @@ document.querySelectorAll('button').forEach(btn => {
       }, 3000); // 3초 뒤 자동 제거
 
   updateDisplay();
+      return { left, grant };
     }
 
 function spin() {
-  const minBet = 10 * Math.pow(2, stage - 1); // 1배 기준 베팅금
-  const bet = minBet * betMultiplier;         // 실제 베팅금
+  const minBet = minBetNow();                 // 1배 기준 베팅금
+  const isAllIn = betMultiplier === 'allin';
+  const bet = currentBet();                   // 실제 베팅금 (올인이면 자금 전부)
+  const payoutRate = currentPayoutRate();     // 베팅 차감 전에 확정
 
   if (money < minBet) {
     gameOver();
+    return;
+  }
+
+  if (isAllIn && !canAllIn()) {
+    resultDisplay.textContent = '올인은 빚의 절반 이상 있어야 가능합니다.';
     return;
   }
 
@@ -621,7 +758,12 @@ function spin() {
     return;
   }
 
-  document.querySelectorAll('.symbol').forEach(el => el.classList.remove('yellow-win'));
+  document.querySelectorAll('.symbol').forEach(el => {
+    el.classList.remove('yellow-win');
+    el.style.removeProperty('--win-color');
+  });
+  activeSpin = { isAllIn, bet, rate: payoutRate };
+  pendingBet = null;
   money -= bet;
   spinCount++;
   updateDisplay();
@@ -645,6 +787,7 @@ function spin() {
   });
 
   setTimeout(() => {
+    activeSpin = null; // 결과 처리부터는 실제 상태로 화면 갱신
     for (let col = 0; col < reelCount; col++) {
       for (let row = 0; row < rowCount; row++) {
         const el = strips[col].children[targets[col] + row];
@@ -670,10 +813,15 @@ function spin() {
     lines.forEach(line => {
       if (line.every(cell => cell.value === line[0].value)) {
         const symbol = line[0].value;
-        const winScore = (scoreTable[symbol] || 0) * betMultiplier;
+        const winScore = Math.round((scoreTable[symbol] || 0) * payoutRate);
         totalWin += winScore;
-        winMessages.push(`${symbol} +${winScore}`);
-        line.forEach(cell => cell.element.classList.add('yellow-win'));
+        // 당첨 줄마다 다른 색 (겹치는 칸은 나중 줄 색)
+        const color = WIN_COLORS[winMessages.length % WIN_COLORS.length];
+        winMessages.push(`<span class="win-amt" style="color:${color}">${symbol} +${fmt(winScore)}만</span>`);
+        line.forEach(cell => {
+          cell.element.style.setProperty('--win-color', color);
+          cell.element.classList.add('yellow-win');
+        });
     // ★ 심볼 맞출 경우 전체 반짝임 추가
 if (symbol === '★') {
   const machine = document.getElementById('slot-machine');
@@ -686,13 +834,32 @@ if (symbol === '★') {
   
 
 if (totalWin > 0) {
+  const lineCount = winMessages.length;
+  let bonus = false;
   if (Math.random() < 0.05) {
     totalWin *= 2;
-    winMessages.push("🎉 터졌다!");
+    bonus = true;
   }
 
-  resultDisplay.textContent = `🎉 터졌다! ${winMessages.join(', ')}`;
+  // 두 줄 이상이거나 보너스면 합계도 표시
+  let summary = '';
+  if (bonus) summary = ` <span class="win-total">x2 보너스! = +${fmt(totalWin)}만원</span>`;
+  else if (lineCount > 1) summary = ` <span class="win-total">= +${fmt(totalWin)}만원</span>`;
+  const winHtml = `${isAllIn ? '🔥 올인 성공!' : '🎉 터졌다!'} ${winMessages.join(' ')}${summary}`;
+  resultDisplay.innerHTML = winHtml;
   money += totalWin;
+
+  // 올인 성공: 당첨금이 빚보다 적어도 이번 스테이지 빚은 탕감 (무조건 다음 스테이지)
+  let forgiven = false;
+  if (isAllIn) {
+    if (money < target) {
+      money = target;
+      forgiven = true;
+    }
+    const machine = document.getElementById('slot-machine');
+    machine.classList.add('crazy-blink');
+    setTimeout(() => machine.classList.remove('crazy-blink'), 2000);
+  }
 
   // 🔊 당첨 효과음 재생
   bgm.pause();
@@ -704,16 +871,35 @@ if (totalWin > 0) {
     bgm.play().catch(() => {});
   };
 
-    // ✅ 목표 초과 시 계속 스테이지 상승
+    // ✅ 빚을 갚을 수 있으면 연속으로 상환하며 스테이지 상승
+  let cleared = 0, lastClear = null;
   while (money >= target) {
-    nextStage();
+    lastClear = nextStage();
+    cleared++;
+  }
+  // 당첨 금액은 그대로 두고 아래 줄에 상환 내역 표시
+  if (cleared > 0) {
+    const chain = cleared > 1 ? `${cleared}스테이지 연속 ` : '';
+    const how = forgiven ? '빚 탕감!' : '빚 갚음!';
+    resultDisplay.innerHTML = `${winHtml}<br>✔️ ${chain}${how} 남은 돈 ${fmt(lastClear.left)}만원 + 추가 대출 ${fmt(lastClear.grant)}만원 | 다음 빚: ${fmt(target)}만원`;
   }
 } else {
   resultDisplay.textContent = '꽝!';
 }
 
+    // 도는 중에 누른 배율이 있으면 그걸 적용 (올인 조건 미달이면 아래 updateDisplay가 1배로 되돌림)
+    // 없으면 올인은 한 판짜리 선택이라 1배로 복귀 (실수로 연속 올인 방지)
+    if (pendingBet !== null) {
+      betMultiplier = pendingBet;
+      pendingBet = null;
+      applyBetTheme();
+    } else if (isAllIn) {
+      betMultiplier = 1;
+      applyBetTheme();
+    }
+
     updateDisplay();
-    if (money < minBet) gameOver();
+    if (money < minBetNow()) gameOver(isAllIn ? '올인 실패! 사채업자 등장.' : undefined);
     else spinButton.disabled = false;
   }, 1000);
 }
@@ -729,11 +915,15 @@ if (totalWin > 0) {
     });
 
     restartButton.addEventListener('click', () => {
-      money = 200;
+      money = START_MONEY;
       stage = 1;
-      target = 400;
+      target = START_DEBT;
       spinCount = 0;
       gameEnded = false;
+      activeSpin = null;
+      pendingBet = null;
+      betMultiplier = 1;
+      applyBetTheme();
       resultDisplay.textContent = '';
       spinButton.disabled = false;
       restartButton.style.display = 'none';
