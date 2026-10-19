@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>불방 인터랙티브 제안서</title>
+<meta name="description" content="정확한 아카이브부터 트렌디한 스낵 콘텐츠까지. 한 팀이 같은 기준으로 기획·제작·운영을 맡습니다." />
+<meta name="robots" content="noindex" />
+<!-- 링크로 공유할 때(카카오톡·슬랙 등) 보이는 미리보기 -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="불방 인터랙티브" />
+<meta property="og:title" content="불방 인터랙티브 콘텐츠 파트너 제안서" />
+<meta property="og:description" content="정확한 아카이브부터 트렌디한 스낵 콘텐츠까지. 한 팀이 같은 기준으로 기획·제작·운영을 맡습니다." />
+<meta property="og:url" content="https://www.boolbang.com/proposal/" />
+<meta property="og:image" content="https://www.boolbang.com/images/logo_card.webp" />
+<link rel="icon" href="/images/boolpavi_64.png" type="image/png" />
+<link rel="apple-touch-icon" href="/images/boolpavi_180.png" />
+<!-- 글꼴은 사이트 공통 D2Coding만 사용 (외부 폰트 금지) -->
+<link rel="stylesheet" href="/css/fonts.css" />
+<!-- 제안서. 단독 주소 /proposal/ 로 공유하고, 메인(index.html)의 제안서 모달에도 iframe으로 띄운다 -->
+<style>
+/* Layout: red wireframe sheet — hairline black frames, diagonal hatch bands, single-column main.
+   한 장의 A4(가로 794px = 210mm @96dpi) 기준으로 짠다 → 모달(A4 비율)·인쇄(PDF)·단독 페이지가 같은 모양 */
+:root{
+  --red:#ef4444;
+  --ink:#140808;
+  --ink-2:#3a1212;
+  --line:#140808;
+  /* 사선 무늬: CSS 그라데이션은 PDF로 찍으면 선이 뭉개져서 벡터(SVG) 타일로 그린다 */
+  --hatch-img:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Cpath d='M-1 1l2-2M0 14L14 0M13 15l2-2' stroke='%23140808' stroke-opacity='.82' stroke-width='1'/%3E%3C/svg%3E");
+  --font:"D2Coding",monospace;
+  --wrap:794px;
+  --pad:40px; /* 문서 좌우 여백 */
+  --gauge:#5fe3ff; /* 스크롤 게이지(밝은 하늘색) */
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+/* 스크롤바는 숨기고, 오른쪽 끝 게이지로 읽은 위치만 표시 */
+html{scroll-behavior:smooth;scroll-snap-type:y proximity;scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+.progress{position:fixed;top:0;right:0;width:4px;height:100%;pointer-events:none;z-index:20}
+.progress i{display:block;width:100%;height:100%;background:var(--gauge);transform-origin:top;transform:scaleY(0)}
+/* 스크롤하다 섹션(= PDF 한 쪽) 시작점 근처에서 멈추면 그 위치에 살짝 맞춰 걸린다 */
+header,section.block{scroll-snap-align:start}
+section.block{scroll-margin-top:28px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--red);color:var(--ink);font-family:var(--font);font-size:16.5px;line-height:1.75;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+a{color:inherit}
+a:focus-visible,button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+h1,h2,h3{margin:0;text-wrap:balance;font-weight:700;letter-spacing:-.02em}
+p{margin:0}
+
+.band{border-bottom:1px solid var(--line)}
+.wrap{max-width:var(--wrap);margin:0 auto;padding-left:var(--pad);padding-right:var(--pad)}
+.hatch{background-image:var(--hatch-img)}
+.mono{font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+.ital{font-style:italic;font-size:14.5px}
+
+/* top bar */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px 24px;padding-block:18px;flex-wrap:wrap}
+/* 모달 안에서는 오른쪽 위 X 버튼과 겹치지 않게 */
+.in-modal .topbar{padding-right:72px}
+.logo{display:flex;align-items:center;justify-content:center;border:1px solid var(--line);width:140px;height:56px;font-size:26px;font-weight:700;letter-spacing:-.04em;text-decoration:none}
+.top-meta{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.top-links{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.pdf-btn{font:inherit;color:var(--red);background:var(--ink);border:1px solid var(--ink);padding:4px 10px;cursor:pointer}
+.pdf-btn:hover{background:transparent;color:var(--ink)}
+.top-links a{text-decoration:none}
+.top-links a:hover{text-decoration:underline}
+
+/* hero */
+.hero{border-bottom:1px solid var(--line)}
+.hero-frame{border-left:1px solid var(--line);border-right:1px solid var(--line);padding:72px 32px 48px;display:flex;flex-direction:column;gap:18px}
+/* 여러 줄 하이라이트: 아랫줄 배경이 윗줄 글자를 덮지 않게 줄 간격 > 글자 높이 + 위아래 여백 */
+.hero .hl{display:inline;background:var(--red);box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:2px 10px}
+.hero h1{font-size:48px;line-height:1.5}
+.hero .sub{max-width:640px;font-size:17px;line-height:2;font-weight:500}
+
+/* main grid */
+.grid{padding-block:40px 72px}
+main{display:flex;flex-direction:column;gap:64px;min-width:0}
+section.block{display:flex;flex-direction:column;gap:24px;min-width:0}
+
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;border:1px solid var(--line);padding:10px 16px;flex-wrap:wrap}
+.bar h2{font-size:15px;letter-spacing:.12em}
+.bar .tags{display:flex;gap:18px;flex-wrap:wrap}
+.bar .tags span{display:inline-flex;align-items:center;gap:6px}
+.lead-h{font-size:28px;line-height:1.3}
+.lead{font-size:17px}
+
+/* intro */
+.intro{display:flex;flex-direction:column;gap:24px}
+.diagram{margin:0;border:1px solid var(--line);padding:20px 0;overflow-x:auto}
+/* 도식은 본문 폭에 맞춰 크게 (휴대폰에선 최소 폭을 두고 가로 스크롤) */
+.diagram svg{display:block;width:100%;height:auto}
+.intro-text{display:flex;flex-direction:column;gap:12px}
+.intro-body{display:flex;flex-direction:column;gap:14px}
+
+/* offer cards */
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.card{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 20px 24px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.card h3{font-size:20px;line-height:1.3}
+.card.note{background-image:var(--hatch-img)}
+.card.note > *{background:var(--red);align-self:flex-start;padding:2px 6px}
+.cards.duo .note{grid-column:1/-1}
+
+/* services */
+.svc{border-top:1px solid var(--line)}
+.svc-row{display:grid;grid-template-columns:110px minmax(0,1.2fr) minmax(0,1fr);gap:18px;align-items:start;padding-block:14px;border-bottom:1px solid var(--line)}
+.svc-head{padding-block:8px}
+.svc-name{font-weight:700;font-size:17px}
+.svc-when{color:var(--ink-2)}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line)}
+/* 휴대폰에서 표·도식이 가로로 스크롤될 때도 흰 기본 스크롤바 대신 얇은 게이지 색 */
+.tbl-wrap,.diagram{scrollbar-width:thin;scrollbar-color:var(--gauge) transparent}
+table{width:100%;border-collapse:collapse;font-size:15px;line-height:1.6}
+th,td{font-size:inherit;border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:12px 14px;text-align:left;vertical-align:top}
+tr > *:last-child{border-right:none}
+tbody tr:last-child > *{border-bottom:none}
+th{font-size:13px;font-weight:500;letter-spacing:.08em;text-transform:uppercase}
+td.k{font-weight:700;white-space:nowrap}
+.cases td.k{white-space:normal}
+.yr{font-size:14px;white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* packages */
+.packs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.pack{border:1px solid var(--line);display:flex;flex-direction:column;min-width:0}
+.pack-top{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+.pack-top h3{font-size:20px}
+.meter{font-size:15px;letter-spacing:.1em}
+.pack-body{padding:14px 16px 18px;display:flex;flex-direction:column;gap:10px}
+.pack-body .fit{color:var(--ink-2);font-size:15px}
+.packs + .lead{margin-top:12px}
+
+/* monthly cycle */
+.cycle{list-style:none;margin:0;padding:0}
+.cycle{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.step{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.step .n{font-size:24px;font-weight:500;font-variant-numeric:tabular-nums}
+.step h3{font-size:17px;line-height:1.35}
+.step p{font-size:15px;line-height:1.65;color:var(--ink-2)}
+.cycle-axis{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.cycle-axis .rule{flex:1;height:1px;background:var(--line);position:relative}
+.cycle-axis .rule::after{content:"";position:absolute;right:-1px;top:-4px;border:4.5px solid transparent;border-left:7px solid var(--ink);border-right:0}
+
+/* features */
+.feats{border-top:1px solid var(--line)}
+.feat{display:grid;grid-template-columns:160px minmax(0,1fr);gap:24px;padding-block:18px;border-bottom:1px solid var(--line)}
+.feat h3{font-size:18px}
+.since{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.big{font-size:52px;font-weight:700;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+
+.prose{display:flex;flex-direction:column;gap:14px}
+.foot-note{color:var(--ink-2);font-size:15px}
+
+/* contact */
+.contact-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.contact-grid > div{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:16px 18px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.contact-grid .v{font-size:18px;font-weight:700;overflow-wrap:anywhere}
+.contact-grid .wide{grid-column:1/-1}
+.contact-grid .wide .v{font-size:17px}
+
+/* A4 폭보다 많이 좁은 화면(휴대폰)만 한 칸으로 쌓는다 */
+@media (max-width:600px){
+  :root{--pad:16px}
+  .in-modal .topbar{padding-right:52px}
+  .hero-frame{padding:48px 16px 36px}
+  .hero h1{font-size:34px}
+  .lead-h{font-size:24px}
+  .cards{grid-template-columns:minmax(0,1fr)}
+  .diagram svg{min-width:560px}
+  .tbl-wrap table{min-width:520px}
+  .cases{min-width:600px}
+  .packs{grid-template-columns:minmax(0,1fr)}
+  .cycle{grid-template-columns:minmax(0,1fr)}
+  .svc-head{display:none}
+  .svc-row{grid-template-columns:minmax(0,1fr);gap:4px;align-items:start}
+  .feat{grid-template-columns:minmax(0,1fr);gap:6px}
+  .contact-grid{grid-template-columns:minmax(0,1fr)}
+  .top-meta{align-items:flex-start}
+  .logo{width:120px;height:48px;font-size:22px}
+}
+/* 인쇄(PDF 저장): A4 세로, 배경색 그대로, 블록이 페이지 경계에서 잘리지 않게 */
+/* 위아래 12mm 여백: 이어지는 쪽도 맨 위에 붙지 않게. 여백까지 빨갛게 → @page 자체에 배경색
+   (여백 칸을 지정하면 html 배경이 여백에 안 칠해져 하얗게 나온다).
+   여백 칸(margin box)을 빈 내용으로 직접 지정하면 브라우저가 찍는 머리글·바닥글(날짜·제목·주소·쪽수)이 빠진다 */
+@page{
+  size:A4 portrait;margin:12mm 0;background:#ef4444;
+  @top-left{content:""} @top-center{content:""} @top-right{content:""}
+  @bottom-left{content:""} @bottom-center{content:""} @bottom-right{content:""}
+}
+@media print{
+  html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  html{background:var(--red);scroll-behavior:auto;scroll-snap-type:none}
+  .pdf-btn,.progress{display:none!important}
+  .wrap{max-width:none;padding-left:14mm;padding-right:14mm}
+  .in-modal .topbar{padding-right:14mm}
+  .grid{padding-block:10mm 14mm}
+  main{gap:12mm}
+  .hero{break-after:page}
+  .hero-frame{min-height:244mm;justify-content:flex-end;padding:0 12mm 22mm}
+  .hero h1{font-size:56px}
+  .tbl-wrap,.diagram{overflow:visible}
+  .diagram svg{min-width:0}
+  #contact,#profile .tbl-wrap,.cards.duo,.card,.pack,.step,.svc-row,.feat,tr,.contact-grid > div,.diagram,.intro-text,.lead,.intro-body p{break-inside:avoid}
+  .bar,.lead-h,.lead,.cycle-axis,.svc-head,thead{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<div class="progress" aria-hidden="true"><i id="progressBar"></i></div>
+
+<header class="band">
+  <div class="wrap topbar">
+    <a class="logo" href="#top" id="top" aria-label="불방 인터랙티브">불방</a>
+    <div class="mono" style="flex:1;min-width:160px">Content Partner Proposal</div>
+    <div class="top-meta">
+      <div class="top-links mono">
+        <a href="#contact">Contact</a>
+        <button type="button" class="pdf-btn mono" id="pdfBtn">PDF 저장</button>
+      </div>
+      <span class="ital">2026 · @boolbang</span>
+    </div>
+  </div>
+</header>
+
+<section class="hero hatch">
+  <div class="wrap">
+    <div class="hero-frame">
+      <span class="mono"><span class="hl">Proposal · 2026</span></span>
+      <h1><span class="hl">불방 인터랙티브<br>콘텐츠 파트너 제안서</span></h1>
+      <p class="sub"><span class="hl">정확한 아카이브부터 트렌디한 스낵 콘텐츠까지. 한 팀이 같은 기준으로 기획·제작·운영을 맡습니다.</span></p>
+    </div>
+  </div>
+</section>
+
+<div class="wrap grid">
+<main>
+
+  <!-- 인사말 -->
+  <section class="block" id="greeting" aria-labelledby="greeting-h">
+    <div class="intro">
+      <div class="intro-text">
+        <span class="ital">Greeting</span>
+        <h2 class="lead-h" id="greeting-h">홍보영상부터 사진, 스낵 콘텐츠 모두 한 팀에서 맡습니다</h2>
+      </div>
+      <figure class="diagram" aria-label="여러 업체에 나눠 맡길 때와 한 팀에 맡길 때의 소통 구조 비교">
+        <svg viewBox="0 0 400 256" role="img" aria-labelledby="dg-t">
+          <title id="dg-t">지금: 대표님이 업체 4곳과 각각 소통 / 제안: 불방 한 창구가 모든 제작물을 조율</title>
+          <g font-family="D2Coding, monospace" font-size="12" fill="#140808" letter-spacing=".04em">
+            <text x="14" y="16">NOW</text>
+            <text x="208" y="16">PROPOSAL</text>
+          </g>
+          <line x1="200" y1="0" x2="200" y2="256" stroke="#140808" stroke-width="1"/>
+          <g stroke="#140808" stroke-width="1" fill="none">
+            <!-- left: scattered vendors -->
+            <rect x="12" y="34" width="84" height="34"/><rect x="104" y="34" width="84" height="34"/>
+            <rect x="12" y="200" width="84" height="34"/><rect x="104" y="200" width="84" height="34"/>
+            <rect x="64" y="118" width="72" height="44" fill="#140808"/>
+            <path d="M54 68L88 118M146 68L112 118M54 200L88 162M146 200L112 162"/>
+            <!-- right: one window -->
+            <rect x="208" y="34" width="56" height="30"/><rect x="268" y="34" width="40" height="30"/><rect x="312" y="34" width="36" height="30"/><rect x="352" y="34" width="40" height="30"/>
+            <path d="M236 64L300 112M288 64L300 112M330 64L300 112M372 64L300 112"/>
+            <rect x="246" y="112" width="108" height="44"/>
+            <path d="M300 156V200"/>
+            <rect x="264" y="200" width="72" height="44" fill="#140808"/>
+          </g>
+          <g font-family="D2Coding, monospace" font-size="12" fill="#140808" text-anchor="middle">
+            <text x="54" y="55" font-size="11">영상·사진 업체</text><text x="146" y="55" font-size="11">디자인 업체</text>
+            <text x="54" y="221" font-size="11">SNS 대행</text><text x="146" y="221" font-size="11">3D·AI 업체</text>
+            <text x="236" y="53" font-size="11">영상·사진</text><text x="288" y="53" font-size="11">디자인</text><text x="330" y="53" font-size="11">SNS</text><text x="372" y="53" font-size="11">3D·AI</text>
+            <text x="300" y="139" font-weight="700">불방 · 창구 1</text>
+            <text x="100" y="144" fill="#ef4444" font-weight="700">대표님</text>
+            <text x="300" y="226" fill="#ef4444" font-weight="700">대표님</text>
+          </g>
+        </svg>
+      </figure>
+    </div>
+    <div class="intro-body">
+      <p>귀사의 영상, 디자인, SNS, 3D·AI 콘텐츠까지 한 팀에서 맡아 진행하는 방식을 제안합니다. 많은 회사가 이 작업들을 각각 다른 업체에 맡깁니다. 이 경우 업체마다 설명을 따로 해야 하고, 결과물끼리 색감이나 디자인이 맞지 않는 일이 생깁니다. 내부에 이를 챙길 담당자가 없으면 대표님이 직접 조율하시게 됩니다.</p>
+      <p><b>불방 인터랙티브는 이 모든 과정을 한 창구에서 해결합니다.<br>한 번 설명하시면, 나머지는 저희가 맞춰 진행합니다.</b></p>
+      <p>한 팀이 만들기 때문에 모든 결과물에 같은 톤과 무드가 이어지고, 회사의 인상은 점점 뚜렷해집니다. 따로 브랜딩 작업을 하지 않아도, 꾸준히 같은 기준으로 만든 콘텐츠가 자연스럽게 브랜드가 됩니다.</p>
+    </div>
+  </section>
+
+  <!-- 제안 내용 -->
+  <section class="block" id="offer" aria-labelledby="offer-h">
+    <div class="bar">
+      <h2 id="offer-h">제안 내용</h2>
+      <div class="tags mono"><span>기획</span><span>제작</span><span>운영</span></div>
+    </div>
+    <p class="lead">귀사의 <b>외부 콘텐츠팀</b>으로 일하는 방식입니다. 기획, 제작, 운영을 함께 맡습니다.</p>
+    <div class="cards">
+      <article class="card"><span class="ital">One point of contact</span><h3>소통 창구</h3><p>담당자 한 명이 작업 전체를 조율합니다.</p></article>
+      <article class="card"><span class="ital">One visual standard</span><h3>디자인 기준 유지</h3><p>영상, 썸네일, 카드뉴스, SNS 이미지, 배너, 3D·AI 이미지까지 같은 색감과 디자인 기준으로 맞춥니다.</p></article>
+      <article class="card"><span class="ital">Team of two</span><h3>2인 운영</h3><p>불방 인터랙티브는 2인으로 운영합니다. 의사결정과 진행이 빠른 편입니다.</p></article>
+      <article class="card"><span class="ital">With your team</span><h3>귀사 담당자와 협업</h3><p>귀사에 콘텐츠 담당 직원이 있다면 함께 운영합니다. 저희가 기획과 제작을 맡고, 담당자분은 내부 소통과 확인을 맡으시면 됩니다.</p></article>
+      <article class="card"><span class="ital">Extra crew</span><h3>추가 인력</h3><p>규모가 큰 촬영처럼 손이 더 필요하면, 함께 일해 온 협력 인력을 저희가 꾸립니다.</p></article>
+      <article class="card note"><span class="mono">Scope</span><h3>맡는 범위</h3><p>브랜드·콘텐츠 영역을 맡습니다. 광고 집행과 성과 분석이 필요한 경우에는 범위를 협의해 별도로 구성합니다.</p></article>
+    </div>
+  </section>
+
+  <!-- 서비스 범위 -->
+  <section class="block" id="services" aria-labelledby="svc-h">
+    <div class="bar">
+      <h2 id="svc-h">서비스 범위</h2>
+      <div class="tags mono"><span>6 영역</span><span>내부 제작</span></div>
+    </div>
+    <p class="lead">기업 콘텐츠에 필요한 제작물을 대부분 내부에서 직접 만듭니다.</p>
+    <div class="svc" role="table" aria-label="서비스 범위">
+      <div class="svc-row svc-head mono" role="row"><span role="columnheader">영역</span><span role="columnheader">제작 항목</span><span role="columnheader">이런 때 필요합니다</span></div>
+      <div class="svc-row" role="row"><span class="svc-name" role="cell">영상</span><span role="cell">기업·제품 홍보영상, 인터뷰, 행사 스케치, 숏폼</span><span class="svc-when" role="cell">회사와 제품을 한눈에 보여줘야 할 때</span></div>
+      <div class="svc-row" role="row"><span class="svc-name" role="cell">전시·광고판</span><span role="cell">미술관·문화재단 전시 기록, 대형 전광판 홍보영상, 전시장 설치 영상, 영화관 상영용(DCP) 영상과 화면 환경에 맞춘 색보정</span><span class="svc-when" role="cell">옥외 전광판, 전시장, 극장처럼 큰 화면에 띄워야 할 때</span></div>
+      <div class="svc-row" role="row"><span class="svc-name" role="cell">사진</span><span role="cell">제품, 인물, 현장 기록 촬영</span><span class="svc-when" role="cell">보도자료, 제품 홍보, 인물 프로필이 필요할 때</span></div>
+      <div class="svc-row" role="row"><span class="svc-name" role="cell">유튜브 운영</span><span role="cell">채널 기획, 정기 업로드, 썸네일, 편집</span><span class="svc-when" role="cell">회사 유튜브를 꾸준히 키우고 싶을 때</span></div>
+      <div class="svc-row" role="row"><span class="svc-name" role="cell">스낵 콘텐츠</span><span role="cell">썸네일 합성, 카드뉴스, SNS 이미지, AI 활용 이미지·숏폼</span><span class="svc-when" role="cell">인스타그램·블로그를 정기적으로 채울 때</span></div>
+      <div class="svc-row" role="row"><span class="svc-name" role="cell">3D·AI</span><span role="cell">3D 스캔·모델링·애니메이션, 전시·작품 3D 아카이브, AI 이미지</span><span class="svc-when" role="cell">실물 촬영이 어렵거나 눈에 띄는 연출이 필요할 때,<br>생산 공정을 정확하게 보여주고 싶을 때,<br>전시나 작품을 형태 그대로 남기고 싶을 때</span></div>
+    </div>
+  </section>
+
+  <!-- 진행 방식 -->
+  <section class="block" id="process" aria-labelledby="proc-h">
+    <div class="bar">
+      <h2 id="proc-h">진행 방식</h2>
+      <div class="tags mono"><span>Monthly</span></div>
+    </div>
+    <p class="lead">월 단위 파트너십은 아래 세 가지 패키지를 기준으로 귀사에 맞게 조정합니다.</p>
+    <div class="packs">
+      <article class="pack">
+        <div class="pack-top"><h3>기본</h3><span class="meter" aria-label="3단계 중 1단계">■□□</span></div>
+        <div class="pack-body"><span class="mono">월 제작 구성 (예시)</span><p>숏폼 4편, 카드뉴스 4개, 인스타그램 운영</p><p class="fit">SNS를 꾸준히 채우고 싶은 회사</p></div>
+      </article>
+      <article class="pack">
+        <div class="pack-top"><h3>성장</h3><span class="meter" aria-label="3단계 중 2단계">■■□</span></div>
+        <div class="pack-body"><span class="mono">기본 +</span><p>유튜브 가로 영상 월 4편<br>(기획·촬영·편집·썸네일·톤 앤 무드 포함)</p><p class="fit">쇼츠 추가는 별도 협의</p><p class="fit">유튜브 채널을 함께 키우고 싶은 회사</p></div>
+      </article>
+      <article class="pack">
+        <div class="pack-top"><h3>풀</h3><span class="meter" aria-label="3단계 중 3단계">■■■</span></div>
+        <div class="pack-body"><span class="mono">성장 +</span><p>분기별 홍보영상 1편, 사진 촬영, 3D·AI 콘텐츠</p><p class="fit">콘텐츠 전체를 맡기고 싶은 회사</p></div>
+      </article>
+    </div>
+
+    <p class="lead">매달 이렇게 운영합니다.</p>
+    <div class="cycle-axis mono" aria-hidden="true"><span>월초</span><span class="rule"></span><span>월말</span></div>
+    <ol class="cycle">
+      <li class="step"><span class="n">01</span><h3>월초 미팅</h3><p>대표님과 30분 내외로 이번 달 목표와 일정을 정합니다.</p></li>
+      <li class="step"><span class="n">02</span><h3>기획안 공유</h3><p>영상·콘텐츠 기획안과 일정표를 드립니다.</p></li>
+      <li class="step"><span class="n">03</span><h3>제작</h3><p>촬영, 편집, 디자인을 진행합니다.</p></li>
+      <li class="step"><span class="n">04</span><h3>검수</h3><p>정해진 수정 횟수 안에서 피드백을 반영합니다.</p></li>
+      <li class="step"><span class="n">05</span><h3>게시·운영</h3><p>SNS 업로드와 완성 파일 전달까지 마무리합니다.</p></li>
+      <li class="step"><span class="n">06</span><h3>월말 리포트</h3><p>조회수, 구독자 등 결과와 다음 달 제안을 정리해 드립니다.</p></li>
+    </ol>
+  </section>
+
+  <!-- 특징 -->
+  <section class="block" id="why" aria-labelledby="why-h">
+    <div class="bar">
+      <h2 id="why-h">불방 인터랙티브의 특징</h2>
+      <div class="tags mono"><span>Archive</span><span>Trendy</span></div>
+    </div>
+    <h3 class="lead-h">정확하게 남기고, 가볍게 퍼뜨립니다</h3>
+    <div class="cards duo">
+      <article class="card"><span class="ital">Archive</span><h3>정확하게 남기는 기록</h3><p>미술관 작품, 문화재단 전시처럼 형태가 제각각인 작업을 색과 공간까지 정확하게 기록해 왔습니다. 영상·사진으로 담기 어려운 것은 3D 스캔으로 아카이브합니다.</p></article>
+      <article class="card"><span class="ital">Trendy</span><h3>지금 반응 오는 스낵 콘텐츠</h3><p>30~40대 남녀 듀오가 썸네일 합성, 카드뉴스, AI 이미지, 숏폼을 피드의 문법으로 가볍고 빠르게 만듭니다. 수백만 회 이상 조회된 콘텐츠도 여럿 만들었습니다.</p></article>
+      <article class="card note"><span class="mono">One team</span><p>보통은 두 업체가 필요한 일입니다. 불방은 한 팀이 둘 다 합니다. 회사의 공식 기록은 정확하게, SNS 콘텐츠는 가볍게, 그러나 같은 기준으로 만듭니다. 제품, 생산 공정, 매장과 공간도 같은 방식으로 정확하게 기록합니다.</p></article>
+    </div>
+    <div class="feats">
+      <div class="feat"><h3>직접 처리하는 범위</h3><p>영상 연출, 사진, 색보정, 포토샵 합성, 3D·AI 작업을 외주 없이 진행합니다. 그래서 일정과 톤을 맞추기 쉽습니다.</p></div>
+      <div class="feat"><h3>소통</h3><p>작가·감독·사업자로 일하며 기획을 설명하고 조율하는 일에 익숙합니다. 대표님께는 결정이 필요한 부분 위주로 정리해 드립니다.</p></div>
+      <div class="feat"><h3>운영 기간</h3><div class="since"><span class="big">2016—</span><p>2016년부터 사업자로 일해 왔습니다.</p></div></div>
+    </div>
+  </section>
+
+  <!-- 상업 작업 사례 -->
+  <section class="block" id="cases" aria-labelledby="cases-h">
+    <div class="bar">
+      <h2 id="cases-h">상업 작업 사례</h2>
+      <div class="tags mono"><span>B2C</span><span>Production</span><span>Art</span><span>Film</span></div>
+    </div>
+    <div class="tbl-wrap">
+      <table class="cases">
+        <thead><tr><th style="width:20%">분야</th><th>작업 내용</th><th style="width:24%">특징</th></tr></thead>
+        <tbody>
+          <tr><td class="k">B2C 기업</td><td>광고·홍보 전반 일괄 운영: 카드뉴스, 스낵 영상, 인스타그램 운영, 현장 배너 디자인</td><td>카드뉴스부터 현장 배너까지</td></tr>
+          <tr><td class="k">생산 기업</td><td>홍보영상, 공장 공정 촬영, 3D 스캔 모델링, 사진, 오프라인 프로모션 기획(공연, 사진, 영상 포함)</td><td>공정 촬영과 3D 스캔 병행</td></tr>
+          <tr><td class="k">미술, 영화, 전시</td><td>전시 고품질 영상·사진 기록, 컬렉터 전용 프리미엄 영상</td><td>사내 아카이브용</td></tr>
+          <tr><td class="k">웹매거진</td><td>인물 프로필·콘셉트 사진 담당</td><td>인물·콘셉트 사진</td></tr>
+          <tr><td class="k">유튜브 콘텐츠</td><td>기획·촬영·편집·썸네일 정기 제작, 라이브 방송</td><td>여러 분야 채널 운영</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="prose foot-note">
+      <p>작업물은 <a href="https://www.boolbang.com/#portfolio" target="_blank" rel="noopener">포트폴리오</a>에서 보실 수 있습니다. 연락 주시면 귀사의 업종과 상황에 맞는 작업을 골라 따로 보내드리겠습니다.</p>
+    </div>
+  </section>
+
+  <!-- 대표 이력 -->
+  <section class="block" id="profile" aria-labelledby="prof-h">
+    <div class="bar">
+      <h2 id="prof-h">대표 이력</h2>
+      <div class="tags mono"><span>2013—2019</span><span>Artist · Director</span></div>
+    </div>
+    <div class="prose">
+      <p>저희는 미술과 영상을 전공하고 그 분야에서 작가·감독으로 일해 왔습니다. 이미지와 콘텐츠가 보는 사람에게 어떻게 읽히는지 살피는 일을 오래 해 왔습니다.</p>
+      <p>그렇다고 기존 브랜드를 바꾸는 데서 시작하지는 않습니다. 귀사가 이미 가진 이미지와 방향을 먼저 이해하고, 그것을 영상과 SNS, 현장 홍보물까지 일관되게 정리하는 데 집중합니다.</p>
+      <p><b>한국예술종합학교 미술원 졸업(영상 전공).</b> 2013년부터 2019년까지 영상 작가·다큐멘터리 감독으로 활동했고, 2016년 불방 인터랙티브를 설립했습니다.</p>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th style="width:14%">연도</th><th>실적</th><th style="width:28%">비고</th></tr></thead>
+        <tbody>
+          <tr><td class="yr">2018</td><td>다큐멘터리 〈원수를 경마장에 데려가라〉 한국영상자료원 소장</td><td>국가 영상 보존 기관 소장</td></tr>
+          <tr><td class="yr">2018</td><td>인디포럼 영화제 신작전, 서울아트시네마 상영</td><td>극장 상영 환경 작업 경험</td></tr>
+          <tr><td class="yr">2014–2019</td><td>아르코미술관, 하이트콜렉션 전시, 사루비아스페이스·트라이보울 개인전 등</td><td>주요 미술관 전시</td></tr>
+          <tr><td class="yr">2015–2016</td><td>인천아트플랫폼 레지던시 6기</td><td>공공 예술기관 레지던시 입주 작가</td></tr>
+          <tr><td class="yr">—</td><td>〈암점〉(문학과지성사), 〈지연의 윤리학〉(워크룸프레스), 〈오큘로〉 5호(미디어버스) 등</td><td>비평서에 작품 수록</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 연락처 -->
+  <section class="block" id="contact" aria-labelledby="contact-h">
+    <div class="bar">
+      <h2 id="contact-h">연락처</h2>
+      <div class="tags mono"><span>Thank you</span></div>
+    </div>
+    <p class="lead">읽어주셔서 감사합니다. 이메일이나 전화로 연락 주시면, 미팅 전에 귀사의 SNS와 채널을 살펴보겠습니다. 지금 콘텐츠에서 정리하면 좋을 부분을 간단히 짚어서 찾아뵙겠습니다. 첫 미팅은 부담 없이 이야기 나누는 자리로 생각해 주셔도 좋습니다.</p>
+    <div class="contact-grid">
+      <div><span class="mono">회사</span><span class="v">불방 인터랙티브</span><span class="foot-note">사업자등록번호 837-04-00472</span></div>
+      <div><span class="mono">이메일</span><span class="v">fromboolbang@gmail.com</span></div>
+      <div><span class="mono">전화</span><span class="v">02-743-4110</span></div>
+      <div><span class="mono">홈페이지</span><a class="v" href="https://www.boolbang.com/" target="_blank" rel="noopener">boolbang.com</a></div>
+      <div class="wide"><span class="mono">사무실</span><span class="v">서울 영등포구 국제금융로 / 경기 성남시 분당구 판교역로</span></div>
+    </div>
+  </section>
+
+</main>
+
+</div>
+
+<script>
+// 페이지 안 이동(Contact, 로고)은 주소 해시를 바꾸지 않고 스크롤만 한다.
+// iframe에서 해시가 바뀌면 히스토리 항목이 쌓여, 부모(index)의 "뒤로가기 = 모달 닫기"가 어긋나기 때문
+document.addEventListener('click', function(e){
+  var a = e.target.closest('a[href^="#"]');
+  if (!a) return;
+  var id = a.getAttribute('href').slice(1);
+  var target = id ? document.getElementById(id) : null;
+  if (!target) return;
+  e.preventDefault();
+  target.scrollIntoView({ block: 'start' });
+});
+
+// 오른쪽 끝 진행 표시선
+var progressBar = document.getElementById('progressBar');
+function updateProgress(){
+  var max = document.documentElement.scrollHeight - innerHeight;
+  progressBar.style.transform = 'scaleY(' + (max > 0 ? scrollY / max : 0) + ')';
+}
+addEventListener('scroll', updateProgress, { passive: true });
+addEventListener('resize', updateProgress);
+updateProgress();
+
+var embedded = window.parent && window.parent !== window;
+// 모달(iframe) 안에서는 X 버튼 자리 확보, 단독 주소로 열었을 때는 로고 = 홈으로
+if (embedded) document.documentElement.classList.add('in-modal');
+else document.getElementById('top').setAttribute('href', '/');
+// PDF 저장 = 브라우저 인쇄 창 (대상: "PDF로 저장"). A4 세로 스타일은 @media print
+document.getElementById('pdfBtn').addEventListener('click', function(){ window.print(); });
+// iframe 안에 포커스가 있을 때도 ESC로 모달이 닫히게 부모에 알린다
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape' && embedded) {
+    window.parent.postMessage({ source: 'boolbang-proposal-close' }, location.origin);
+  }
+});
+// 부모가 모달을 닫으면 다시 열 때 맨 위부터 보이게
+window.addEventListener('message', function(e){
+  if (e.origin !== location.origin) return;
+  if ((e.data || {}).source === 'boolbang-reset-proposal') window.scrollTo(0, 0);
+});
+</script>
+
+</body>
+</html>

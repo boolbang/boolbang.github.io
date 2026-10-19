@@ -44,7 +44,8 @@
 
     <link rel="stylesheet" href="/css/fonts.css" />
     <link rel="stylesheet" href="/css/style3.css" />
-    <link rel="icon" href="../images/pavicon.png" type="image/png" />
+    <link rel="icon" href="/images/boolpavi_64.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/images/boolpavi_180.png" />
 
     <style>
       /* 포트폴리오 모달 */
@@ -134,6 +135,22 @@
           height: 100vh;
           height: 100dvh; /* 모바일 브라우저 UI 영역까지 정확히 채움 */
           max-width: none;
+          max-height: none;
+        }
+      }
+
+      /* 제안서 모달: A4 세로 비율(210:297) — PDF로 저장했을 때와 같은 모양으로 보이게.
+         높이를 화면에 맞추고 폭은 비율로 계산. 모바일(768px 이하)은 다른 모달처럼 풀스크린 */
+      /* 제안서 배경(빨강)과 같게 — 불러오는 동안이나 끝까지 스크롤했을 때 흰 바탕이 비치지 않게 */
+      #proposalModal .portfolio-modal-content,
+      #proposalModal .portfolio-modal-frame {
+        background-color: #ef4444;
+      }
+      @media (min-width: 769px) {
+        #proposalModal .portfolio-modal-content {
+          height: 94vh;
+          width: calc(94vh * 210 / 297);
+          max-width: 94vw;
           max-height: none;
         }
       }
@@ -361,108 +378,6 @@
         background: #ececec;
       }
 
-      /* === 제안서 — 이력서(about.html)와 같은 결: 왼쪽 정렬, 파란 제목, 검정 라벨 === */
-      .pp-text {
-        margin: 0 0 28px;
-        font-size: 0.95rem;
-        color: #000;
-        text-align: justify;
-        word-break: keep-all;
-      }
-      .pp-form {
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        max-width: 480px;
-      }
-      .pp-field {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-      /* 이력서의 strong과 같은 검정 라벨 */
-      .pp-field strong {
-        flex: 0 0 auto;
-        color: #fff;
-        background-color: #000;
-        padding: 2px 6px;
-        font-size: 0.9rem;
-        font-weight: 400;
-      }
-      .pp-field input {
-        flex: 1 1 auto;
-        min-width: 0;
-        font-family: inherit;
-        font-size: 16px; /* 16px 미만이면 아이폰이 입력할 때 화면을 확대함 */
-        color: #000;
-        background: transparent;
-        border: none;
-        border-bottom: 1px solid #a8a8a8;
-        border-radius: 0;
-        padding: 4px 2px;
-      }
-      .pp-field input:focus {
-        outline: none;
-        border-bottom-color: #000;
-      }
-      /* 스팸봇만 채우는 숨은 칸 (사람 눈에는 안 보임) */
-      .pp-form .pp-hp {
-        position: absolute;
-        left: -9999px;
-        width: 1px;
-        height: 1px;
-        opacity: 0;
-      }
-      .pp-foot {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-top: 6px;
-        font-size: 0.8rem;
-        color: #8c8c8c;
-      }
-      /* 메인 메뉴 버튼과 같은 모양 */
-      .pp-submit {
-        appearance: none;
-        border: none;
-        border-radius: 0;
-        background: #000;
-        color: #fff;
-        font-family: inherit;
-        font-size: 0.95rem;
-        padding: 4px 8px;
-        cursor: pointer;
-      }
-      .pp-submit:hover {
-        background: #444;
-      }
-      .pp-submit:disabled {
-        background: #a8a8a8;
-        cursor: default;
-      }
-      .pp-form[hidden],
-      .pp-done[hidden] {
-        display: none;
-      }
-      .pp-done-msg {
-        margin: 0 0 8px;
-        font-size: 0.95rem;
-        color: #000;
-      }
-      .pp-again {
-        padding: 0;
-        background: none;
-        border: none;
-        color: #555;
-        font-family: inherit;
-        font-size: 0.85rem;
-        text-decoration: underline;
-        cursor: pointer;
-      }
-      .pp-again:hover {
-        color: #333;
-      }
-
       @media (max-width: 768px) {
         /* 모바일: 닫기 버튼을 작게·위로 올려 탭과 겹치지 않게 (포트폴리오·방명록·제안서 공통) */
         #portfolioCloseButton,
@@ -487,10 +402,6 @@
         }
         .gb-form .gb-name {
           max-width: none;
-        }
-        /* 좁은 화면에서 양쪽 정렬은 단어 사이가 벌어져 왼쪽 정렬 */
-        .pp-text {
-          text-align: left;
         }
         .gb-item {
           padding: 14px 0;
@@ -629,10 +540,10 @@
             "
             >게임</a
           >
-          <!-- 제안서: 기업 고객용 제안서 요청 -->
+          <!-- 제안서: 클릭하면 모달, 새 탭 열기·링크 복사는 단독 주소 /proposal/ -->
           <a
             id="proposalBox"
-            href="#"
+            href="/proposal/"
             style="
               color: #000000;
               background-color: #ffffff;
@@ -738,52 +649,15 @@
       </div>
     </div>
 
-    <!-- 제안서 모달 (방명록과 같은 모양). 회사명·이메일을 구글 시트에 기록 + 메일 알림(Apps Script), 제안서는 직접 이메일로 발송 -->
+    <!-- 제안서 모달 (A4 세로 비율). 내용은 단독 주소로도 공유하는 /proposal/ -->
     <div id="proposalModal" class="portfolio-modal">
       <div class="portfolio-modal-content">
         <button id="proposalCloseButton" class="portfolio-modal-close">✕</button>
-        <div class="guestbook-layout">
-          <div class="guestbook-tabs">
-            <span class="guestbook-tab">제안서</span>
-          </div>
-          <div class="guestbook-content">
-            <div class="pp">
-              <!-- 소개 — 요청을 보낸 뒤에는 숨김 -->
-              <div id="ppIntro">
-                <p class="pp-text">
-                  회사명과 이메일을 남겨주시면, 귀사 업무에 맞춘 제안서(PDF)를
-                  이메일로 보내드립니다.
-                </p>
-              </div>
-
-              <!-- 회사명·이메일만 받아 저장. 제안서는 확인 후 직접 이메일로 보낸다 -->
-              <form class="pp-form" id="ppForm" autocomplete="on" novalidate>
-                <label class="pp-field">
-                  <strong>회사명</strong>
-                  <input id="ppCompany" maxlength="50" autocomplete="organization" />
-                </label>
-                <label class="pp-field">
-                  <strong>이메일</strong>
-                  <input id="ppEmail" type="email" maxlength="100" autocomplete="email" />
-                </label>
-                <input class="pp-hp" id="ppHp" tabindex="-1" autocomplete="off" aria-hidden="true" />
-                <div class="pp-foot">
-                  <button type="submit" class="pp-submit" id="ppSubmit">제안서 요청</button>
-                  <span class="gb-status" id="ppStatus" role="status"></span>
-                </div>
-              </form>
-
-              <!-- 요청을 남긴 뒤 보이는 안내 -->
-              <div class="pp-done" id="ppDone" hidden>
-                <p class="pp-done-msg">
-                  요청이 접수되었습니다.<br />
-                  확인 후 귀사 업무에 맞춘 제안서를 이메일로 보내드릴게요.
-                </p>
-                <button type="button" class="pp-again" id="ppBack">← 뒤로가기</button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <iframe
+          id="proposalFrame"
+          class="portfolio-modal-frame"
+          title="제안서"
+        ></iframe>
       </div>
     </div>
 
@@ -1116,9 +990,11 @@
         }
       });
       // 최초 로드 시 해시가 유효한 탭이면 포트폴리오를 그 탭으로 바로 연다 (공유 링크)
+      // #portfolio 는 탭 지정 없이 포트폴리오 첫 화면 (제안서 PDF 등 외부 링크용)
       (function openPortfolioFromHash() {
         const key = (location.hash || "").replace(/^#/, "");
         if (PORTFOLIO_TAB_KEYS.includes(key)) openPortfolioModal(key);
+        else if (key === "portfolio") openPortfolioModal();
       })();
 
       // === 방명록 (비로그인, Firestore "guestbook" 컬렉션) ===
@@ -1559,92 +1435,16 @@
 
       // 게임: 모달 없이 게임 페이지로 바로 이동 (index의 href="/html/slot_index.html")
 
-      // === 제안서 요청 (Google Apps Script 웹 앱) ===
-      // 회사명·이메일을 보내면 스크립트가 구글 시트에 기록하고 내 메일로 알림을 보낸다.
-      // 제안서는 자동 발송 없이, 알림을 보고 해당 회사 업무에 맞춘 PDF를 직접 보낸다.
-      // 스크립트 코드: /google/proposal-apps-script.gs
-      const PROPOSAL_ENDPOINT =
-        "https://script.google.com/macros/s/AKfycbx7iIZIIsCTnshRWgcBxuB91YCp4BEz49KTcWmE4VTIRaNcKa_RRy98gFTzlAUI1fVx/exec"; // 웹 앱 배포 URL
-      const PP_COOLDOWN = 30 * 1000; // 같은 브라우저에서 연속 요청 간격(도배 방지)
-
+      // === 제안서 (모달 안 iframe으로 /proposal/ 표시) ===
       const proposalBoxEl = document.getElementById("proposalBox");
       const proposalModal = document.getElementById("proposalModal");
       const proposalCloseButton = document.getElementById("proposalCloseButton");
-      const ppForm = document.getElementById("ppForm");
-      const ppCompany = document.getElementById("ppCompany");
-      const ppEmail = document.getElementById("ppEmail");
-      const ppHp = document.getElementById("ppHp");
-      const ppStatus = document.getElementById("ppStatus");
-      const ppSubmit = document.getElementById("ppSubmit");
-      const ppDone = document.getElementById("ppDone");
-      const ppIntro = document.getElementById("ppIntro");
-      const ppBack = document.getElementById("ppBack");
-
-      function ppSetStatus(msg, isError) {
-        ppStatus.textContent = msg;
-        ppStatus.classList.toggle("is-error", !!isError);
-      }
-
-      // 폼 ↔ 접수 안내 전환 (접수 후에는 소개 문단도 숨기고 안내만 보여준다)
-      function ppShowDone() {
-        ppIntro.hidden = true;
-        ppForm.hidden = true;
-        ppDone.hidden = false;
-      }
-      function ppShowForm() {
-        ppDone.hidden = true;
-        ppIntro.hidden = false;
-        ppForm.hidden = false;
-        ppSetStatus("");
-      }
-
-      // 한 번 쓴 회사명·이메일은 기억
-      ppCompany.value = gbGet("ppCompany") || "";
-      ppEmail.value = gbGet("ppEmail") || "";
-
-      // 뒤로가기 = 모달 닫고 메인으로 (X 버튼과 같은 경로)
-      ppBack.addEventListener("click", requestCloseModal);
-
-      ppForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const company = ppCompany.value.trim();
-        const email = ppEmail.value.trim();
-        if (!company) return ppSetStatus("회사명을 입력해 주세요.", true);
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-          return ppSetStatus("이메일 주소를 확인해 주세요.", true);
-        }
-        const last = Number(gbGet("ppLastRequest")) || 0;
-        const wait = Math.ceil((PP_COOLDOWN - (Date.now() - last)) / 1000);
-        if (wait > 0) return ppSetStatus(`${wait}초 뒤에 다시 요청할 수 있어요.`, true);
-
-        // 숨은 칸이 채워져 있으면 스팸봇 — 저장하지 않고 성공한 척만 한다
-        if (ppHp.value) return ppShowDone();
-
-        ppSubmit.disabled = true;
-        ppSetStatus("요청 중...");
-        try {
-          if (!PROPOSAL_ENDPOINT) throw new Error("PROPOSAL_ENDPOINT 미설정");
-          // Content-Type을 지정하지 않으면 text/plain으로 가서 CORS 사전 요청 없이 보내진다
-          const res = await fetch(PROPOSAL_ENDPOINT, {
-            method: "POST",
-            body: JSON.stringify({ company, email }),
-          });
-          const data = await res.json().catch(() => ({}));
-          if (!res.ok || !data.ok) throw new Error(data.error || "HTTP " + res.status);
-          gbSet("ppLastRequest", String(Date.now()));
-          gbSet("ppCompany", company);
-          gbSet("ppEmail", email);
-          ppSetStatus("");
-          ppShowDone();
-        } catch (err) {
-          console.error("제안서 요청 실패:", err);
-          ppSetStatus("요청하지 못했습니다. 잠시 후 다시 시도하거나 fromboolbang@gmail.com으로 연락 주세요.", true);
-        }
-        ppSubmit.disabled = false;
-      });
+      const proposalFrame = document.getElementById("proposalFrame");
 
       function openProposalModal() {
         lockBodyScroll();
+        // 처음 열 때 한 번만 로드 (메인 페이지 로딩에 부담을 주지 않게)
+        if (!proposalFrame.src) proposalFrame.src = "/proposal/";
         proposalModal.style.display = "flex";
         requestAnimationFrame(() => proposalModal.classList.add("is-open"));
         pushModalHistory(closeProposalModal);
@@ -1657,12 +1457,20 @@
           // 닫히는 모션 도중 다시 열렸으면 숨기지 않는다
           if (proposalModal.classList.contains("is-open")) return;
           proposalModal.style.display = "none";
-          ppShowForm(); // 다시 열면 처음 화면(소개 + 폼)부터
+          // 다시 열면 맨 위부터 보이게
+          if (proposalFrame.contentWindow) {
+            proposalFrame.contentWindow.postMessage(
+              { source: "boolbang-reset-proposal" },
+              location.origin
+            );
+          }
         }, 350);
       }
 
       if (proposalBoxEl) {
         proposalBoxEl.addEventListener("click", (e) => {
+          // Ctrl/⌘/Shift+클릭은 브라우저 기본 동작(새 탭·새 창)에 맡긴다
+          if (e.ctrlKey || e.metaKey || e.shiftKey) return;
           e.preventDefault();
           openProposalModal();
         });
@@ -1679,6 +1487,12 @@
         if (e.key === "Escape" && proposalModal.classList.contains("is-open")) {
           requestCloseModal();
         }
+      });
+      // iframe 안에 포커스가 있을 때 누른 ESC는 /proposal/ 페이지가 메시지로 알려준다
+      window.addEventListener("message", (e) => {
+        if (e.origin !== location.origin) return;
+        if ((e.data || {}).source !== "boolbang-proposal-close") return;
+        if (proposalModal.classList.contains("is-open")) requestCloseModal();
       });
     </script>
   </body>
