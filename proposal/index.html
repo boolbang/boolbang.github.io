@@ -49,7 +49,13 @@ img{max-width:100%}
 a{color:inherit}
 a:focus-visible,button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 h1,h2,h3{margin:0;text-wrap:balance;font-weight:700;letter-spacing:-.02em}
-p{margin:0}
+/* 문단은 이력서(about.html)처럼 양쪽 정렬 — 줄 끝이 들쭉날쭉하지 않게 (단어 단위 줄바꿈은 body의 keep-all).
+   inter-character: 남는 폭을 단어 사이가 아니라 글자 사이에 고르게 나눠, 좁은 칸에서도 띄어쓰기가 크게 벌어지지 않게 */
+p{margin:0;text-align:justify;text-justify:inter-character}
+.hero p{text-align:left} /* 표지 부제는 줄마다 하이라이트가 있어 왼쪽 정렬 유지 */
+/* 패키지·월간 단계는 PC·모달에서 3칸이라 칸이 좁아, 양쪽 정렬하면 글자가 듬성듬성 벌어져 왼쪽 정렬.
+   휴대폰에선 한 칸으로 넓어지니 다른 문단처럼 양쪽 정렬 */
+@media (min-width:601px){.pack-body p,.step p{text-align:left}}
 
 .band{border-bottom:1px solid var(--line)}
 .wrap{max-width:var(--wrap);margin:0 auto;padding-left:var(--pad);padding-right:var(--pad)}
@@ -91,9 +97,10 @@ section.block{display:flex;flex-direction:column;gap:24px;min-width:0}
 
 /* intro */
 .intro{display:flex;flex-direction:column;gap:24px}
-.diagram{margin:0;border:1px solid var(--line);padding:20px 0;overflow-x:auto}
+.diagram{margin:0;border:1px solid var(--line);padding:20px 0;display:flex}
 /* 도식은 본문 폭에 맞춰 크게 (휴대폰에선 최소 폭을 두고 가로 스크롤) */
-.diagram svg{display:block;width:100%;height:auto}
+.diagram svg{display:block;width:50%;height:auto}
+.diagram svg + svg{border-left:1px solid var(--line)} /* 가운데 구분선 */
 .intro-text{display:flex;flex-direction:column;gap:12px}
 .intro-body{display:flex;flex-direction:column;gap:14px}
 
@@ -111,18 +118,22 @@ section.block{display:flex;flex-direction:column;gap:24px;min-width:0}
 .svc-head{padding-block:8px}
 .svc-name{font-weight:700;font-size:17px}
 .svc-when{color:var(--ink-2)}
+/* 칸 안 글도 본문 문단처럼 양쪽 정렬 */
+.svc-row > span{text-align:justify;text-justify:inter-character}
 
 /* tables */
 .tbl-wrap{overflow-x:auto;border:1px solid var(--line)}
 /* 휴대폰에서 표·도식이 가로로 스크롤될 때도 흰 기본 스크롤바 대신 얇은 게이지 색 */
-.tbl-wrap,.diagram{scrollbar-width:thin;scrollbar-color:var(--gauge) transparent}
+.tbl-wrap{scrollbar-width:thin;scrollbar-color:var(--gauge) transparent}
 table{width:100%;border-collapse:collapse;font-size:15px;line-height:1.6}
 th,td{font-size:inherit;border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:12px 14px;text-align:left;vertical-align:top}
 tr > *:last-child{border-right:none}
 tbody tr:last-child > *{border-bottom:none}
 th{font-size:13px;font-weight:500;letter-spacing:.08em;text-transform:uppercase}
-td.k{font-weight:700;white-space:nowrap}
+td{text-align:justify;text-justify:inter-character}
+td.k{font-weight:700;white-space:nowrap;text-align:left}
 .cases td.k{white-space:normal}
+#profile td small{display:block;margin-top:2px;color:var(--ink-2);font-size:13.5px}
 .yr{font-size:14px;white-space:nowrap;font-variant-numeric:tabular-nums}
 
 /* packages */
@@ -171,9 +182,13 @@ td.k{font-weight:700;white-space:nowrap}
   .hero h1{font-size:34px}
   .lead-h{font-size:24px}
   .cards{grid-template-columns:minmax(0,1fr)}
-  .diagram svg{min-width:560px}
-  .tbl-wrap table{min-width:520px}
-  .cases{min-width:600px}
+  .diagram{flex-direction:column;align-items:center;padding:16px}
+  .diagram svg{width:100%;max-width:340px}
+  .diagram svg + svg{border-left:none;border-top:1px solid var(--line);margin-top:16px;padding-top:16px}
+  /* 휴대폰: 작업 사례 표는 보조 칸 '특징'을 숨겨 화면 폭 안에 */
+  .cases th:nth-child(3),.cases td:nth-child(3){display:none}
+  th,td{padding:10px}
+  .yr{white-space:normal}
   .packs{grid-template-columns:minmax(0,1fr)}
   .cycle{grid-template-columns:minmax(0,1fr)}
   .svc-head{display:none}
@@ -203,8 +218,7 @@ td.k{font-weight:700;white-space:nowrap}
   .hero{break-after:page}
   .hero-frame{min-height:244mm;justify-content:flex-end;padding:0 12mm 22mm}
   .hero h1{font-size:56px}
-  .tbl-wrap,.diagram{overflow:visible}
-  .diagram svg{min-width:0}
+  .tbl-wrap{overflow:visible}
   #contact,#profile .tbl-wrap,.cards.duo,.card,.pack,.step,.svc-row,.feat,tr,.contact-grid > div,.diagram,.intro-text,.lead,.intro-body p{break-inside:avoid}
   .bar,.lead-h,.lead,.cycle-axis,.svc-head,thead{break-after:avoid}
 }
@@ -248,33 +262,34 @@ td.k{font-weight:700;white-space:nowrap}
         <h2 class="lead-h" id="greeting-h">홍보영상부터 사진, 스낵 콘텐츠 모두 한 팀에서 맡습니다</h2>
       </div>
       <figure class="diagram" aria-label="여러 업체에 나눠 맡길 때와 한 팀에 맡길 때의 소통 구조 비교">
-        <svg viewBox="0 0 400 256" role="img" aria-labelledby="dg-t">
-          <title id="dg-t">지금: 대표님이 업체 4곳과 각각 소통 / 제안: 불방 한 창구가 모든 제작물을 조율</title>
-          <g font-family="D2Coding, monospace" font-size="12" fill="#140808" letter-spacing=".04em">
-            <text x="14" y="16">NOW</text>
-            <text x="208" y="16">PROPOSAL</text>
-          </g>
-          <line x1="200" y1="0" x2="200" y2="256" stroke="#140808" stroke-width="1"/>
+        <!-- NOW / PROPOSAL 두 장: PC·PDF는 좌우, 휴대폰은 위아래로 쌓아 가로 스크롤이 없게 -->
+        <svg viewBox="0 0 200 256" role="img" aria-label="지금: 대표님이 업체 4곳과 각각 소통">
+          <text x="14" y="16" font-family="D2Coding, monospace" font-size="12" fill="#140808" letter-spacing=".04em">NOW</text>
           <g stroke="#140808" stroke-width="1" fill="none">
-            <!-- left: scattered vendors -->
             <rect x="12" y="34" width="84" height="34"/><rect x="104" y="34" width="84" height="34"/>
             <rect x="12" y="200" width="84" height="34"/><rect x="104" y="200" width="84" height="34"/>
             <rect x="64" y="118" width="72" height="44" fill="#140808"/>
             <path d="M54 68L88 118M146 68L112 118M54 200L88 162M146 200L112 162"/>
-            <!-- right: one window -->
+          </g>
+          <g font-family="D2Coding, monospace" font-size="11" fill="#140808" text-anchor="middle">
+            <text x="54" y="55">영상·사진 업체</text><text x="146" y="55">디자인 업체</text>
+            <text x="54" y="221">SNS 대행</text><text x="146" y="221">3D·AI 업체</text>
+            <text x="100" y="144" font-size="12" fill="#ef4444" font-weight="700">대표님</text>
+          </g>
+        </svg>
+        <svg viewBox="200 0 200 256" role="img" aria-label="제안: 불방 한 창구가 모든 제작물을 조율">
+          <text x="208" y="16" font-family="D2Coding, monospace" font-size="12" fill="#140808" letter-spacing=".04em">PROPOSAL</text>
+          <g stroke="#140808" stroke-width="1" fill="none">
             <rect x="208" y="34" width="56" height="30"/><rect x="268" y="34" width="40" height="30"/><rect x="312" y="34" width="36" height="30"/><rect x="352" y="34" width="40" height="30"/>
             <path d="M236 64L300 112M288 64L300 112M330 64L300 112M372 64L300 112"/>
             <rect x="246" y="112" width="108" height="44"/>
             <path d="M300 156V200"/>
             <rect x="264" y="200" width="72" height="44" fill="#140808"/>
           </g>
-          <g font-family="D2Coding, monospace" font-size="12" fill="#140808" text-anchor="middle">
-            <text x="54" y="55" font-size="11">영상·사진 업체</text><text x="146" y="55" font-size="11">디자인 업체</text>
-            <text x="54" y="221" font-size="11">SNS 대행</text><text x="146" y="221" font-size="11">3D·AI 업체</text>
-            <text x="236" y="53" font-size="11">영상·사진</text><text x="288" y="53" font-size="11">디자인</text><text x="330" y="53" font-size="11">SNS</text><text x="372" y="53" font-size="11">3D·AI</text>
-            <text x="300" y="139" font-weight="700">불방 · 창구 1</text>
-            <text x="100" y="144" fill="#ef4444" font-weight="700">대표님</text>
-            <text x="300" y="226" fill="#ef4444" font-weight="700">대표님</text>
+          <g font-family="D2Coding, monospace" font-size="11" fill="#140808" text-anchor="middle">
+            <text x="236" y="53">영상·사진</text><text x="288" y="53">디자인</text><text x="330" y="53">SNS</text><text x="372" y="53">3D·AI</text>
+            <text x="300" y="139" font-size="12" font-weight="700">불방 · 창구 1</text>
+            <text x="300" y="226" font-size="12" fill="#ef4444" font-weight="700">대표님</text>
           </g>
         </svg>
       </figure>
@@ -317,7 +332,7 @@ td.k{font-weight:700;white-space:nowrap}
       <div class="svc-row" role="row"><span class="svc-name" role="cell">사진</span><span role="cell">제품, 인물, 현장 기록 촬영</span><span class="svc-when" role="cell">보도자료, 제품 홍보, 인물 프로필이 필요할 때</span></div>
       <div class="svc-row" role="row"><span class="svc-name" role="cell">유튜브 운영</span><span role="cell">채널 기획, 정기 업로드, 썸네일, 편집</span><span class="svc-when" role="cell">회사 유튜브를 꾸준히 키우고 싶을 때</span></div>
       <div class="svc-row" role="row"><span class="svc-name" role="cell">스낵 콘텐츠</span><span role="cell">썸네일 합성, 카드뉴스, SNS 이미지, AI 활용 이미지·숏폼</span><span class="svc-when" role="cell">인스타그램·블로그를 정기적으로 채울 때</span></div>
-      <div class="svc-row" role="row"><span class="svc-name" role="cell">3D·AI</span><span role="cell">3D 스캔·모델링·애니메이션, 전시·작품 3D 아카이브, AI 이미지</span><span class="svc-when" role="cell">실물 촬영이 어렵거나 눈에 띄는 연출이 필요할 때,<br>생산 공정을 정확하게 보여주고 싶을 때,<br>전시나 작품을 형태 그대로 남기고 싶을 때</span></div>
+      <div class="svc-row" role="row"><span class="svc-name" role="cell">3D·AI</span><span role="cell">3D 스캔·모델링·애니메이션, 전시·작품 3D 아카이브, AI 이미지</span><span class="svc-when" role="cell">실물 촬영이 어렵거나 눈에 띄는 연출이 필요할 때, 생산 공정을 정확하게 보여주고 싶을 때, 전시나 작품을 형태 그대로 남기고 싶을 때</span></div>
     </div>
   </section>
 
@@ -410,13 +425,13 @@ td.k{font-weight:700;white-space:nowrap}
     </div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th style="width:14%">연도</th><th>실적</th><th style="width:28%">비고</th></tr></thead>
+        <thead><tr><th style="width:16%">연도</th><th>실적</th></tr></thead>
         <tbody>
-          <tr><td class="yr">2018</td><td>다큐멘터리 〈원수를 경마장에 데려가라〉 한국영상자료원 소장</td><td>국가 영상 보존 기관 소장</td></tr>
-          <tr><td class="yr">2018</td><td>인디포럼 영화제 신작전, 서울아트시네마 상영</td><td>극장 상영 환경 작업 경험</td></tr>
-          <tr><td class="yr">2014–2019</td><td>아르코미술관, 하이트콜렉션 전시, 사루비아스페이스·트라이보울 개인전 등</td><td>주요 미술관 전시</td></tr>
-          <tr><td class="yr">2015–2016</td><td>인천아트플랫폼 레지던시 6기</td><td>공공 예술기관 레지던시 입주 작가</td></tr>
-          <tr><td class="yr">—</td><td>〈암점〉(문학과지성사), 〈지연의 윤리학〉(워크룸프레스), 〈오큘로〉 5호(미디어버스) 등</td><td>비평서에 작품 수록</td></tr>
+          <tr><td class="yr">2018</td><td>다큐멘터리 〈원수를 경마장에 데려가라〉 한국영상자료원 소장</td></tr>
+          <tr><td class="yr">2018</td><td>인디포럼 영화제 신작전, 서울아트시네마 상영</td></tr>
+          <tr><td class="yr">2014–2019</td><td>아르코미술관, 하이트콜렉션 전시, 사루비아스페이스·트라이보울 개인전 등<small>주요 미술관 전시</small></td></tr>
+          <tr><td class="yr">2015–2016</td><td>인천아트플랫폼 레지던시 6기<small>공공 예술기관 레지던시 입주 작가</small></td></tr>
+          <tr><td class="yr">—</td><td>〈암점〉(문학과지성사), 〈지연의 윤리학〉(워크룸프레스), 〈오큘로〉 5호(미디어버스) 등<small>비평서에 작품 수록</small></td></tr>
         </tbody>
       </table>
     </div>
