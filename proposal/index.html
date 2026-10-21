@@ -104,6 +104,19 @@ section.block{display:flex;flex-direction:column;gap:24px;min-width:0}
 .diagram svg + svg{border-left:1px solid var(--line)} /* 가운데 구분선 */
 .intro-text{display:flex;flex-direction:column;gap:12px}
 .intro-body{display:flex;flex-direction:column;gap:14px}
+/* 3D 참고 이미지: 가는 선 틀 안에 맨 위 한 장은 전체 폭, 나머지는 두 장씩. 모두 3:2 */
+.ref{margin:0;border:1px solid var(--line)}
+.ref figcaption{display:flex;justify-content:space-between;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);font-weight:700}
+.ref-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:16px}
+.ref-row img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;border:1px solid var(--line);background:var(--ink)}
+.ref-row .wide{grid-column:1/-1}
+.ref-row.wide-16 img{aspect-ratio:16/9} /* 영상 스틸은 화면 비율 그대로 */
+/* 사진 두 줄: 가로(3:2)는 9, 세로(2:3)는 4 비율 폭 → 한 줄 두 장 높이가 같다. 둘째 줄도 가로 사진이 왼쪽 */
+.ref-strip{display:grid;grid-template-columns:9fr 4fr;gap:12px;padding:16px}
+.ref-strip img:last-child{grid-row:2;grid-column:1}
+.ref-strip img{display:block;width:100%;height:auto;object-fit:cover;border:1px solid var(--line);background:var(--ink)}
+.ref-strip .land{aspect-ratio:3/2}
+.ref-strip .port{aspect-ratio:2/3}
 
 /* offer cards */
 .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;border-top:1px solid var(--line);border-left:1px solid var(--line)}
@@ -236,7 +249,7 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
   .hero-frame{min-height:244mm;justify-content:flex-end;padding:0 12mm 22mm}
   .hero h1{font-size:56px}
   .tbl-wrap{overflow:visible}
-  #contact,#profile .tbl-wrap,.cards.duo,.card,.pack,.step,.svc-row,.feat,tr,.contact-grid > div,.diagram,.flow,.intro-text,.lead,.intro-body p{break-inside:avoid}
+  #contact,#profile .tbl-wrap,.cards.duo,.card,.pack,.step,.svc-row,.feat,tr,.contact-grid > div,.diagram,.ref-row,.ref-strip,.flow,.intro-text,.lead,.intro-body p{break-inside:avoid}
   .bar,.lead-h,.lead,.cycle-axis,.svc-head,thead{break-after:avoid}
 }
 </style>
@@ -295,21 +308,21 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
           </g>
           <g font-family="D2Coding, monospace" font-size="11" fill="#140808" text-anchor="middle">
             <text x="54" y="55">촬영 업체</text><text x="146" y="55">색보정 업체</text>
-            <text x="54" y="221">3D 스캔 업체</text><text x="146" y="221">웹 개발 업체</text>
+            <text x="54" y="221">3D 모델링 업체</text><text x="146" y="221">웹 개발 업체</text>
             <text x="100" y="144" font-size="12" fill="#ef4444" font-weight="700">담당자</text>
           </g>
         </svg>
         <svg viewBox="200 0 200 256" role="img" aria-label="제안: 불방 한 창구가 기록 전 과정을 맡음">
           <text x="208" y="16" font-family="D2Coding, monospace" font-size="12" fill="#140808" letter-spacing=".04em">PROPOSAL</text>
           <g stroke="#140808" stroke-width="1" fill="none">
-            <rect x="204" y="34" width="56" height="30"/><rect x="264" y="34" width="40" height="30"/><rect x="308" y="34" width="44" height="30"/><rect x="356" y="34" width="40" height="30"/>
-            <path d="M232 64L300 112M284 64L300 112M330 64L300 112M376 64L300 112"/>
+            <rect x="204" y="34" width="40" height="30"/><rect x="248" y="34" width="44" height="30"/><rect x="296" y="34" width="60" height="30"/><rect x="360" y="34" width="36" height="30"/>
+            <path d="M224 64L300 112M270 64L300 112M326 64L300 112M378 64L300 112"/>
             <rect x="246" y="112" width="108" height="44"/>
             <path d="M300 156V200"/>
             <rect x="264" y="200" width="72" height="44" fill="#140808"/>
           </g>
           <g font-family="D2Coding, monospace" font-size="11" fill="#140808" text-anchor="middle">
-            <text x="232" y="53">촬영</text><text x="284" y="53">색보정</text><text x="330" y="53">3D 스캔</text><text x="376" y="53">웹</text>
+            <text x="224" y="53">촬영</text><text x="270" y="53">색보정</text><text x="326" y="53">3D 모델링</text><text x="378" y="53">웹</text>
             <text x="300" y="139" font-size="12" font-weight="700">불방</text>
             <text x="300" y="226" font-size="12" fill="#ef4444" font-weight="700">담당자</text>
           </g>
@@ -318,9 +331,20 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
     </div>
     <div class="intro-body">
       <p>불방 인터랙티브는 작품, 공간, 제품, 생산 공정을 색채와 형태의 왜곡 없이 정밀하게 기록·디지털화하고, 이를 웹에서 열람할 수 있는 아카이브로 구축하는 기록 전문 팀입니다.</p>
-      <p><b>촬영, 색보정, 3D 스캔, 공간 투어, 웹 아카이브 구축까지 전 과정을 한 팀이 일관된 기준으로 수행합니다.</b></p>
+      <p><b>촬영, 색보정, 3D 모델링, 3D 공간 투어, 웹 아카이브 구축까지 전 과정을 한 팀이 일관된 기준으로 수행합니다.</b></p>
       <p>보통 이 업무들은 여러 업체에 나뉘어 맡겨집니다. 불방은 이를 하나의 창구에서 관리하므로, 영상과 사진, 3D 데이터, 웹 아카이브의 색과 형태가 서로 어긋나지 않습니다.</p>
     </div>
+    <!-- 3D 모델링 참고 이미지: 무대 상영 사진 한 장을 크게, 아래 두 칸 두 줄(PC·PDF·휴대폰 동일) -->
+    <figure class="ref" aria-labelledby="ref-cap">
+      <figcaption id="ref-cap"><span class="mono">Reference</span><span>3D 모델링 예시</span></figcaption>
+      <div class="ref-row">
+        <img class="wide" src="/images/proposal/3d-screen-stage.webp" width="1600" height="1066" alt="완성된 3D 영상이 공연장 대형 스크린에 상영되는 모습" loading="lazy" decoding="async">
+        <img src="/images/proposal/3d-product.webp" width="1080" height="954" alt="카메라 바디를 3D 모델링해 실물 질감대로 렌더링한 이미지" loading="lazy" decoding="async">
+        <img src="/images/proposal/3d-building.webp" width="1200" height="675" alt="생산 시설 건물의 층별 구조를 단면으로 보여주는 3D 모델" loading="lazy" decoding="async">
+        <img src="/images/proposal/3d-process.webp" width="1200" height="1200" alt="유리 용기가 컨베이어를 따라 이동하는 생산 공정 3D 렌더링" loading="lazy" decoding="async">
+        <img src="/images/proposal/3d-screen-making.webp" width="1200" height="844" alt="대형 스크린 상영용 3D 영상을 제작하는 작업 화면" loading="lazy" decoding="async">
+      </div>
+    </figure>
   </section>
 
   <!-- 정밀 기록의 필요성 -->
@@ -346,21 +370,32 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
       <div class="tags mono"><span>4 방식</span><span>원본 1</span></div>
     </div>
     <p class="lead">대상의 특성에 따라 네 가지 기록 방식을 조합하고, 모든 결과물은 하나의 원본 데이터 체계로 통합해 관리합니다.</p>
+    <!-- 사진 기록 참고: 가로·세로 사진을 같은 높이로 한 줄(휴대폰은 가로+세로 두 줄) -->
+    <figure class="ref" aria-labelledby="photo-ref-cap">
+      <figcaption id="photo-ref-cap"><span class="mono">Reference</span><span>사진 기록 예시</span></figcaption>
+      <div class="ref-strip">
+        <img class="land" src="/images/proposal/photo-book.webp" width="1200" height="800" alt="펼친 책의 지면을 색과 형태 그대로 촬영한 사진" loading="lazy" decoding="async">
+        <img class="port" src="/images/proposal/photo-hoop.webp" width="800" height="1206" alt="어두운 공간에서 조명을 받으며 훌라후프를 돌리는 인물 사진" loading="lazy" decoding="async">
+        <img class="port" src="/images/proposal/photo-track.webp" width="800" height="1200" alt="붉은 육상 트랙 위를 걷는 네 사람" loading="lazy" decoding="async">
+        <img class="land" src="/images/proposal/photo-portrait.webp" width="1200" height="800" alt="육상 트랙에서 무릎을 짚고 선 인물 사진" loading="lazy" decoding="async">
+      </div>
+    </figure>
     <div class="svc" role="table" aria-label="서비스 구성">
       <div class="svc-row svc-head mono" role="row"><span role="columnheader">서비스</span><span role="columnheader">기록 대상 · 품질 기준</span><span role="columnheader">납품물</span></div>
-      <div class="svc-row" role="row"><span class="svc-name" role="cell">영상·사진 기록</span><span role="cell">전시, 작품, 공간, 공정, 제품<small>컬러차트 기반 촬영, 상영 환경별 색보정(REC.709, P3)</small></span><span class="svc-when" role="cell">원본 및 보정본, 상영·설치용 마스터(DCP 포함)</span></div>
-      <div class="svc-row" role="row"><span class="svc-name" role="cell">3D 스캔·모델링</span><span role="cell">작품, 오브젝트, 제품, 설비<small>실물 형태와 표면 색채를 원본과 대조</small></span><span class="svc-when" role="cell">3D 데이터(OBJ, GLB 등), 렌더링 이미지</span></div>
-      <div class="svc-row" role="row"><span class="svc-name" role="cell">공간 투어</span><span role="cell">전시장, 매장, 쇼룸, 생산 시설<small>실제 공간 구조에 기반한 어라운드 뷰</small></span><span class="svc-when" role="cell">웹 기반 공간 투어</span></div>
+      <div class="svc-row" role="row"><span class="svc-name" role="cell">영상·사진 기록</span><span role="cell">전시, 작품, 공간, 공정, 제품<small>컬러차트 기반 촬영, 상영 환경별 색보정(REC.709, P3)</small></span><span class="svc-when" role="cell">원본 및 보정본, 상영·설치용 마스터</span></div>
+      <div class="svc-row" role="row"><span class="svc-name" role="cell">3D 모델링</span><span role="cell">작품, 오브젝트, 제품, 설비<small>실물 형태와 표면 색채를 원본과 대조</small></span><span class="svc-when" role="cell">3D 데이터(OBJ, GLB 등), 고화질 렌더링 이미지</span></div>
+      <div class="svc-row" role="row"><span class="svc-name" role="cell">3D 공간 투어</span><span role="cell">전시장, 매장, 쇼룸, 생산 시설<small>실제 공간 구조에 기반한 어라운드 뷰</small></span><span class="svc-when" role="cell">웹 기반 3D 공간 투어</span></div>
       <div class="svc-row" role="row"><span class="svc-name" role="cell">웹 아카이브</span><span role="cell">전체 기록물<small>브라우저 기반 3D 뷰어, 색 정확도를 유지한 이미지 열람</small></span><span class="svc-when" role="cell">전용 아카이브 사이트 또는 기존 홈페이지 연동</span></div>
     </div>
     <figure class="flow" aria-label="기록에서 원본 데이터, 활용으로 이어지는 흐름">
-      <div class="flow-col"><span class="mono">Record</span><ul><li>영상·사진 기록</li><li>3D 스캔·모델링</li><li>공간 투어</li></ul></div>
+      <div class="flow-col"><span class="mono">Record</span><ul><li>영상·사진 기록</li><li>3D 모델링</li><li>3D 공간 투어</li></ul></div>
       <span class="flow-arrow" aria-hidden="true"></span>
-      <div class="flow-core"><span class="mono">Master</span><b>원본 데이터</b><small>색 기준 · 3D · 공간</small></div>
+      <div class="flow-core"><span class="mono">Master</span><b>원본 데이터</b></div>
       <span class="flow-arrow" aria-hidden="true"></span>
       <div class="flow-col"><span class="mono">Use</span><ul><li>웹 아카이브</li><li>상영·전시</li><li>홍보 콘텐츠</li><li>AI 기반 활용</li></ul></div>
     </figure>
     <p>각 방식으로 확보한 기록은 하나의 원본 데이터로 합쳐지고, 이후 웹 아카이브, 상영·전시, 홍보, AI 기반 활용 등에 계속 다시 쓰입니다.</p>
+    <p>잘 기록한 마스터 영상은 변환에 강합니다. 크고 작은 스크린의 변형 규격, 방송 규격, 프레임 레이트 변경, AI 기반 활용까지 어떤 형태로 옮겨도 화질과 색이 무너지지 않습니다. <b>불방은 이 규격 변환 작업도 함께 진행해, 하나의 마스터에서 필요한 납품본을 모두 만들어 드립니다.</b></p>
   </section>
 
   <!-- 적용 분야 -->
@@ -374,16 +409,26 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
       <table class="cases">
         <thead><tr><th style="width:22%">분야</th><th>주요 수요</th><th style="width:36%">기록 범위</th></tr></thead>
         <tbody>
-          <tr><td class="k">미술관·갤러리·문화재단</td><td>전시 종료 전 기록, 기관 아카이브에 넣을 기록물 확보</td><td>전시 전경 영상·사진, 작품 3D 데이터, 전시 공간 투어</td></tr>
+          <tr><td class="k">미술관·갤러리·문화재단</td><td>전시 종료 전 기록, 기관 아카이브에 넣을 기록물 확보</td><td>전시 전경 영상·사진, 작품 3D 데이터, 전시장 3D 공간 투어</td></tr>
           <tr><td class="k">작가·컬렉터</td><td>작품 판매, 도록 제작, 보험, 소장 이력 관리</td><td>작품 정밀 기록, 컬렉터 전용 영상</td></tr>
-          <tr><td class="k">제조 기업</td><td>공정 변경·설비 교체 전 기록, 바이어 대상 소개 자료</td><td>공정 영상, 제품·설비 3D 스캔</td></tr>
-          <tr><td class="k">기업·브랜드</td><td>창립 기념, 사사 편찬, 역사관·쇼룸 운영</td><td>기업 웹 아카이브, 쇼룸 공간 투어</td></tr>
-          <tr><td class="k">공간 운영 주체</td><td>이전, 리모델링, 철거 전 기록</td><td>공간 투어, 전경 기록</td></tr>
+          <tr><td class="k">제조 기업</td><td>공정 변경·설비 교체 전 기록, 바이어 대상 소개 자료</td><td>공정 영상, 제품·설비 3D 모델링</td></tr>
+          <tr><td class="k">기업·브랜드</td><td>창립 기념, 사사 편찬, 역사관·쇼룸 운영</td><td>기업 웹 아카이브, 쇼룸 3D 공간 투어</td></tr>
+          <tr><td class="k">공간 운영 주체</td><td>이전, 리모델링, 철거 전 기록</td><td>3D 공간 투어, 전경 기록</td></tr>
         </tbody>
       </table>
     </div>
+    <!-- 수행 실적 참고: 영상 기록 스틸 두 칸 두 줄(16:9) -->
+    <figure class="ref" aria-labelledby="work-ref-cap">
+      <figcaption id="work-ref-cap"><span class="mono">Reference</span><span>기록 실적 예시</span></figcaption>
+      <div class="ref-row wide-16">
+        <img src="/images/proposal/archive-1.webp" width="1200" height="674" alt="조명이 켜진 낡은 건물 계단실 내부를 기록한 영상 스틸" loading="lazy" decoding="async">
+        <img src="/images/proposal/archive-2.webp" width="1200" height="660" alt="철거를 앞둔 건물 복도를 기록한 영상 스틸" loading="lazy" decoding="async">
+        <img src="/images/proposal/archive-3.webp" width="1200" height="678" alt="전시장에 설치된 작품 Resonator Percussion(2019)을 기록한 영상 스틸" loading="lazy" decoding="async">
+        <img src="/images/proposal/archive-4.webp" width="1200" height="704" alt="전시장에 설치된 작품 Resonator(2018)를 기록한 영상 스틸" loading="lazy" decoding="async">
+      </div>
+    </figure>
     <div class="prose foot-note">
-      <p><b>주요 수행 실적</b>: 미술관·문화재단 전시 기록, 생산 기업 공정 촬영 및 3D 스캔 모델링, 컬렉터 전용 영상 제작, 극장 상영용 DCP 색보정. 작업물은 <a href="https://www.boolbang.com/#portfolio" target="_blank" rel="noopener">포트폴리오</a>에서 보실 수 있습니다.</p>
+      <p><b>주요 수행 실적</b>: 미술관·문화재단 전시 기록, 생산 기업 공정 촬영 및 3D 모델링, 컬렉터 전용 영상 제작, 극장 상영용 DCP 색보정. 작업물은 <a href="https://www.boolbang.com/#portfolio" target="_blank" rel="noopener">포트폴리오</a>에서 보실 수 있습니다.</p>
     </div>
   </section>
 
@@ -397,7 +442,7 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
     <p class="lead">피드에서 며칠 만에 지나가는 스낵 콘텐츠와는 결이 다른 작업입니다. 정밀 기록은 지금 보기 좋은 이미지가 아니라, 시간이 지나도 대상을 그대로 증명하는 원본을 오래 남기는 일입니다. 그래서 촬영 전 준비부터 납품 형식까지 모든 단계를 그 기준에 맞춥니다.</p>
     <div class="feats">
       <div class="feat"><h3>프리프로덕션</h3><p>촬영에 앞서 대상의 실제 색과 귀사에 맞는 무드를 철저히 분석해 결정합니다. 조명, 재질, 공간의 빛을 살피고, 무엇을 어떤 기준으로 남길지 먼저 정한 뒤에 촬영에 들어갑니다.</p></div>
-      <div class="feat"><h3>장비 선택</h3><p>정해진 색 기준과 무드, 최종 용도에 맞는 카메라와 렌즈, 스캔 장비를 골라 촬영을 진행합니다. 늘 쓰는 장비가 아니라 그 대상에 맞는 장비를 씁니다.</p></div>
+      <div class="feat"><h3>장비 선택</h3><p>정해진 색 기준과 무드, 최종 용도에 맞는 카메라와 렌즈를 골라 촬영을 진행합니다. 늘 쓰는 장비가 아니라 그 대상에 맞는 장비를 씁니다.</p></div>
       <div class="feat"><h3>플랫폼별 납품</h3><p>웹사이트, 유튜브, 전시장, 영화관 등 최종 납품 플랫폼을 처음부터 고려합니다. 같은 원본에서 각 환경에 맞는 색 기준과 포맷으로 마스터를 따로 만들어 제공합니다.</p></div>
       <div class="feat"><h3>AI 활용 대비</h3><p>나중에 AI로 숏폼이나 SNS 이미지 같은 스낵 콘텐츠를 만들더라도, 결과물의 품질은 결국 원본 소스가 정합니다. 색이 정확하고 해상도와 3D 데이터가 충분한 원본이 있어야 AI가 만든 이미지도 실물과 어긋나지 않습니다.</p></div>
     </div>
@@ -424,18 +469,16 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
     <div class="cycle-axis mono" aria-hidden="true"><span>착수</span><span class="rule"></span><span>납품</span></div>
     <ol class="cycle">
       <li class="step"><span class="n">01</span><h3>사전 협의</h3><p>기록 대상과 활용 용도(상영, 웹, 인쇄, 보존)를 확정하고, 색 기준과 납품 형식을 정합니다.</p></li>
-      <li class="step"><span class="n">02</span><h3>현장 실사</h3><p>조명 조건, 공간 구조, 동선을 확인해 촬영·스캔 계획을 세웁니다.</p></li>
-      <li class="step"><span class="n">03</span><h3>기록 수행</h3><p>촬영, 3D 스캔, 공간 데이터 취득을 진행합니다.</p></li>
-      <li class="step"><span class="n">04</span><h3>후반 작업</h3><p>색보정, 3D 데이터 정리, 공간 투어 구성을 합니다.</p></li>
+      <li class="step"><span class="n">02</span><h3>현장 실사</h3><p>조명 조건, 공간 구조, 동선을 확인해 촬영 계획을 세웁니다.</p></li>
+      <li class="step"><span class="n">03</span><h3>기록 수행</h3><p>촬영과 3D 모델링·공간 투어에 필요한 데이터 취득을 진행합니다.</p></li>
+      <li class="step"><span class="n">04</span><h3>후반 작업</h3><p>색보정, 3D 모델링, 3D 공간 투어 구성을 합니다.</p></li>
       <li class="step"><span class="n">05</span><h3>품질 검수</h3><p>실물·현장과 대조해 색채와 형태의 정확도를 확인합니다.</p></li>
       <li class="step"><span class="n">06</span><h3>납품 및 공개</h3><p>원본 데이터와 웹 아카이브를 인도합니다.</p></li>
     </ol>
     <div class="feats">
       <div class="feat"><h3>소유권</h3><p>모든 원본 데이터의 소유권은 귀사에 귀속됩니다.</p></div>
       <div class="feat"><h3>기준 문서화</h3><p>파일 목록, 촬영 조건, 색 기준을 문서로 정리해 드립니다. 이후 내부 인력이나 다른 업체도 같은 기준으로 작업을 이어갈 수 있습니다.</p></div>
-      <div class="feat"><h3>장기 보존</h3><p>오래 보존하기에 알맞은 파일 형식과 백업 체계를 함께 제시합니다.</p></div>
-      <div class="feat"><h3>기관 아카이브 연계</h3><p>분류 체계와 메타데이터 표준(Dublin Core 등)의 설계·운영은 기관의 기록 담당자 영역으로 존중합니다. 저희는 기록물이 그 체계에 바로 들어갈 수 있도록 파일명 규칙, 촬영 정보, 색 기준을 기관 양식에 맞춰 정리해 드립니다.</p></div>
-    </div>
+      <div class="feat"><h3>장기 보존</h3><p>오래 보존하기에 알맞은 파일 형식과 백업 체계를 함께 제시합니다.</p></div>    </div>
   </section>
 
   <!-- 패키지 구성 -->
@@ -452,11 +495,11 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
       </article>
       <article class="pack">
         <div class="pack-top"><h3>기록 및 3D</h3><span class="meter" aria-label="3단계 중 2단계">■■□</span></div>
-        <div class="pack-body"><span class="mono">기본 기록 +</span><p>3D 스캔·모델링</p><p class="fit">작품, 제품, 설비의 형태 보존</p></div>
+        <div class="pack-body"><span class="mono">기본 기록 +</span><p>3D 모델링</p><p class="fit">작품, 제품, 설비의 형태 보존</p></div>
       </article>
       <article class="pack">
         <div class="pack-top"><h3>통합 기록</h3><span class="meter" aria-label="3단계 중 3단계">■■■</span></div>
-        <div class="pack-body"><span class="mono">기록 및 3D +</span><p>공간 투어, 웹 아카이브 구축</p><p class="fit">기관, 브랜드, 공간 전체의 기록</p></div>
+        <div class="pack-body"><span class="mono">기록 및 3D +</span><p>3D 공간 투어, 웹 아카이브 구축</p><p class="fit">기관, 브랜드, 공간 전체의 기록</p></div>
       </article>
     </div>
   </section>
@@ -471,7 +514,7 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
     <p class="lead">미술관과 극장이라는 서로 다른 상영 환경에서 작품을 만들고 발표해 왔습니다. 그래서 매체와 환경에 따라 이미지를 어떻게 재현해야 하는지 정확히 이해하고 있습니다.</p>
     <div class="feats">
       <div class="feat"><h3>전시·상영 환경</h3><p>미술관 설치 영상의 다채널 환경과 극장 상영용 REC.709·P3 색보정을 직접 해 왔습니다.</p></div>
-      <div class="feat"><h3>전 공정 내재화</h3><p>촬영, 색보정, 3D 스캔·모델링, WebGL 기반 웹 개발을 외주 없이 내부에서 합니다. 기록부터 공개까지 한 가지 품질 기준을 지킵니다.</p></div>
+      <div class="feat"><h3>전 공정 내재화</h3><p>촬영, 색보정, 3D 모델링, WebGL 기반 웹 개발을 외주 없이 내부에서 합니다. 기록부터 공개까지 한 가지 품질 기준을 지킵니다.</p></div>
       <div class="feat"><h3>운영 체계</h3><p>핵심 인력 2인이 의사결정과 실무를 직접 맡습니다. 규모가 큰 현장에는 함께 일해 온 협력 인력을 꾸립니다.</p></div>
       <div class="feat"><h3>운영 기간</h3><div class="since"><span class="big">2016—</span><p>2016년부터 사업자로 일해 왔습니다.</p></div></div>
     </div>
