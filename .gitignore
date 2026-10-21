@@ -1,5 +1,7 @@
 # 관리자 전용 파일 (민감 정보 포함)
 html/write_boolbang_write.html
+# 제안서 원고(md) — 공개 페이지는 proposal/index.html만
+proposal/*.md
 
 # OS 관련
 .DS_Store
