@@ -63,7 +63,8 @@ body {
   color: #000000;
 }
 
-/* 사무실 주소·메일을 C 배열 모양으로 보여주는 블록 (index.html의 intro-section 안) */
+/* 사무실 주소·전화·메일을 코드 한 줄처럼(키 = 값;) 이어 쓰는 블록 (index.html의 intro-section 안).
+   pre-wrap이라 박스 폭에 맞춰 자연스럽게 줄바꿈된다 */
 .office-code {
   margin: 0;
   color: #000000;
@@ -140,11 +141,9 @@ a:hover {
     padding: 15px;
   }
 
-  /* 모바일: 주소 줄이 화면 폭을 넘겨 접히면 4줄짜리 코드가 7~8줄로 흩어진다.
-     화면 폭에 맞춰 글자를 줄여 한 줄에 한 줄씩 들어가게 한다.
-     (pre-wrap은 그대로 둬서 폭 계산이 어긋나도 가로로 넘치지는 않는다) */
+  /* 모바일: 이어 쓰는 한 줄이 박스 폭에 맞춰 접히므로 글자만 조금 작게 */
   .office-code {
-    font-size: clamp(9.5px, 2.8vw, 12px);
+    font-size: 12.5px;
     line-height: 1.6;
   }
 

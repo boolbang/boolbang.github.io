@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>영상·사진·3D 정밀 기록 및 웹사이트 구축 제안서 | 불방 인터랙티브</title>
+<title>기업·기관 영상·사진·3D 및 웹사이트 제작 제안서 | 불방 인터랙티브</title>
 <meta name="description" content="작품, 공간, 제품, 공정을 영상·사진·3D로 색채와 형태의 왜곡 없이 기록하고, 오래 활용할 수 있는 원본으로 남깁니다." />
 <meta name="robots" content="noindex" />
 <!-- 링크로 공유할 때(카카오톡·슬랙 등) 보이는 미리보기 -->
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="불방 인터랙티브" />
-<meta property="og:title" content="영상·사진·3D 정밀 기록 및 웹사이트 구축 제안서 | 불방 인터랙티브" />
+<meta property="og:title" content="기업·기관 영상·사진·3D 및 웹사이트 제작 제안서 | 불방 인터랙티브" />
 <meta property="og:description" content="작품, 공간, 제품, 공정을 영상·사진·3D로 색채와 형태의 왜곡 없이 기록하고, 오래 활용할 수 있는 원본으로 남깁니다." />
 <meta property="og:url" content="https://www.boolbang.com/proposal/" />
 <meta property="og:image" content="https://www.boolbang.com/images/logo_card.webp" />
@@ -54,7 +54,6 @@ p{margin:0;text-align:justify;text-justify:inter-character}
 .hero p{text-align:left} /* 표지 부제는 줄마다 하이라이트가 있어 왼쪽 정렬 유지 */
 /* 패키지는 PC·모달에서 3칸이라 칸이 좁아, 양쪽 정렬하면 글자가 듬성듬성 벌어져 왼쪽 정렬.
    휴대폰에선 한 칸으로 넓어지니 다른 문단처럼 양쪽 정렬 */
-@media (min-width:601px){.pack-body p{text-align:left}}
 
 .band{border-bottom:1px solid var(--line)}
 .wrap{max-width:var(--wrap);margin:0 auto;padding-left:var(--pad);padding-right:var(--pad)}
@@ -96,6 +95,9 @@ section.block{display:flex;flex-direction:column;gap:24px;min-width:0}
 .bar .tags span{display:inline-flex;align-items:center;gap:6px}
 .lead-h{font-size:28px;line-height:1.3}
 .lead{font-size:17px}
+/* 검은 박스 = 섹션의 결론·핵심 주장에만, 섹션당 하나 (표지 사양 줄, Our goal 카드와 같은 색) */
+.lead-box{background:var(--ink);color:var(--red);padding:20px 22px}
+div.lead-box{display:flex;flex-direction:column;gap:4px}
 
 /* intro */
 .intro{display:flex;flex-direction:column;gap:24px}
@@ -121,17 +123,17 @@ section.block{display:flex;flex-direction:column;gap:24px;min-width:0}
 .card h3{font-size:20px;line-height:1.3}
 /* 강조 카드: 사선 대신 단색(먹색) 면 */
 .card.note{background:var(--ink);color:var(--red)}
-.cards.duo .note{grid-column:1/-1}
+/* Any screen 카드의 화면 비율 도형: 높이를 같게 두고 폭만 비율대로, 아래에 비율 숫자 */
+.ratios{display:flex;align-items:flex-end;gap:14px;margin-top:8px;font-size:11px;line-height:1}
+.ratios span{display:flex;flex-direction:column;align-items:center;gap:6px}
+.ratios i{display:block;height:44px;aspect-ratio:var(--r);border:1px solid var(--line)}
 
 /* services */
 .svc{border-top:1px solid var(--line)}
-.svc-row{display:grid;grid-template-columns:110px minmax(0,1.2fr) minmax(0,1fr);gap:18px;align-items:start;padding-block:14px;border-bottom:1px solid var(--line)}
+.svc-row{display:grid;grid-template-columns:140px minmax(0,1.2fr) minmax(0,1fr);gap:20px;align-items:start;padding-block:16px;border-bottom:1px solid var(--line);line-height:1.6}
 .svc-head{padding-block:8px}
-.svc-name{font-weight:700;font-size:17px}
+.svc-name{font-weight:700;font-size:17px;white-space:nowrap}
 .svc-when{color:var(--ink-2)}
-/* 칸 안 글도 본문 문단처럼 양쪽 정렬 */
-.svc-row > span{text-align:justify;text-justify:inter-character}
-.svc-row small{display:block;margin-top:2px;color:var(--ink-2);font-size:14.5px}
 
 /* 기록 → 원본 데이터 → 활용 흐름도 (HTML로 그려 휴대폰에선 세로로 쌓는다) */
 
@@ -150,15 +152,9 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
 #profile td small{display:block;margin-top:2px;color:var(--ink-2);font-size:13.5px}
 .yr{font-size:14px;white-space:nowrap;font-variant-numeric:tabular-nums}
 
-/* packages */
-.packs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.pack{border:1px solid var(--line);display:flex;flex-direction:column;min-width:0}
-.pack-top{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
-.pack-top h3{font-size:20px}
-.meter{font-size:15px;letter-spacing:.1em}
-.pack-body{padding:14px 16px 18px;display:flex;flex-direction:column;gap:10px}
-.pack-body .fit{color:var(--ink-2);font-size:15px}
-.packs + .lead{margin-top:12px}
+/* packages: 위아래로 쌓은 3단계 목록. 왼쪽 단계 번호·이름, 오른쪽 구성 (제작 원칙 목록과 같은 줄 구성) */
+.pack-list .n{font-weight:500;margin-right:10px}
+.pack-list p .plus{color:var(--ink-2)}
 
 /* 수행 절차: 가는 선 위에 점 여섯 개, 점 아래 번호·제목. 마지막 납품 점만 조금 크게 */
 .chain{list-style:none;margin:0;padding:4px 0 0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr))}
@@ -196,7 +192,6 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
   .cards{grid-template-columns:minmax(0,1fr)}
   th,td{padding:10px}
   .yr{white-space:normal}
-  .packs{grid-template-columns:minmax(0,1fr)}
   .svc-head{display:none}
   .svc-row{grid-template-columns:minmax(0,1fr);gap:4px;align-items:start}
   .feat{grid-template-columns:minmax(0,1fr);gap:6px}
@@ -219,14 +214,21 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
   .pdf-btn,.progress{display:none!important}
   .wrap{max-width:none;padding-left:14mm;padding-right:14mm}
   .in-modal .topbar{padding-right:14mm}
-  .grid{padding-block:10mm 14mm}
+  .grid{padding-block:10mm 0} /* 아래 여백은 @page 여백(12mm)이 대신 — 여기 여백이 있으면 빈 마지막 쪽이 생길 수 있다 */
   main{gap:12mm}
   .hero{break-after:page}
   .hero-frame{min-height:244mm;justify-content:flex-end;padding:0 12mm 22mm}
   .hero h1{font-size:56px}
   .tbl-wrap{overflow:visible}
-  #contact,#profile .tbl-wrap,.cards.duo,.card,.pack,.chain,.svc-row,.feat,tr,.contact-grid > div,.ref,.intro-text,.lead-h,.lead,.intro-body p{break-inside:avoid}
+  #contact,#profile .tbl-wrap,.card,.lead-box,.chain,.svc-row,.feat,tr,.contact-grid > div,.ref,.intro-text,.lead-h,.lead,.intro-body p{break-inside:avoid}
   .bar,.lead-h,.lead,.svc-head,thead{break-after:avoid}
+  /* 소유권 박스는 앞 목록과 같은 쪽에 (결론만 다음 쪽에 떨어지지 않게).
+     대표 이력은 새 쪽에서 통째로 시작 → 마지막 쪽이 대표 이력 + 문의로 깔끔하게 묶인다 */
+  div.lead-box{break-before:avoid}
+  #profile{break-before:page;break-inside:avoid}
+  /* 대표 이력 + 문의가 한 쪽에 들어가도록 두 섹션의 표·칸 위아래 여백만 살짝 줄임 */
+  #profile th,#profile td{padding-block:8px}
+  .contact-grid > div{padding-block:10px}
 }
 </style>
 </head>
@@ -250,9 +252,9 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
 <section class="hero">
   <div class="wrap">
     <div class="hero-frame">
-      <span class="mono">Boolbang Interactive · Proposal 2026</span>
-      <h1>영상·사진·3D<br>정밀 기록 및<br>웹사이트 구축 제안서</h1>
-      <p class="sub">작품, 공간, 제품, 공정을 색채와 형태의 왜곡 없이 기록하고, 오래 활용할 수 있는 원본으로 남깁니다.</p>
+      <span class="mono">BoolBang Interactive · Proposal 2026</span>
+      <h1>기업·기관<br>영상·사진·3D 및<br>웹사이트 제작 제안서</h1>
+      <p class="sub"><b>영상·사진·3D 정밀 기록</b><br>작품, 공간, 제품, 공정을 색채와 형태의 왜곡 없이 기록하고, 오래 활용할 수 있는 원본으로 남깁니다.</p>
       <dl class="hero-spec">
         <div><dt class="mono">Subject</dt><dd>작품 · 공간 · 제품 · 공정</dd></div>
         <div><dt class="mono">Master</dt><dd>원본 데이터</dd></div>
@@ -270,11 +272,11 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
     <div class="intro">
       <div class="intro-text">
         <span class="ital">Overview</span>
-        <h2 class="lead-h" id="greeting-h">영상·사진·3D로, 대상을 정확한 데이터로 기록합니다</h2>
+        <h2 class="lead-h" id="greeting-h">영상·사진·3D로, 완성 영상과 정확한 원본을 함께 만듭니다</h2>
       </div>
     </div>
     <div class="intro-body">
-      <p><b>저희의 일은 정확한 원본 기록입니다. 색 기준을 맞춘 촬영과 3D 모델링으로, 대상을 있는 그대로 남깁니다.</b></p>
+      <p><b>기획과 촬영부터 편집·색보정까지 직접 마무리합니다.</b> 색 기준을 맞춘 촬영과 3D 모델링으로, 다시 쓸 수 있는 원본까지 남깁니다.</p>
     </div>
   </section>
 
@@ -287,10 +289,10 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
     <h3 class="lead-h">잘 기록한 원본 하나가, 다음 작업을 모두 쉽게 만듭니다</h3>
     <p class="lead">처음에 정확하게 기록해 두면, 나중에 새 용도가 생겨도 다시 촬영하지 않고 그 원본에서 바로 만들 수 있습니다.</p>
     <div class="cards">
-      <article class="card"><span class="ital">Any screen</span><h3>어떤 화면에도 맞춥니다</h3><p>SNS용 짧은 영상, 행사 부스 홍보 영상, 옥외 광고판까지. 화면 크기와 비율이 달라도 원본에서 바로 뽑아냅니다.</p></article>
+      <article class="card"><span class="ital">Any screen</span><h3>어떤 화면에도 맞춥니다</h3><p>행사 부스 영상부터 옥외 광고판까지. 화면 크기와 비율이 달라도 같은 원본에서 각각 맞춰 냅니다.</p><div class="ratios mono" aria-label="화면 비율 예시: 16:9, 4:3, 1:1, 9:16"><span><i style="--r:16/9"></i>16:9</span><span><i style="--r:4/3"></i>4:3</span><span><i style="--r:1/1"></i>1:1</span><span><i style="--r:9/16"></i>9:16</span></div></article>
       <article class="card"><span class="ital">Easy handoff</span><h3>다음 작업자가 쉽게 이어받습니다</h3><p>색 기준과 촬영 정보가 정리된 원본은 다른 편집자나 업체가 받아도 같은 품질로 다시 만들 수 있습니다.</p></article>
       <article class="card"><span class="ital">Only once</span><h3>그때가 아니면 못 찍습니다</h3><p>전시가 끝나거나 공간·설비가 바뀌면 같은 장면은 다시 기록할 수 없습니다.</p></article>
-      <article class="card note"><span class="mono">Our goal</span><h3>계속 꺼내 쓰는 원본</h3><p>한 번 쓰고 끝나는 홍보물이 아니라, 귀사가 소유하고 오래 활용하는 원본을 남깁니다.</p></article>
+      <article class="card note"><span class="mono">Our goal</span><h3>계속 꺼내 쓰는 원본</h3><p>한 번 쓰고 끝나는 영상이 아니라, 귀사가 오래 꺼내 쓰는 원본을 남깁니다.</p></article>
     </div>
   </section>
 
@@ -298,9 +300,9 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
   <section class="block" id="services" aria-labelledby="svc-h">
     <div class="bar">
       <h2 id="svc-h">서비스 구성</h2>
-      <div class="tags mono"><span>Video</span><span>3D</span><span>Web</span></div>
+      <div class="tags mono"><span>Video</span><span>Photo</span><span>3D</span><span>Web</span></div>
     </div>
-    <p class="lead">영상·사진과 3D로 대상을 기록해 하나의 원본 데이터로 관리하고, 필요하면 이를 보여줄 웹사이트까지 직접 개발합니다.</p>
+    <p class="lead">영상·사진과 3D로 대상을 기록해 하나의 원본 데이터로 관리하고, 이를 바탕으로 기업 영상과 웹사이트까지 직접 만듭니다.</p>
     <!-- 사진 기록 참고: 가로·세로 사진을 같은 높이로 한 줄(휴대폰은 가로+세로 두 줄) -->
     <figure class="ref" aria-labelledby="photo-ref-cap">
       <figcaption id="photo-ref-cap"><span class="mono">Reference</span><span>사진 기록 예시</span></figcaption>
@@ -323,13 +325,11 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
       </div>
     </figure>
     <div class="svc" role="table" aria-label="서비스 구성">
-      <div class="svc-row svc-head mono" role="row"><span role="columnheader">서비스</span><span role="columnheader">기록 대상 · 품질 기준</span><span role="columnheader">납품물</span></div>
-      <div class="svc-row" role="row"><span class="svc-name" role="cell">영상·사진 기록</span><span role="cell">전시, 작품, 공간, 공정, 제품<small>색 기준표를 두고 촬영, 상영 환경별 색보정</small></span><span class="svc-when" role="cell">원본 및 보정본, 상영·설치용 마스터</span></div>
-      <div class="svc-row" role="row"><span class="svc-name" role="cell">3D 모델링</span><span role="cell">작품, 오브젝트, 제품, 설비<small>실물 형태와 표면 색채를 원본과 대조</small></span><span class="svc-when" role="cell">3D 데이터 파일, 고화질 렌더링 이미지</span></div>
-      <div class="svc-row" role="row"><span class="svc-name" role="cell">웹 아카이브 구축</span><span role="cell">포트폴리오·아카이브 사이트 기획과 개발</span><span class="svc-when" role="cell">개발·배포까지 마친 아카이브 사이트, 영상·이미지 호스팅 구성</span></div>
-    </div>
-    <div class="cards duo">
-      <article class="card note"><span class="ital">Web</span><h3>웹사이트는 개발까지 직접</h3><p><b>트래픽 비용은 낮추고 화질은 지키는</b> 사이트로 구축합니다.</p></article>
+      <div class="svc-row svc-head mono" role="row"><span role="columnheader">서비스</span><span role="columnheader">대상</span><span role="columnheader">납품물</span></div>
+      <div class="svc-row" role="row"><span class="svc-name" role="cell">영상·사진 기록</span><span role="cell">전시, 작품, 공간, 공정, 제품</span><span class="svc-when" role="cell">완성 영상, 색보정한 A컷 원본 클립, 보정 사진, 상영·설치용 마스터</span></div>
+      <div class="svc-row" role="row"><span class="svc-name" role="cell">기업 영상</span><span role="cell">제품 소개, 신제품 런칭, 기술 시연, 브랜드 필름, 행사 오프닝·키노트</span><span class="svc-when" role="cell">행사·발표 상영용 마스터, 웹 게시본</span></div>
+      <div class="svc-row" role="row"><span class="svc-name" role="cell">3D 모델링</span><span role="cell">작품, 오브젝트, 제품, 설비</span><span class="svc-when" role="cell">3D 데이터 파일, 고화질 렌더링 이미지</span></div>
+      <div class="svc-row" role="row"><span class="svc-name" role="cell">웹 아카이브 구축</span><span role="cell">기관·브랜드·작가의 포트폴리오·아카이브 사이트</span><span class="svc-when" role="cell">개발·배포까지 마친 아카이브 사이트, 영상·이미지 호스팅 구성</span></div>
     </div>
   </section>
 
@@ -339,15 +339,16 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
       <h2 id="fields-h">적용 분야</h2>
       <div class="tags mono"><span>Art</span><span>Industry</span><span>Space</span></div>
     </div>
-    <p class="lead">시간이 지나면 사라지거나 바뀌는 대상을 정밀하게 보존해야 하는 기관과 기업을 주로 돕습니다.</p>
+    <p class="lead">시간이 지나면 사라지거나 바뀌는 대상을 정밀하게 보존해야 하는 기관, 제품과 기술을 정확하게 보여줘야 하는 기업을 주로 돕습니다.</p>
     <div class="tbl-wrap">
       <table class="cases">
-        <thead><tr><th style="width:22%">분야</th><th>주요 수요</th><th style="width:36%">기록 범위</th></tr></thead>
+        <thead><tr><th style="width:22%">분야</th><th>주요 수요</th><th style="width:36%">작업 범위</th></tr></thead>
         <tbody>
           <tr><td class="k">미술관·갤러리·문화재단</td><td>전시 종료 전 기록, 기관 아카이브에 넣을 기록물 확보</td><td>전시 전경 영상·사진, 작품 3D 데이터</td></tr>
           <tr><td class="k">작가·컬렉터</td><td>작품 판매, 도록 제작, 보험, 소장 이력 관리</td><td>작품 정밀 기록, 컬렉터 전용 영상</td></tr>
           <tr><td class="k">제조 기업</td><td>공정 변경·설비 교체 전 기록, 바이어 대상 소개 자료</td><td>공정 영상, 제품·설비 3D 모델링</td></tr>
           <tr><td class="k">기업·브랜드</td><td>창립 기념, 회사 역사 정리, 역사관·쇼룸 운영</td><td>기업 웹 아카이브, 쇼룸 영상·사진 기록</td></tr>
+          <tr><td class="k">기업 발표·행사</td><td>신제품 발표, 포럼·컨퍼런스·전시회 상영</td><td>런칭·키노트·오프닝 영상, 기술 시연 3D 영상</td></tr>
           <tr><td class="k">공간 운영 주체</td><td>이전, 리모델링, 철거 전 기록</td><td>공간 전경 영상·사진 기록</td></tr>
         </tbody>
       </table>
@@ -363,7 +364,7 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
       </div>
     </figure>
     <div class="prose foot-note">
-      <p><b>주요 수행 실적</b>: 미술관·문화재단 전시 기록, 생산 기업 공정 촬영 및 3D 모델링, 컬렉터 전용 영상 제작, 극장 상영용 색보정. 작업물은 <a href="https://www.boolbang.com/#portfolio" target="_blank" rel="noopener">포트폴리오</a>에서 보실 수 있습니다.</p>
+      <p><b>주요 수행 실적</b>: 미술관·문화재단 전시 기록, 생산 기업 공정 촬영 및 3D 모델링, 컬렉터 전용 영상 제작, 극장 상영용 색보정, 공연장 대형 스크린 상영용 3D 영상 제작. 작업물은 <a href="https://www.boolbang.com/#portfolio" target="_blank" rel="noopener">포트폴리오</a>에서 보실 수 있습니다.</p>
     </div>
   </section>
 
@@ -371,16 +372,10 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
   <section class="block" id="principle" aria-labelledby="prin-h">
     <div class="bar">
       <h2 id="prin-h">제작 원칙</h2>
-      <div class="tags mono"><span>Pre-production</span><span>Camera</span><span>Delivery</span></div>
+      <div class="tags mono"><span>Mood</span><span>Aesthetics</span></div>
     </div>
     <h3 class="lead-h">빠르게 소비되는 콘텐츠가 아니라, 오래 남는 기록을 만듭니다</h3>
-    <p class="lead">피드에서 며칠 만에 지나가는 스낵 콘텐츠와는 결이 다른 작업입니다.</p>
-    <div class="feats">
-      <div class="feat"><h3>촬영 전 준비</h3><p>촬영에 앞서 대상의 실제 색과 귀사에 맞는 무드를 철저히 분석해 결정합니다. 조명, 재질, 공간의 빛을 살피고, 무엇을 어떤 기준으로 남길지 먼저 정한 뒤에 촬영에 들어갑니다.</p></div>
-      <div class="feat"><h3>장비 선택</h3><p>정해진 색 기준과 무드, 최종 용도에 맞는 카메라와 렌즈를 골라 촬영을 진행합니다. 늘 쓰는 장비가 아니라 그 대상에 맞는 장비를 씁니다.</p></div>
-      <div class="feat"><h3>플랫폼별 납품</h3><p>웹사이트, 유튜브, 전시장, 영화관 등 최종 납품 플랫폼을 처음부터 고려합니다. 같은 원본에서 각 환경에 맞는 색 기준과 포맷으로 마스터를 따로 만들어 제공합니다.</p></div>
-      <div class="feat"><h3>AI 활용 대비</h3><p>AI로 콘텐츠를 만들어도 품질은 결국 원본이 정합니다.</p></div>
-    </div>
+    <p class="lead lead-box">애플이나 엔비디아 같은 글로벌 기술 기업의 신제품 발표 영상을 보면, 기술 설명보다 먼저 그 회사만의 무드가 전해집니다. 빛과 색, 카메라의 움직임, 인터뷰 한 컷까지 미술적인 판단이 쌓인 결과입니다. 저희는 그 판단을 촬영 전에 정합니다. 미술관의 작품은 짐벌 대신 슬라이더로 천천히 담고, 행사 오프닝처럼 에너지가 필요한 영상에는 화려한 움직임을 씁니다. 3D와 합성은 실사와 같은 빛과 톤으로 맞추고, 사진은 때로 선명함보다 필름 룩의 부드러움을 택합니다. <b>언제 화려하게, 언제 절제할지 아는 것. 미술 전공과 미술관·영화관에서의 활동으로 쌓아 온 기준입니다.</b></p>
   </section>
 
   <!-- 수행 절차 -->
@@ -389,41 +384,33 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
       <h2 id="proc-h">수행 절차</h2>
       <div class="tags mono"><span>6 Steps</span></div>
     </div>
-    <p class="lead">기록물의 최종 용도를 먼저 정하고, 그에 맞는 색 기준과 데이터 형식을 적용합니다.</p>
+    <p class="lead">결과물의 최종 용도를 먼저 정하고, 그에 맞는 색 기준과 데이터 형식을 적용합니다.</p>
     <ol class="chain">
       <li><span class="n mono">01</span>사전 협의</li>
       <li><span class="n mono">02</span>현장 실사</li>
-      <li><span class="n mono">03</span>기록 수행</li>
+      <li><span class="n mono">03</span>촬영·제작</li>
       <li><span class="n mono">04</span>후반 작업</li>
       <li><span class="n mono">05</span>품질 검수</li>
       <li><span class="n mono">06</span>납품·공개</li>
     </ol>
     <div class="feats">
-      <div class="feat"><h3>소유권</h3><p>모든 원본 데이터의 소유권은 귀사에 귀속됩니다.</p></div>
       <div class="feat"><h3>기준 문서화</h3><p>파일 목록, 촬영 조건, 색 기준을 문서로 정리해 드립니다.</p></div>
-      <div class="feat"><h3>장기 보존</h3><p>오래 보존하기에 알맞은 파일 형식과 백업 체계를 함께 제시합니다.</p></div>    </div>
+      <div class="feat"><h3>장기 보존</h3><p>보존에 알맞은 파일 형식과 백업 체계를 함께 제시합니다.</p></div>
+    </div>
+    <div class="lead-box"><span class="mono">Ownership</span><p class="lead">모든 원본 데이터의 소유권은 귀사에 귀속됩니다.</p></div>
   </section>
 
   <!-- 패키지 구성 -->
   <section class="block" id="packages" aria-labelledby="pack-h">
     <div class="bar">
       <h2 id="pack-h">패키지 구성</h2>
-      <div class="tags mono"><span>Project</span><span>3 Levels</span></div>
+      <div class="tags mono"><span>Project</span><span>3 Options</span></div>
     </div>
-    <p class="lead">기록 업무는 프로젝트 단위로 운영합니다. 비용은 대상과 범위를 검토한 뒤 별도로 견적을 드립니다.</p>
-    <div class="packs">
-      <article class="pack">
-        <div class="pack-top"><h3>기본 기록</h3><span class="meter" aria-label="3단계 중 1단계">■□□</span></div>
-        <div class="pack-body"><span class="mono">구성</span><p>영상·사진 기록, 용도별 색보정</p><p class="fit">스케치 영상·사진 제작, 홍보 영상·사진 제작</p></div>
-      </article>
-      <article class="pack">
-        <div class="pack-top"><h3>기록 및 3D</h3><span class="meter" aria-label="3단계 중 2단계">■■□</span></div>
-        <div class="pack-body"><span class="mono">기본 기록 +</span><p>3D 모델링</p><p class="fit">제품의 작동 원리, 공간의 구조, 재질·재료 등 구체적인 설명이 필요한 영상과 렌더링 이미지</p></div>
-      </article>
-      <article class="pack">
-        <div class="pack-top"><h3>통합 기록</h3><span class="meter" aria-label="3단계 중 3단계">■■■</span></div>
-        <div class="pack-body"><span class="mono">기록 및 3D +</span><p>웹 아카이브 사이트 구축</p><p class="fit">기관, 브랜드의 기록을 웹에 최적화해 공개</p></div>
-      </article>
+    <p class="lead">모든 작업은 프로젝트 단위로 운영합니다. 비용은 대상과 범위를 검토한 뒤 별도로 견적을 드립니다.</p>
+    <div class="feats pack-list">
+      <div class="feat"><h3><span class="n mono">01</span>기본 기록</h3><p>영상·사진 기록, 용도별 색보정</p></div>
+      <div class="feat"><h3><span class="n mono">02</span>기록 및 3D</h3><p><span class="plus">기본 기록 + </span>3D 모델링, VFX·AI 합성이 필요한 경우</p></div>
+      <div class="feat"><h3><span class="n mono">03</span>통합 기록</h3><p><span class="plus">기록 및 3D + </span>웹 아카이브 사이트 구축</p></div>
     </div>
   </section>
 
@@ -444,7 +431,7 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
   <section class="block" id="profile" aria-labelledby="prof-h">
     <div class="bar">
       <h2 id="prof-h">대표 이력</h2>
-      <div class="tags mono"><span>2013—2019</span><span>Artist · Director</span></div>
+      <div class="tags mono"><span>2013–2019</span><span>Artist · Director</span></div>
     </div>
     <div class="prose">
       <p><b>한국예술종합학교 미술원 졸업.</b> 2013년부터 2019년까지 영상 작가·다큐멘터리 감독으로 활동했고, 2016년 불방 인터랙티브를 설립했습니다.</p>
@@ -470,7 +457,7 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
       <h2 id="contact-h">문의</h2>
       <div class="tags mono"><span>Thank you</span></div>
     </div>
-    <p class="lead">읽어주셔서 감사합니다. 문의 주시면 기록 대상을 미리 검토하고, 알맞은 기록 방식에 대한 개략적인 안을 준비해 미팅에 임하겠습니다.</p>
+    <p class="lead">읽어주셔서 감사합니다. 문의 주시면 대상과 용도를 미리 검토하고, 알맞은 제작 방식에 대한 개략적인 안을 준비해 미팅에 임하겠습니다.</p>
     <div class="contact-grid">
       <div><span class="mono">회사</span><span class="v">불방 인터랙티브</span><span class="foot-note">사업자등록번호 837-04-00472</span></div>
       <div><span class="mono">이메일</span><span class="v">fromboolbang@gmail.com</span></div>
