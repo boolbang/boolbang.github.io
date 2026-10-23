@@ -305,16 +305,24 @@ window.addEventListener("hashchange", () => { const c = fromHash(); if (c !== "A
 /* ── 크게 보기: 사진은 원본 비율, 영상은 16:9 플레이어로 바로 재생 ── */
 const viewer = document.getElementById("viewer");
 const vStage = document.getElementById("vStage");
+// 열 때 브라우저 기록에 한 칸을 넣어 두어, 휴대폰·PC의 '뒤로가기'가 페이지를 떠나지 않고 창만 닫게 한다
 function openViewer(html) {
   vStage.innerHTML = html;
+  if (!viewer.classList.contains("open")) history.pushState({ viewer: true }, "");
   viewer.classList.add("open");
   document.body.classList.add("lock");
 }
-function closeViewer() {
+function hideViewer() {
   viewer.classList.remove("open");
   document.body.classList.remove("lock");
   vStage.innerHTML = ""; // 플레이어를 지워 재생·요금을 멈춘다
 }
+// Close·배경·Esc로 닫을 때도 넣어 둔 기록을 되돌려, 다음 뒤로가기가 한 번 헛돌지 않게
+function closeViewer() {
+  if (history.state && history.state.viewer) history.back(); // → popstate에서 hideViewer
+  else hideViewer();
+}
+window.addEventListener("popstate", () => { if (viewer.classList.contains("open")) hideViewer(); });
 const openVideo = el => openViewer(
   `<div class="vframe"><iframe src="${el.dataset.src}"
     allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen; xr-spatial-tracking;" allowfullscreen></iframe></div>`);
