@@ -116,7 +116,12 @@ body.lock{overflow:hidden}
   .media{grid-template-columns:repeat(2,minmax(0,1fr))}
   .m.big{grid-row:auto}
 }
+/* 기업용 흰 버전 (/works/?w) — 흰 제안서(/proposal/?w)에서 넘어올 때 같은 색으로 */
+html.white{--bg:#fff}
 </style>
+<script>
+if (new URLSearchParams(location.search).has('w')) document.documentElement.classList.add('white');
+</script>
 </head>
 <body id="top">
 
@@ -281,7 +286,8 @@ const filters = document.getElementById("filters");
   const b = document.createElement("button");
   b.textContent = c;
   b.dataset.c = c;
-  b.onclick = () => { history.replaceState(null, "", c === "All" ? location.pathname : "#" + c.toLowerCase()); setFilter(c); };
+  // 주소의 ?w(흰 버전)는 남긴다 — 필터를 누른 뒤 주소를 복사해 보내도 같은 색으로 열리게
+  b.onclick = () => { history.replaceState(null, "", location.pathname + location.search + (c === "All" ? "" : "#" + c.toLowerCase())); setFilter(c); };
   filters.appendChild(b);
 });
 function setFilter(c) {
