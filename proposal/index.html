@@ -19,17 +19,17 @@
 <link rel="stylesheet" href="/css/fonts.css" />
 <!-- 제안서. 단독 주소 /proposal/ 로 공유하고, 메인(index.html)의 제안서 모달에도 iframe으로 띄운다 -->
 <style>
-/* Layout: red wireframe sheet — hairline black frames, solid ink accents, single-column main.
+/* Layout: white wireframe sheet — hairline black frames, solid ink accents, single-column main.
    한 장의 A4(가로 794px = 210mm @96dpi) 기준으로 짠다 → 모달(A4 비율)·인쇄(PDF)·단독 페이지가 같은 모양 */
 :root{
-  --red:#ef4444;
+  --red:#fff; /* 바탕색 (예전 빨강 버전의 변수명을 그대로 씀) — 빨강은 눈부셔서 흰 바탕만 사용 */
   --ink:#140808;
   --ink-2:#3a1212;
   --line:#140808;
   --font:"D2Coding",monospace;
   --wrap:794px;
   --pad:40px; /* 문서 좌우 여백 */
-  --gauge:#5fe3ff; /* 스크롤 게이지(밝은 하늘색) */
+  --gauge:var(--ink); /* 스크롤 게이지(먹색) */
   color-scheme:light;
 }
 *{box-sizing:border-box}
@@ -64,7 +64,7 @@ p{margin:0;text-align:justify;text-justify:inter-character}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px 24px;padding-block:18px;flex-wrap:wrap}
 /* 모달 안에서는 오른쪽 위 X 버튼과 겹치지 않게 */
 .in-modal .topbar{padding-right:72px}
-/* 로고는 칸 없이 글자만 (빨강·흰 버전 공통). 누르면 홈(boolbang.com) — PDF 안에서도 링크로 남는다 */
+/* 로고는 칸 없이 글자만. 누르면 홈(boolbang.com) — PDF 안에서도 링크로 남는다 */
 .logo{display:flex;align-items:center;height:56px;font-size:26px;font-weight:700;letter-spacing:-.04em;text-decoration:none}
 .top-meta{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
 .top-links{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
@@ -79,7 +79,7 @@ p{margin:0;text-align:justify;text-justify:inter-character}
 /* 여러 줄 하이라이트: 아랫줄 배경이 윗줄 글자를 덮지 않게 줄 간격 > 글자 높이 + 위아래 여백 */
 .hero h1{font-size:48px;line-height:1.3}
 .hero .sub{max-width:600px;font-size:17px;line-height:1.85;font-weight:500}
-/* 표지 아래 기록 사양 줄: 먹색 박스 3칸, 칸 사이는 빨간 가는 선 */
+/* 표지 아래 기록 사양 줄: 먹색 박스 3칸, 칸 사이는 바탕색(흰) 가는 선 */
 .hero-spec{margin:28px 0 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:var(--ink);color:var(--red)}
 .hero-spec div{padding:14px 16px;display:flex;flex-direction:column;gap:2px;min-width:0}
 .hero-spec div + div{border-left:1px solid var(--red)}
@@ -201,11 +201,11 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
   .logo{height:48px;font-size:22px}
 }
 /* 인쇄(PDF 저장): A4 세로, 배경색 그대로, 블록이 페이지 경계에서 잘리지 않게 */
-/* 위아래 12mm 여백: 이어지는 쪽도 맨 위에 붙지 않게. 여백까지 빨갛게 → @page 자체에 배경색
+/* 위아래 12mm 여백: 이어지는 쪽도 맨 위에 붙지 않게. 여백까지 바탕색으로 → @page 자체에 배경색
    (여백 칸을 지정하면 html 배경이 여백에 안 칠해져 하얗게 나온다).
    여백 칸(margin box)을 빈 내용으로 직접 지정하면 브라우저가 찍는 머리글·바닥글(날짜·제목·주소·쪽수)이 빠진다 */
 @page{
-  size:A4 portrait;margin:12mm 0;background:#ef4444;
+  size:A4 portrait;margin:12mm 0;background:#fff;
   @top-left{content:""} @top-center{content:""} @top-right{content:""}
   @bottom-left{content:""} @bottom-center{content:""} @bottom-right{content:""}
 }
@@ -231,20 +231,11 @@ td.k{font-weight:700;white-space:nowrap;text-align:left}
   #profile th,#profile td{padding-block:8px}
   .contact-grid > div{padding-block:10px}
 }
-/* 기업용 흰 버전 (/proposal/?w): 바탕 변수만 흰색으로 → 먹색 박스는 검정 바탕 + 흰 글씨.
-   빨강 없이 흰 바탕 + 먹색만 */
-html.white{--red:#fff;--gauge:var(--ink)}
 </style>
 <script>
-// 기업용: 주소 끝에 ?w → 흰 버전. 메인(index.html)의 모달·링크는 /proposal/ 그대로라 항상 빨강.
-// 화면이 그려지기 전에 적용되도록 head에 둔다 (빨강이 번쩍했다 바뀌지 않게)
+// 제안서는 항상 흰 바탕. 예전에 보낸 /proposal/?w 주소도 그대로 열리고,
+// ?w로 들어온 경우만 포트폴리오 링크를 흰 버전(/works/?w)으로 바꾼다 (PDF로 저장해도 이 주소가 들어간다)
 if (new URLSearchParams(location.search).has('w')) {
-  document.documentElement.classList.add('white');
-  // PDF 여백(@page)은 클래스로 못 바꿔 따로 덮어쓴다 (위 style보다 뒤에 붙어야 이김)
-  var paperWhite = document.createElement('style');
-  paperWhite.textContent = '@page{background:#fff}';
-  document.head.appendChild(paperWhite);
-  // 제안서 안 포트폴리오 링크도 흰 버전으로 (PDF로 저장해도 이 주소가 들어간다)
   document.addEventListener('DOMContentLoaded', function(){
     document.querySelectorAll('a[href="https://www.boolbang.com/works/"]').forEach(function(a){
       a.href = 'https://www.boolbang.com/works/?w';

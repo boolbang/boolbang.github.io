@@ -141,10 +141,10 @@
 
       /* 제안서 모달: A4 세로 비율(210:297) — PDF로 저장했을 때와 같은 모양으로 보이게.
          높이를 화면에 맞추고 폭은 비율로 계산. 모바일(768px 이하)은 다른 모달처럼 풀스크린 */
-      /* 제안서 배경(빨강)과 같게 — 불러오는 동안이나 끝까지 스크롤했을 때 흰 바탕이 비치지 않게 */
+      /* 제안서 배경(흰색)과 같게 — 불러오는 동안이나 끝까지 스크롤했을 때 다른 색이 비치지 않게 */
       #proposalModal .portfolio-modal-content,
       #proposalModal .portfolio-modal-frame {
-        background-color: #ef4444;
+        background-color: #ffffff;
       }
       @media (min-width: 769px) {
         #proposalModal .portfolio-modal-content {
@@ -296,13 +296,13 @@
             "
             >게임</a
           >
-          <!-- 제안서: 클릭하면 모달, 새 탭 열기·링크 복사는 단독 주소 /proposal/. 바탕은 제안서와 같은 빨강 -->
+          <!-- 제안서: 클릭하면 모달, 새 탭 열기·링크 복사는 단독 주소 /proposal/. 다른 메뉴와 반전(검정 바탕 + 흰 글씨)으로 눈에 띄게 -->
           <a
             id="proposalBox"
             href="/proposal/"
             style="
-              color: #000000;
-              background-color: #ef4444;
+              color: #ffffff;
+              background-color: #000000;
               text-decoration: none;
               padding: 4px 8px;
               cursor: pointer;
